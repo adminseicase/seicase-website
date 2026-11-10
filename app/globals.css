@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+/* Admin dark mode is opt-in via the `.dark` class on the admin shell */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+ * seicase design tokens
+ * Warm, minimal, editorial. All colours checked for WCAG AA on cream.
+ * ------------------------------------------------------------------------- */
+:root {
+  --background: #f6eee7;
+  --surface: #fbf7f3;
+  --surface-muted: #efe4da;
+  --border: #e6dad0;
+  --border-strong: #d6c6b8;
+  --foreground: #1f1a17;
+  --muted-text: #6f6158; /* darkened from #7D6E64 for 4.5:1 contrast on cream */
+  --accent-cognac: #9c5a33;
+  --accent-brown: #6e3b22;
+  --accent-olive: #5f5d3b;
+  --accent-burgundy: #6d2430;
+  --success: #5e7a4e;
+  --success-bg: #e3ead9;
+  --warning: #9a6a1c;
+  --warning-bg: #f5e7cc;
+  --danger: #9b2c2c;
+  --danger-bg: #f6dcd8;
+  --ring: #9c5a33;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #171311;
+  --surface: #1f1a17;
+  --surface-muted: #2a2320;
+  --border: #3a302b;
+  --border-strong: #4b3f38;
+  --foreground: #f3ebe4;
+  --muted-text: #b5a79d;
+  --accent-cognac: #d08a5f;
+  --accent-brown: #e0a57f;
+  --success: #9cbf88;
+  --success-bg: #26301f;
+  --warning-bg: #3a2e18;
+  --danger: #e0817a;
+  --danger-bg: #3b1f1d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted-text);
+  --color-cognac: var(--accent-cognac);
+  --color-brown: var(--accent-brown);
+  --color-olive: var(--accent-olive);
+  --color-burgundy: var(--accent-burgundy);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-ring: var(--ring);
+
+  --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-jost), "Jost", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-soft: 0 1px 2px rgb(60 40 25 / 0.04), 0 8px 24px -12px rgb(60 40 25 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(60 40 25 / 0.05), 0 18px 40px -18px rgb(60 40 25 / 0.25);
+
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-slide-in-right: slide-in-right 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-slide-in-left: slide-in-left 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: none; }
+  }
+  @keyframes slide-in-left {
+    from { transform: translateX(-100%); }
+    to { transform: none; }
+  }
+  @keyframes shimmer {
+    from { background-position: -400px 0; }
+    to { background-position: 400px 0; }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, .font-display {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: #e7d2c0;
+    color: var(--foreground);
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* Rich text from the CMS (product descriptions, policies, journal) */
+  .prose-seicase {
+    color: var(--foreground);
+    line-height: 1.75;
+    font-size: 1rem;
+  }
+  .prose-seicase h2 {
+    font-size: 1.75rem;
+    margin: 2rem 0 0.75rem;
+  }
+  .prose-seicase h3 {
+    font-size: 1.35rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .prose-seicase p { margin: 0 0 1rem; }
+  .prose-seicase ul, .prose-seicase ol { margin: 0 0 1rem 1.25rem; }
+  .prose-seicase ul { list-style: disc; }
+  .prose-seicase ol { list-style: decimal; }
+  .prose-seicase li { margin: 0.25rem 0; }
+  .prose-seicase a { color: var(--accent-cognac); text-decoration: underline; text-underline-offset: 3px; }
+  .prose-seicase strong { font-weight: 500; }
+  .prose-seicase blockquote {
+    border-left: 2px solid var(--accent-cognac);
+    padding-left: 1rem;
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--muted-text);
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface-muted) 0, #f5ece4 50%, var(--surface-muted) 100%);
+    background-size: 800px 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
