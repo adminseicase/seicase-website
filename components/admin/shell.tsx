@@ -14,7 +14,6 @@ import {
   LogOut,
   Mail,
   Menu,
-  Moon,
   Package,
   PanelLeft,
   Receipt,
@@ -24,7 +23,6 @@ import {
   ShoppingBag,
   ShoppingCart,
   Star,
-  Sun,
   Tags,
   Ticket,
   Undo2,
@@ -98,26 +96,16 @@ export function AdminShell({
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dark, setDark] = useState(false);
   const [q, setQ] = useState("");
 
   useEffect(() => {
     try {
-      setDark(localStorage.getItem("sc_admin_dark") === "1");
       setCollapsed(localStorage.getItem("sc_admin_collapsed") === "1");
     } catch {}
   }, []);
   useEffect(() => setMobileOpen(false), [pathname]);
 
   const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`));
-  const toggleDark = () => {
-    setDark((d) => {
-      try {
-        localStorage.setItem("sc_admin_dark", d ? "0" : "1");
-      } catch {}
-      return !d;
-    });
-  };
 
   const nav = (compact: boolean) => (
     <nav aria-label="Admin" className="flex-1 overflow-y-auto px-3 py-4">
@@ -165,7 +153,7 @@ export function AdminShell({
   );
 
   return (
-    <div className={cn(dark && "dark")}>
+    <div>
       <div className="bg-background text-foreground flex min-h-dvh">
         <aside
           className={cn(
@@ -254,14 +242,6 @@ export function AdminShell({
               >
                 View store <ExternalLink className="size-3.5" />
               </Link>
-              <button
-                type="button"
-                onClick={toggleDark}
-                className="hover:bg-surface-muted inline-flex size-10 items-center justify-center rounded-lg"
-                aria-label={dark ? "Light mode" : "Dark mode"}
-              >
-                {dark ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
-              </button>
               <div className="ml-2 hidden text-right text-xs leading-tight md:block">
                 <p className="font-medium">{user.name}</p>
                 <p className="text-muted capitalize">{user.role}</p>

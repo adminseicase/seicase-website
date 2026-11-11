@@ -9,7 +9,7 @@ const badgeVariants = cva("inline-flex items-center gap-1 rounded-full px-2.5 py
       success: "bg-success-bg text-success",
       warning: "bg-warning-bg text-warning",
       danger: "bg-danger-bg text-danger",
-      cognac: "bg-[#F1E2D6] text-brown dark:bg-[#3a2a20] dark:text-cognac",
+      cognac: "bg-[#F1E2D6] text-brown",
       dark: "bg-foreground text-background",
       outline: "border border-border-strong text-foreground",
     },

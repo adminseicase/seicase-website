@@ -1,13 +1,12 @@
 @import "tailwindcss";
 
-/* Admin dark mode is opt-in via the `.dark` class on the admin shell */
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ---------------------------------------------------------------------------
  * seicase design tokens
  * Warm, minimal, editorial. All colours checked for WCAG AA on cream.
  * ------------------------------------------------------------------------- */
 :root {
+  /* Light mode only, everywhere (store + admin). Also stops browsers auto-darkening the page. */
+  color-scheme: light only;
   --background: #f6eee7;
   --surface: #fbf7f3;
   --surface-muted: #efe4da;
@@ -27,23 +26,6 @@
   --danger-bg: #f6dcd8;
   --ring: #9c5a33;
   --radius: 0.5rem;
-}
-
-.dark {
-  --background: #171311;
-  --surface: #1f1a17;
-  --surface-muted: #2a2320;
-  --border: #3a302b;
-  --border-strong: #4b3f38;
-  --foreground: #f3ebe4;
-  --muted-text: #b5a79d;
-  --accent-cognac: #d08a5f;
-  --accent-brown: #e0a57f;
-  --success: #9cbf88;
-  --success-bg: #26301f;
-  --warning-bg: #3a2e18;
-  --danger: #e0817a;
-  --danger-bg: #3b1f1d;
 }
 
 @theme inline {
