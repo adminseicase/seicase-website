@@ -10,7 +10,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BLUR_DATA_URL, absoluteUrl, formatDate, stripHtml, truncate } from "@/lib/utils";
 
 export async function generateStaticParams() {
-  return (await getJournalPosts()).filter((p) => p.status === "published").map((p) => ({ slug: p.slug }));
+  const params = (await getJournalPosts()).filter((p) => p.status === "published").map((p) => ({ slug: p.slug }));
+  // Cache Components needs at least one entry; the placeholder renders notFound().
+  return params.length ? params : [{ slug: "__placeholder__" }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/journal/[slug]">): Promise<Metadata> {

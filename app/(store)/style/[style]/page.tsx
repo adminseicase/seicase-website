@@ -6,7 +6,9 @@ import { ShopPage } from "@/components/store/shop/shop-page";
 import { ShopResultsSkeleton } from "@/components/store/shop/shop-results";
 
 export async function generateStaticParams() {
-  return (await getStyles()).map((s) => ({ style: s.slug }));
+  const params = (await getStyles()).map((s) => ({ style: s.slug }));
+  // Cache Components needs at least one entry; the placeholder renders notFound().
+  return params.length ? params : [{ style: "__placeholder__" }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/style/[style]">): Promise<Metadata> {

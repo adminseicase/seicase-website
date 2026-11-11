@@ -16,7 +16,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { absoluteUrl, formatINR, stripHtml, truncate } from "@/lib/utils";
 
 export async function generateStaticParams() {
-  return (await getProductSlugs()).map((slug) => ({ slug }));
+  const params = (await getProductSlugs()).map((slug) => ({ slug }));
+  // Cache Components needs at least one entry; the placeholder renders notFound().
+  return params.length ? params : [{ slug: "__placeholder__" }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/product/[slug]">): Promise<Metadata> {
