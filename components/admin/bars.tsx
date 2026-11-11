@@ -1,14 +1,18 @@
 import { formatINR, formatNumber } from "@/lib/utils";
+import { FUNNEL_RAMP, SERIES, type SeriesHue } from "@/lib/admin/palette";
 
-/** Horizontal bar list (server-rendered, no JS). */
+/** Horizontal bar list (server-rendered, no JS). One measure per list, so the whole
+ *  list wears one hue; give each card its own `hue` so cards are easy to tell apart. */
 export function BarList({
   rows,
   money = false,
   empty = "No data for this period yet.",
+  hue = "blue",
 }: {
   rows: { label: string; value: number; sub?: string; color?: string }[];
   money?: boolean;
   empty?: string;
+  hue?: SeriesHue;
 }) {
   const max = Math.max(1, ...rows.map((r) => r.value));
   if (!rows.length) return <p className="text-muted py-6 text-center text-sm">{empty}</p>;
@@ -26,8 +30,8 @@ export function BarList({
               {r.sub && <span className="text-muted ml-2 text-xs">{r.sub}</span>}
             </span>
           </div>
-          <div className="bg-surface-muted h-1.5 overflow-hidden rounded-full">
-            <div className="bg-cognac h-full rounded-full" style={{ width: `${(r.value / max) * 100}%` }} />
+          <div className="bg-surface-muted h-2 overflow-hidden rounded-full">
+            <div className="h-full rounded-full" style={{ width: `${(r.value / max) * 100}%`, background: SERIES[hue] }} />
           </div>
         </li>
       ))}
@@ -52,8 +56,11 @@ export function Funnel({ steps }: { steps: { step: string; sessions: number }[] 
             </div>
             <div className="bg-surface-muted h-7 overflow-hidden rounded-md">
               <div
-                className="from-brown to-cognac h-full rounded-md bg-gradient-to-r"
-                style={{ width: `${Math.max(2, (s.sessions / top) * 100)}%` }}
+                className="h-full rounded-md"
+                style={{
+                  width: `${Math.max(2, (s.sessions / top) * 100)}%`,
+                  background: FUNNEL_RAMP[Math.min(i, FUNNEL_RAMP.length - 1)],
+                }}
               />
             </div>
           </li>

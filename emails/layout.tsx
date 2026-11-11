@@ -1,4 +1,4 @@
-import { Body, Container, Head, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
+import { Body, Container, Head, Hr, Html, Img, Link, Preview, Section, Text } from "@react-email/components";
 import type { CSSProperties, ReactNode } from "react";
 
 /** Brand-styled email shell shared by every transactional email. */
@@ -43,8 +43,8 @@ export function EmailLayout({ preview, children, siteUrl }: { preview: string; c
       <Body style={{ background: colors.bg, margin: 0, padding: "32px 12px" }}>
         <Container style={{ maxWidth: "600px", margin: "0 auto" }}>
           <Section style={{ textAlign: "center", paddingBottom: "22px" }}>
-            <Link href={siteUrl} style={{ fontFamily: serif, fontSize: "36px", color: colors.text, textDecoration: "none" }}>
-              seicase
+            <Link href={siteUrl} style={{ textDecoration: "none", display: "inline-block" }}>
+              <Img src={`${siteUrl.replace(/\/$/, "")}/images/logo/seicaselogo.png`} alt="seicase" width="155" height="48" style={{ margin: "0 auto" }} />
             </Link>
           </Section>
           <Section style={s.card}>{children}</Section>

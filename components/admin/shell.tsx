@@ -33,6 +33,7 @@ import {
 import { cn } from "@/lib/utils";
 import { signOut } from "@/lib/actions/account";
 import type { TrackerCounts } from "@/lib/admin/queries";
+import { BrandLogo, BrandMark } from "@/components/brand-logo";
 
 type Item = { href: string; label: string; Icon: typeof Package; badge?: keyof TrackerCounts; adminOnly?: boolean };
 const NAV: { group: string; items: Item[] }[] = [
@@ -162,8 +163,8 @@ export function AdminShell({
           )}
         >
           <div className={cn("flex h-16 items-center border-b px-5", collapsed && "justify-center px-0")}>
-            <Link href="/admin" className="font-serif text-2xl">
-              {collapsed ? "s" : "seicase"}
+            <Link href="/admin" className="inline-flex items-center" aria-label="seicase admin home">
+              {collapsed ? <BrandMark className="h-7" /> : <BrandLogo className="h-8" priority />}
             </Link>
             {!collapsed && (
               <span className="bg-surface-muted text-muted ml-2 rounded px-1.5 py-0.5 text-[10px] tracking-wider uppercase">admin</span>
@@ -192,7 +193,7 @@ export function AdminShell({
             <button type="button" className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} aria-label="Close menu" />
             <aside className="bg-surface shadow-lift animate-slide-in-left relative flex h-full w-72 flex-col">
               <div className="flex h-16 items-center justify-between border-b px-5">
-                <span className="font-serif text-2xl">seicase</span>
+                <BrandLogo className="h-8" />
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}

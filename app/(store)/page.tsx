@@ -67,7 +67,7 @@ export default async function HomePage() {
             "@type": "Organization",
             name: "seicase",
             url: absoluteUrl("/"),
-            logo: absoluteUrl("/icon.svg"),
+            logo: absoluteUrl("/images/logo/seicaselogo.png"),
             slogan: "Carry What You Love. Timeless leather. Thoughtful design.",
             email: s.email,
             telephone: s.phone,

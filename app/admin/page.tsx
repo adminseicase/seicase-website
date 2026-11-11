@@ -9,6 +9,7 @@ import { SalesChart, RealtimePanel } from "@/components/admin/lazy-charts";
 import { BarList, Funnel } from "@/components/admin/bars";
 import { StatusBadge } from "@/components/ui/badge";
 import { ORDER_STATUS_LABEL, formatCompactINR, formatDate, formatINR, formatNumber } from "@/lib/utils";
+import { SERIES_ORDER } from "@/lib/admin/palette";
 
 export const metadata = { title: "Dashboard" };
 
@@ -89,10 +90,10 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
       </div>
 
       <ul className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        {trackers.map(({ href, label, n, Icon, warn }) => (
+        {trackers.map(({ href, label, n, Icon, warn }, i) => (
           <li key={label}>
             <Link href={href} className="bg-surface hover:border-foreground flex h-full flex-col rounded-xl border p-4">
-              <Icon className="text-cognac size-5 stroke-[1.5]" aria-hidden="true" />
+              <Icon className="size-5 stroke-[1.5]" style={{ color: SERIES_ORDER[i] }} aria-hidden="true" />
               <p className="mt-3 text-2xl font-medium tabular-nums">{n}</p>
               <p className="text-muted text-xs">{label}</p>
               {warn && (
@@ -123,7 +124,11 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card title="Top products">
-          <BarList money rows={report.top_products.slice(0, 6).map((p) => ({ label: p.name, value: p.revenue, sub: `${p.units} sold` }))} />
+          <BarList
+            hue="blue"
+            money
+            rows={report.top_products.slice(0, 6).map((p) => ({ label: p.name, value: p.revenue, sub: `${p.units} sold` }))}
+          />
         </Card>
         <Card
           title="Low stock"

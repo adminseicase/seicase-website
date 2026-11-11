@@ -110,7 +110,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
           <Funnel steps={rep.funnel} />
         </Card>
         <Card title="Traffic sources" actions={ex("sources")}>
-          <BarList rows={rep.sources.map((s) => ({ label: s.source, value: s.sessions }))} />
+          <BarList hue="aqua" rows={rep.sources.map((s) => ({ label: s.source, value: s.sessions }))} />
         </Card>
       </div>
 
@@ -130,10 +130,14 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card title="Categories" actions={ex("categories")}>
-          <BarList money rows={rep.categories.map((c) => ({ label: c.name, value: c.revenue, sub: `${c.units} units` }))} />
+          <BarList hue="orange" money rows={rep.categories.map((c) => ({ label: c.name, value: c.revenue, sub: `${c.units} units` }))} />
         </Card>
         <Card title="Colours" actions={ex("colours")}>
-          <BarList money rows={rep.colours.map((c) => ({ label: c.name, value: c.revenue, color: c.hex, sub: `${c.units}` }))} />
+          <BarList
+            hue="violet"
+            money
+            rows={rep.colours.map((c) => ({ label: c.name, value: c.revenue, color: c.hex, sub: `${c.units}` }))}
+          />
         </Card>
         <Card title="Devices" actions={ex("devices")}>
           <DonutChart label="Sessions by device" data={rep.devices.map((d) => ({ name: d.device, value: d.sessions }))} />
@@ -143,15 +147,20 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card title="Top cities (visitors)" actions={ex("cities")}>
           <BarList
+            hue="magenta"
             rows={rep.cities.map((c) => ({ label: `${c.city}${c.region ? `, ${c.region}` : ""}`, value: c.sessions }))}
             empty="City data appears once you're live on Vercel."
           />
         </Card>
         <Card title="Top states (orders)" actions={ex("states")}>
-          <BarList rows={rep.states.map((s) => ({ label: s.state ?? "Unknown", value: s.orders, sub: formatCompactINR(s.revenue) }))} />
+          <BarList
+            hue="green"
+            rows={rep.states.map((s) => ({ label: s.state ?? "Unknown", value: s.orders, sub: formatCompactINR(s.revenue) }))}
+          />
         </Card>
         <Card title="UTM campaigns" actions={ex("campaigns")}>
           <BarList
+            hue="yellow"
             rows={rep.campaigns.map((c) => ({
               label: `${c.campaign} (${c.source ?? "—"}/${c.medium ?? "—"})`,
               value: c.sessions,
@@ -164,14 +173,21 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card title="Top searches" actions={ex("searches")}>
-          <BarList rows={rep.searches.map((s) => ({ label: s.term, value: s.count, sub: `~${s.avg_results} results` }))} />
+          <BarList hue="blue" rows={rep.searches.map((s) => ({ label: s.term, value: s.count, sub: `~${s.avg_results} results` }))} />
         </Card>
         <Card title="Searches with no results" actions={ex("zero_result_searches")}>
-          <BarList rows={rep.zero_result_searches.map((s) => ({ label: s.term, value: s.count }))} empty="Every search found something." />
+          <BarList
+            hue="red"
+            rows={rep.zero_result_searches.map((s) => ({ label: s.term, value: s.count }))}
+            empty="Every search found something."
+          />
           <p className="text-muted mt-3 text-xs">Tip: these are products or words customers expect — consider adding them.</p>
         </Card>
         <Card title="Most wishlisted" actions={ex("wishlisted")}>
-          <BarList rows={rep.wishlisted.map((w) => ({ label: w.name, value: w.saved, sub: `+${w.added_in_period} this period` }))} />
+          <BarList
+            hue="magenta"
+            rows={rep.wishlisted.map((w) => ({ label: w.name, value: w.saved, sub: `+${w.added_in_period} this period` }))}
+          />
         </Card>
       </div>
 

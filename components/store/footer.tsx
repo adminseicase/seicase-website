@@ -4,6 +4,7 @@ import { getCategories } from "@/lib/data/catalog";
 import { getSiteSettings } from "@/lib/data/content";
 import { FacebookIcon, InstagramIcon, PinterestIcon, YoutubeIcon } from "./icons";
 import { BackToTop } from "./back-to-top";
+import { BrandLogo } from "@/components/brand-logo";
 
 // Evaluated once per deployment (module scope keeps the footer fully static).
 const YEAR = new Date().getFullYear();
@@ -52,8 +53,8 @@ export async function Footer() {
       <div className="mx-auto max-w-[1440px] px-4 pt-14 pb-8 md:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.3fr_repeat(3,1fr)_1.3fr]">
           <div>
-            <Link href="/" className="font-serif text-4xl" aria-label="seicase home">
-              seicase
+            <Link href="/" className="inline-flex" aria-label="seicase home">
+              <BrandLogo className="h-11" />
             </Link>
             <p className="text-muted mt-3 max-w-xs font-serif text-lg italic">More than a bag. A part of your story.</p>
             <ul className="mt-6 flex gap-1" aria-label="Follow seicase">

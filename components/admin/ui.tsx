@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { metricColor } from "@/lib/admin/palette";
 
 export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: React.ReactNode }) {
   return (
@@ -39,11 +40,30 @@ export function Card({
   );
 }
 
-export function StatCard({ label, value, delta, hint }: { label: string; value: string; delta?: number | null; hint?: string }) {
+/** KPI tile. Each metric gets its own colour (see lib/admin/palette.ts) so tiles are easy to spot;
+ *  the number and label stay in normal ink, and up/down keeps its arrow icon. */
+export function StatCard({
+  label,
+  value,
+  delta,
+  hint,
+  accent,
+}: {
+  label: string;
+  value: string;
+  delta?: number | null;
+  hint?: string;
+  accent?: string;
+}) {
   const up = (delta ?? 0) >= 0;
+  const color = accent ?? metricColor(label);
   return (
-    <div className="bg-surface rounded-xl border p-4">
-      <p className="text-muted text-xs">{label}</p>
+    <div className="bg-surface relative overflow-hidden rounded-xl border p-4">
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1" style={{ background: color }} />
+      <p className="text-muted flex items-center gap-1.5 text-xs">
+        <span aria-hidden="true" className="size-2 shrink-0 rounded-full" style={{ background: color }} />
+        {label}
+      </p>
       <p className="mt-1.5 text-2xl font-medium tabular-nums">{value}</p>
       <div className="mt-1 flex items-center gap-2 text-xs">
         {delta != null && Number.isFinite(delta) && (

@@ -1,13 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand-logo";
 
 /** Calm split-screen layout for sign-in pages. */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-2">
       <div className="flex flex-col px-5 py-6 md:px-12">
-        <Link href="/" className="font-serif text-4xl" aria-label="seicase home">
-          seicase
+        <Link href="/" className="inline-flex self-start" aria-label="seicase home">
+          <BrandLogo className="h-11" priority />
         </Link>
         <main id="main" className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
           {children}

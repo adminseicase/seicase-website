@@ -100,7 +100,7 @@ async function Post({ params }: Pick<PageProps<"/journal/[slug]">, "params">) {
           datePublished: post.published_at,
           dateModified: post.updated_at ?? post.published_at,
           author: { "@type": "Organization", name: post.author ?? "seicase" },
-          publisher: { "@type": "Organization", name: "seicase", logo: { "@type": "ImageObject", url: absoluteUrl("/icon.svg") } },
+          publisher: { "@type": "Organization", name: "seicase", logo: { "@type": "ImageObject", url: absoluteUrl("/images/logo/seicaselogo.png") } },
           mainEntityOfPage: absoluteUrl(`/journal/${post.slug}`),
         }}
       />

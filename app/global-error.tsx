@@ -17,7 +17,8 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
         }}
       >
         <div>
-          <p style={{ fontSize: 40, margin: 0 }}>seicase</p>
+          {/* eslint-disable-next-line @next/next/no-img-element -- global-error renders outside the app shell */}
+          <img src="/images/logo/seicaselogo.png" alt="seicase" width={155} height={48} style={{ display: "block", margin: "0 auto" }} />
           <h1 style={{ fontWeight: 400, fontSize: 34 }}>We&apos;ll be right back</h1>
           <p style={{ fontFamily: "Arial, sans-serif", color: "#6F6158" }}>Something unexpected happened. Please try again.</p>
           <button

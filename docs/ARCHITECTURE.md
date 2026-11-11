@@ -17,7 +17,7 @@ app/
     admin/export      CSV exports
     cron/daily        Daily jobs (abandoned-cart emails, low stock, housekeeping)
     revalidate        On-demand cache refresh for external webhooks
-  sitemap.ts robots.ts manifest.ts icon.svg not-found.tsx error.tsx global-error.tsx
+  sitemap.ts robots.ts manifest.ts icon.png apple-icon.png not-found.tsx error.tsx global-error.tsx
 components/
   ui/                 Buttons, inputs, badges, sheet/modal (shadcn-style, brand themed)
   store/              Storefront components (home/, product/, shop/, checkout/, account/, order/)

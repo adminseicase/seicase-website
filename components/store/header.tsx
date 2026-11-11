@@ -3,15 +3,16 @@ import { getCategories, getStyles } from "@/lib/data/catalog";
 import { getSiteSettings } from "@/lib/data/content";
 import { NavMenu } from "./nav-menu";
 import { HeaderActions, MobileMenuButton, StickyHeader } from "./header-client";
+import { BrandLogo } from "@/components/brand-logo";
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <Link
       href="/"
       aria-label="seicase home"
-      className={`text-foreground font-serif text-[2rem] leading-none tracking-tight md:text-[2.4rem] ${className}`}
+      className={`inline-flex items-center ${className}`}
     >
-      seicase
+      <BrandLogo className="h-8 md:h-10" priority />
     </Link>
   );
 }

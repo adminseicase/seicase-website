@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { BotanicalBranch } from "@/components/store/botanical";
+import { BrandLogo } from "@/components/brand-logo";
 
 export default function NotFound() {
   return (
     <main id="main" className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 text-center">
       <BotanicalBranch className="text-cognac/25 pointer-events-none absolute top-1/2 -left-10 h-80 -translate-y-1/2" />
       <BotanicalBranch className="text-cognac/25 pointer-events-none absolute top-1/2 -right-10 h-80 -translate-y-1/2 -scale-x-100" />
-      <Link href="/" className="font-serif text-4xl">
-        seicase
+      <Link href="/" className="inline-flex" aria-label="seicase home">
+        <BrandLogo className="h-12" priority />
       </Link>
       <p className="text-cognac/70 mt-16 font-serif text-8xl">404</p>
       <h1 className="mt-2 text-4xl md:text-5xl">This page has wandered off</h1>
