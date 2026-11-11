@@ -35,6 +35,28 @@ export async function signInWithPassword(input: unknown): Promise<Result> {
   return { ok: true, message: "Welcome back", redirect: safeNext(d.data.next) };
 }
 
+/** Admin panel sign-in: email + password only, and only for staff/admin roles.
+ *  Anyone else is signed straight back out with the same generic error, so the
+ *  page never reveals which emails have accounts. */
+export async function signInAdmin(input: unknown): Promise<Result> {
+  if (!isSupabaseConfigured) return notConfigured;
+  const d = z.object({ email: emailSchema, password: z.string().min(1).max(72), next: z.string().optional() }).safeParse(input);
+  if (!d.success) return { ok: false, message: "Please enter your email and password." };
+  if (!(await rateLimit("admin-login", 5, 900))) return { ok: false, message: "Too many attempts. Please wait 15 minutes." };
+  const denied: Result = { ok: false, message: "Incorrect email or password." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({ email: d.data.email, password: d.data.password });
+  if (error || !data.user)
+    return error?.message === "Email not confirmed" ? { ok: false, message: "Please confirm your email first — check your inbox." } : denied;
+  const { data: profile } = await supabase.from("profiles").select("role, is_blocked").eq("id", data.user.id).maybeSingle();
+  if (!profile || profile.is_blocked || (profile.role !== "admin" && profile.role !== "staff")) {
+    await supabase.auth.signOut();
+    return denied;
+  }
+  const next = safeNext(d.data.next);
+  return { ok: true, message: "Welcome back", redirect: next.startsWith("/admin") ? next : "/admin" };
+}
+
 export async function signUp(input: unknown): Promise<Result> {
   if (!isSupabaseConfigured) return notConfigured;
   const d = z

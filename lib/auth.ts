@@ -50,7 +50,7 @@ export async function requireUser(next = "/account") {
 
 export async function requireStaff() {
   const user = await getCurrentUser();
-  if (!user) redirect("/login?next=/admin");
+  if (!user) redirect("/admin-login?next=/admin");
   if (user.isBlocked || (user.role !== "staff" && user.role !== "admin")) redirect("/");
   return user;
 }

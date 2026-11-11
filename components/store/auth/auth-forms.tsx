@@ -11,6 +11,7 @@ import {
   requestPasswordReset,
   sendMagicLink,
   sendPhoneOtp,
+  signInAdmin,
   signInWithGoogle,
   signInWithPassword,
   signUp,
@@ -234,6 +235,58 @@ export function LoginForm() {
           Create an account
         </Link>
       </p>
+    </div>
+  );
+}
+
+/** Admin panel sign-in: email + password only (no Google, email link or phone). */
+export function AdminLoginForm() {
+  const router = useRouter();
+  const next = useSearchParams().get("next") ?? "/admin";
+  const [pending, start] = useTransition();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  return (
+    <div>
+      <h1 className="text-4xl md:text-5xl">Admin sign in</h1>
+      <p className="text-muted mt-2">For seicase staff only.</p>
+      <form
+        className="mt-8 space-y-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          start(async () => {
+            const r = await signInAdmin({ email, password, next });
+            if (r.ok && r.redirect) {
+              router.push(r.redirect);
+              router.refresh();
+            } else toast.error(r.message);
+          });
+        }}
+      >
+        <div>
+          <Label htmlFor="admin-email">Email</Label>
+          <Input id="admin-email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+        <div>
+          <div className="flex items-baseline justify-between">
+            <Label htmlFor="admin-password">Password</Label>
+            <Link href="/forgot-password" className="text-muted text-xs underline-offset-4 hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+          <Input
+            id="admin-password"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <Button type="submit" size="lg" className="w-full" disabled={pending}>
+          {pending ? "Signing in…" : "Sign in"}
+        </Button>
+      </form>
     </div>
   );
 }
