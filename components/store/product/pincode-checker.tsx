@@ -40,8 +40,8 @@ export function PincodeChecker() {
         <label htmlFor="pincode" className="sr-only">
           Delivery pincode
         </label>
-        <div className="flex h-11 flex-1 items-center gap-2 rounded-md border border-border-strong bg-surface px-3 focus-within:border-cognac">
-          <MapPin className="size-4 shrink-0 stroke-[1.5] text-muted" aria-hidden="true" />
+        <div className="border-border-strong bg-surface focus-within:border-cognac flex h-11 flex-1 items-center gap-2 rounded-md border px-3">
+          <MapPin className="text-muted size-4 shrink-0 stroke-[1.5]" aria-hidden="true" />
           <input
             id="pincode"
             inputMode="numeric"
@@ -53,14 +53,20 @@ export function PincodeChecker() {
             className="min-w-0 flex-1 bg-transparent text-sm focus:outline-none"
           />
         </div>
-        <button type="submit" className="h-11 rounded-md border border-foreground px-4 text-sm hover:bg-foreground hover:text-background" disabled={loading}>
+        <button
+          type="submit"
+          className="border-foreground hover:bg-foreground hover:text-background h-11 rounded-md border px-4 text-sm"
+          disabled={loading}
+        >
           {loading ? "…" : "Check"}
         </button>
       </form>
       {res && (
         <p className={`mt-2 text-sm ${res.ok ? "text-success" : "text-danger"}`} role="status">
           {res.message}
-          {res.ok && res.cod !== undefined && <span className="text-muted"> · {res.cod ? "Cash on Delivery available" : "Prepaid only"}</span>}
+          {res.ok && res.cod !== undefined && (
+            <span className="text-muted"> · {res.cod ? "Cash on Delivery available" : "Prepaid only"}</span>
+          )}
         </p>
       )}
     </div>

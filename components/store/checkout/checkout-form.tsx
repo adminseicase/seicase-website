@@ -45,13 +45,29 @@ const formSchema = z
 type FormIn = z.input<typeof formSchema>;
 type FormOut = z.output<typeof formSchema>;
 
-function AddressFields({ prefix, register, errors, onPincode }: { prefix: "shipping" | "billing"; register: UseFormRegister<FormIn>; errors: FieldErrors<FormIn>; onPincode?: (pin: string) => void }) {
+function AddressFields({
+  prefix,
+  register,
+  errors,
+  onPincode,
+}: {
+  prefix: "shipping" | "billing";
+  register: UseFormRegister<FormIn>;
+  errors: FieldErrors<FormIn>;
+  onPincode?: (pin: string) => void;
+}) {
   const e = (errors[prefix] ?? {}) as Record<string, { message?: string }>;
   const f = (name: string) => `${prefix}.${name}` as const;
   const field = (name: string, label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}, span = "") => (
     <div className={span}>
       <Label htmlFor={`${prefix}-${name}`}>{label}</Label>
-      <Input id={`${prefix}-${name}`} aria-invalid={!!e[name]} aria-describedby={e[name] ? `${prefix}-${name}-err` : undefined} {...props} {...register(f(name) as never)} />
+      <Input
+        id={`${prefix}-${name}`}
+        aria-invalid={!!e[name]}
+        aria-describedby={e[name] ? `${prefix}-${name}-err` : undefined}
+        {...props}
+        {...register(f(name) as never)}
+      />
       <FieldError id={`${prefix}-${name}-err`} message={e[name]?.message} />
     </div>
   );
@@ -69,7 +85,9 @@ function AddressFields({ prefix, register, errors, onPincode }: { prefix: "shipp
           maxLength={6}
           autoComplete="postal-code"
           aria-invalid={!!e.pincode}
-          {...register(f("pincode") as never, { onChange: (ev: React.ChangeEvent<HTMLInputElement>) => /^[1-9]\d{5}$/.test(ev.target.value) && onPincode?.(ev.target.value) })}
+          {...register(f("pincode") as never, {
+            onChange: (ev: React.ChangeEvent<HTMLInputElement>) => /^[1-9]\d{5}$/.test(ev.target.value) && onPincode?.(ev.target.value),
+          })}
         />
         <FieldError message={e.pincode?.message} />
       </div>
@@ -99,14 +117,31 @@ export function CheckoutForm() {
   const couponCode = useCart((s) => s.couponCode);
   const setCoupon = useCart((s) => s.setCoupon);
   const clear = useCart((s) => s.clear);
-  const [ctx, setCtx] = useState<{ user: { email: string | null; name: string | null; phone: string | null } | null; addresses: SavedAddress[] } | null>(null);
+  const [ctx, setCtx] = useState<{
+    user: { email: string | null; name: string | null; phone: string | null } | null;
+    addresses: SavedAddress[];
+  } | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | "new">("new");
   const [submitting, start] = useTransition();
   const [paying, setPaying] = useState(false);
 
-  const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm<FormIn, unknown, FormOut>({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<FormIn, unknown, FormOut>({
     resolver: zodResolver(formSchema),
-    defaultValues: { email: "", phone: "", billingSameAsShipping: true, paymentMethod: "razorpay", saveAddress: true, shipping: { state: "" as never } },
+    defaultValues: {
+      email: "",
+      phone: "",
+      billingSameAsShipping: true,
+      paymentMethod: "razorpay",
+      saveAddress: true,
+      shipping: { state: "" as never },
+    },
     mode: "onBlur",
   });
   const email = watch("email");
@@ -160,7 +195,8 @@ export function CheckoutForm() {
       if (j.ok && j.city) {
         const [district, state] = j.city.split(", ");
         if (!watch("shipping.city")) setValue("shipping.city", district, { shouldValidate: true });
-        if (state && (INDIAN_STATES as readonly string[]).includes(state)) setValue("shipping.state", state as FormIn["shipping"]["state"], { shouldValidate: true });
+        if (state && (INDIAN_STATES as readonly string[]).includes(state))
+          setValue("shipping.state", state as FormIn["shipping"]["state"], { shouldValidate: true });
       }
     } catch {}
   };
@@ -244,7 +280,7 @@ export function CheckoutForm() {
               <span className={num}>1</span> Contact
             </h2>
             {ctx && !ctx.user && config.supabaseEnabled && (
-              <p className="text-sm text-muted">
+              <p className="text-muted text-sm">
                 Have an account?{" "}
                 <Link href="/login?next=/checkout" className="text-foreground underline underline-offset-4">
                   Sign in
@@ -252,7 +288,7 @@ export function CheckoutForm() {
                 or continue as guest.
               </p>
             )}
-            {ctx?.user && <p className="text-sm text-muted">Signed in as {ctx.user.email}</p>}
+            {ctx?.user && <p className="text-muted text-sm">Signed in as {ctx.user.email}</p>}
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -263,8 +299,17 @@ export function CheckoutForm() {
             <div>
               <Label htmlFor="phone">Mobile number</Label>
               <div className="flex">
-                <span className="inline-flex h-11 items-center rounded-l-md border border-r-0 border-border-strong bg-surface-muted px-3 text-sm text-muted">+91</span>
-                <Input id="phone" inputMode="tel" autoComplete="tel-national" className="rounded-l-none" aria-invalid={!!errors.phone} {...register("phone")} />
+                <span className="border-border-strong bg-surface-muted text-muted inline-flex h-11 items-center rounded-l-md border border-r-0 px-3 text-sm">
+                  +91
+                </span>
+                <Input
+                  id="phone"
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  className="rounded-l-none"
+                  aria-invalid={!!errors.phone}
+                  {...register("phone")}
+                />
               </div>
               <FieldError message={errors.phone?.message} />
             </div>
@@ -279,7 +324,13 @@ export function CheckoutForm() {
             <fieldset className="mb-5 grid gap-3 sm:grid-cols-2">
               <legend className="sr-only">Saved addresses</legend>
               {ctx.addresses.map((a) => (
-                <label key={a.id} className={cn("cursor-pointer rounded-xl border p-4 text-sm transition-colors", selectedAddress === a.id ? "border-foreground bg-surface" : "hover:border-border-strong")}>
+                <label
+                  key={a.id}
+                  className={cn(
+                    "cursor-pointer rounded-xl border p-4 text-sm transition-colors",
+                    selectedAddress === a.id ? "border-foreground bg-surface" : "hover:border-border-strong",
+                  )}
+                >
                   <input
                     type="radio"
                     name="saved-address"
@@ -291,13 +342,25 @@ export function CheckoutForm() {
                     }}
                   />
                   <span className="font-medium">{a.label ?? "Address"}</span>
-                  <span className="mt-1 block text-muted">
+                  <span className="text-muted mt-1 block">
                     {a.full_name}, {a.line1}, {a.city}, {a.state} {a.pincode}
                   </span>
                 </label>
               ))}
-              <label className={cn("flex cursor-pointer items-center justify-center rounded-xl border border-dashed p-4 text-sm", selectedAddress === "new" && "border-foreground")}>
-                <input type="radio" name="saved-address" className="sr-only" checked={selectedAddress === "new"} onChange={() => setSelectedAddress("new")} />+ Use a new address
+              <label
+                className={cn(
+                  "flex cursor-pointer items-center justify-center rounded-xl border border-dashed p-4 text-sm",
+                  selectedAddress === "new" && "border-foreground",
+                )}
+              >
+                <input
+                  type="radio"
+                  name="saved-address"
+                  className="sr-only"
+                  checked={selectedAddress === "new"}
+                  onChange={() => setSelectedAddress("new")}
+                />
+                + Use a new address
               </label>
             </fieldset>
           )}
@@ -328,24 +391,37 @@ export function CheckoutForm() {
           </h2>
           <fieldset className="space-y-3">
             <legend className="sr-only">Payment method</legend>
-            <label className={cn("flex cursor-pointer items-start gap-4 rounded-xl border p-4", method === "razorpay" ? "border-foreground bg-surface" : "hover:border-border-strong")}>
-              <input type="radio" value="razorpay" className="mt-1 accent-foreground" {...register("paymentMethod")} />
+            <label
+              className={cn(
+                "flex cursor-pointer items-start gap-4 rounded-xl border p-4",
+                method === "razorpay" ? "border-foreground bg-surface" : "hover:border-border-strong",
+              )}
+            >
+              <input type="radio" value="razorpay" className="accent-foreground mt-1" {...register("paymentMethod")} />
               <span className="flex-1">
                 <span className="flex items-center gap-2 font-medium">
                   <CreditCard className="size-4 stroke-[1.5]" aria-hidden="true" /> Pay online
                 </span>
-                <span className="mt-0.5 block text-sm text-muted">UPI, cards, netbanking and wallets — secured by Razorpay</span>
+                <span className="text-muted mt-0.5 block text-sm">UPI, cards, netbanking and wallets — secured by Razorpay</span>
               </span>
             </label>
             {config.codEnabled && (
-              <label className={cn("flex items-start gap-4 rounded-xl border p-4", !codAllowed ? "cursor-not-allowed opacity-50" : "cursor-pointer", method === "cod" ? "border-foreground bg-surface" : "hover:border-border-strong")}>
-                <input type="radio" value="cod" disabled={!codAllowed} className="mt-1 accent-foreground" {...register("paymentMethod")} />
+              <label
+                className={cn(
+                  "flex items-start gap-4 rounded-xl border p-4",
+                  !codAllowed ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                  method === "cod" ? "border-foreground bg-surface" : "hover:border-border-strong",
+                )}
+              >
+                <input type="radio" value="cod" disabled={!codAllowed} className="accent-foreground mt-1" {...register("paymentMethod")} />
                 <span className="flex-1">
                   <span className="flex items-center gap-2 font-medium">
                     <Banknote className="size-4 stroke-[1.5]" aria-hidden="true" /> Cash on Delivery
                   </span>
-                  <span className="mt-0.5 block text-sm text-muted">
-                    {codAllowed ? `Pay when it arrives · ${formatINR(config.codFee)} handling fee` : `Available for orders up to ${formatINR(config.codMaxOrder)}`}
+                  <span className="text-muted mt-0.5 block text-sm">
+                    {codAllowed
+                      ? `Pay when it arrives · ${formatINR(config.codFee)} handling fee`
+                      : `Available for orders up to ${formatINR(config.codMaxOrder)}`}
                   </span>
                 </span>
               </label>
@@ -354,14 +430,24 @@ export function CheckoutForm() {
         </section>
       </div>
 
-      <aside className="h-fit space-y-5 rounded-2xl border bg-surface p-6 lg:sticky lg:top-24" aria-label="Order summary">
+      <aside className="bg-surface h-fit space-y-5 rounded-2xl border p-6 lg:sticky lg:top-24" aria-label="Order summary">
         <h2 className="text-2xl">Order Summary</h2>
         <ul className="max-h-72 space-y-4 overflow-y-auto pr-1">
           {lines.map((l) => (
             <li key={l.key} className="flex gap-3">
               <div className="relative shrink-0">
-                <Image src={l.image || "/images/placeholder.webp"} alt="" width={64} height={80} className="h-20 w-16 rounded-md bg-surface-muted object-cover" placeholder="blur" blurDataURL={BLUR_DATA_URL} />
-                <span className="absolute -right-2 -top-2 inline-flex size-5 items-center justify-center rounded-full bg-foreground text-[11px] text-background">{l.quantity}</span>
+                <Image
+                  src={l.image || "/images/placeholder.webp"}
+                  alt=""
+                  width={64}
+                  height={80}
+                  className="bg-surface-muted h-20 w-16 rounded-md object-cover"
+                  placeholder="blur"
+                  blurDataURL={BLUR_DATA_URL}
+                />
+                <span className="bg-foreground text-background absolute -top-2 -right-2 inline-flex size-5 items-center justify-center rounded-full text-[11px]">
+                  {l.quantity}
+                </span>
               </div>
               <div className="min-w-0 flex-1 text-sm">
                 <p className="font-serif text-lg leading-tight">{l.name}</p>
@@ -381,8 +467,9 @@ export function CheckoutForm() {
           {busy ? <LoaderCircle className="animate-spin" /> : <Lock />}
           {busy ? "Processing…" : method === "cod" ? "Place Order" : `Pay ${quote ? formatINR(quote.total) : ""}`}
         </Button>
-        <p className="flex items-start gap-2 text-xs text-muted">
-          <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> Prices and stock are confirmed on our server. By placing your order you agree to our{" "}
+        <p className="text-muted flex items-start gap-2 text-xs">
+          <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> Prices and stock are confirmed on our server. By placing
+          your order you agree to our{" "}
           <Link href="/terms-of-service" className="underline">
             Terms
           </Link>

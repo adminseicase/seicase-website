@@ -1,7 +1,15 @@
 /** Decorative botanical line-art (inline SVG, inherits currentColor). */
 export function BotanicalBranch({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 120 240" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 120 240"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      className={className}
+      aria-hidden="true"
+    >
       <path d="M60 236C58 180 64 120 84 60 92 36 100 18 108 6" />
       {[
         [62, 200, -1],
@@ -32,7 +40,15 @@ export function BotanicalBranch({ className }: { className?: string }) {
 
 export function BotanicalSprig({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 64 64"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      className={className}
+      aria-hidden="true"
+    >
       <path d="M14 58C24 42 34 28 52 8" />
       <path d="M22 46c-8-2-12-10-12-18 8 2 12 10 12 18z" />
       <path d="M30 35c-2-8 2-16 9-20 2 8-2 16-9 20z" />
@@ -44,7 +60,15 @@ export function BotanicalSprig({ className }: { className?: string }) {
 
 export function BotanicalVase({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 200 320" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 200 320"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      className={className}
+      aria-hidden="true"
+    >
       <path d="M70 318c-10-30-14-60-6-86 6-18 6-26 0-34h72c-6 8-6 16 0 34 8 26 4 56-6 86z" />
       <path d="M100 198C96 150 80 110 50 70M100 198c4-50 22-96 56-140M100 198c0-60 2-120 4-180" />
       {[

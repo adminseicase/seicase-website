@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <main id="main" className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
           {children}
         </main>
-        <p className="text-center text-xs text-muted">
+        <p className="text-muted text-center text-xs">
           <Link href="/privacy-policy" className="hover:underline">
             Privacy Policy
           </Link>{" "}
@@ -20,7 +20,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <Link href="/terms-of-service" className="hover:underline">
             Terms
           </Link>{" "}
-          · <Link href="/help" className="hover:underline">Help</Link>
+          ·{" "}
+          <Link href="/help" className="hover:underline">
+            Help
+          </Link>
         </p>
       </div>
       <div className="relative hidden lg:block">

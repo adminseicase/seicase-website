@@ -47,7 +47,12 @@ export async function POST(request: NextRequest) {
   const { data: log } = await admin
     .from("payment_webhook_logs")
     .upsert(
-      { event: body?.event ?? "unparseable", razorpay_event_id: eventId, signature_valid: valid, payload: (body as unknown as Json) ?? null },
+      {
+        event: body?.event ?? "unparseable",
+        razorpay_event_id: eventId,
+        signature_valid: valid,
+        payload: (body as unknown as Json) ?? null,
+      },
       { onConflict: "razorpay_event_id", ignoreDuplicates: false },
     )
     .select("id, processed")
@@ -60,7 +65,11 @@ export async function POST(request: NextRequest) {
   try {
     const payment = body.payload.payment?.entity;
     if ((body.event === "payment.captured" || body.event === "order.paid") && payment) {
-      const { data: order } = await admin.from("orders").select("id, payment_status").eq("razorpay_order_id", payment.order_id).maybeSingle();
+      const { data: order } = await admin
+        .from("orders")
+        .select("id, payment_status")
+        .eq("razorpay_order_id", payment.order_id)
+        .maybeSingle();
       if (order && order.payment_status !== "paid") {
         const { error: e } = await admin.rpc("mark_order_paid", {
           p_order_id: order.id,

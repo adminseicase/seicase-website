@@ -3,16 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createPublicClient } from "@/lib/supabase/public";
 import { buildCatalog, categories as demoCategories, styles as demoStyles, collections as demoCollections } from "@/lib/demo/seed-data";
-import type {
-  Charm,
-  Product,
-  ProductCardData,
-  ProductDetail,
-  ProductImage,
-  ProductVariant,
-  Review,
-  Taxonomy,
-} from "@/lib/types";
+import type { Charm, Product, ProductCardData, ProductDetail, ProductImage, ProductVariant, Review, Taxonomy } from "@/lib/types";
 
 /**
  * Cache tags used across the app. Admin actions call updateTag()/revalidateTag()
@@ -99,8 +90,7 @@ function demoRawProducts(): RawProduct[] {
   }));
 }
 
-const PRODUCT_SELECT =
-  "*, product_variants(*), product_images(*), product_styles(style_id), categories(slug)" as const;
+const PRODUCT_SELECT = "*, product_variants(*), product_images(*), product_styles(style_id), categories(slug)" as const;
 
 /** Every published product as a filterable card. Cached and shared by all shop pages. */
 export async function getAllProducts(): Promise<ListedProduct[]> {

@@ -35,7 +35,8 @@ export async function submitContact(input: unknown): Promise<ActionResult> {
   }
   const d = parsed.data;
   if (d.website) return { ok: true, message: "Thank you! We'll be in touch soon." };
-  if (!(await rateLimit("contact", 4, 900))) return { ok: false, message: "You've sent several messages recently. Please try again later." };
+  if (!(await rateLimit("contact", 4, 900)))
+    return { ok: false, message: "You've sent several messages recently. Please try again later." };
   if (!(await verifyTurnstile(d.turnstileToken))) return { ok: false, message: "Please complete the verification and try again." };
   if (!isServiceRoleConfigured()) return { ok: true, message: "Thank you! (demo mode — message not saved)" };
 

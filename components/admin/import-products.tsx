@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/sheet";
 import { importProducts } from "@/lib/actions/admin/products";
 
-const TEMPLATE = "name,slug,status,price,compare_at_price,cost_price,gst_rate,category,material,short_description,sku,colour_name,colour_hex,stock,price_override\nThe Tulip Tote,the-tulip-tote,published,8990,,3600,18,handbags,Full-grain leather,A modern classic,SC-TULTOT-TAN,Tan,#A0623A,24,\n";
+const TEMPLATE =
+  "name,slug,status,price,compare_at_price,cost_price,gst_rate,category,material,short_description,sku,colour_name,colour_hex,stock,price_override\nThe Tulip Tote,the-tulip-tote,published,8990,,3600,18,handbags,Full-grain leather,A modern classic,SC-TULTOT-TAN,Tan,#A0623A,24,\n";
 
 export function ImportProducts() {
   const router = useRouter();
@@ -21,9 +22,18 @@ export function ImportProducts() {
       <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
         <Upload /> Import CSV
       </Button>
-      <Modal open={open} onOpenChange={setOpen} title="Import products" description="One row per colour/variant. Existing products are matched by slug and variants by SKU.">
+      <Modal
+        open={open}
+        onOpenChange={setOpen}
+        title="Import products"
+        description="One row per colour/variant. Existing products are matched by slug and variants by SKU."
+      >
         <div className="space-y-4 text-sm">
-          <a href={`data:text/csv;charset=utf-8,${encodeURIComponent(TEMPLATE)}`} download="seicase-products-template.csv" className="text-cognac underline">
+          <a
+            href={`data:text/csv;charset=utf-8,${encodeURIComponent(TEMPLATE)}`}
+            download="seicase-products-template.csv"
+            className="text-cognac underline"
+          >
             Download a template
           </a>
           <input
@@ -44,7 +54,11 @@ export function ImportProducts() {
             }}
             className="block w-full text-sm"
           />
-          {rows.length > 0 && <p className="text-muted">{rows.length} rows ready · {new Set(rows.map((r) => r.slug || r.name)).size} products</p>}
+          {rows.length > 0 && (
+            <p className="text-muted">
+              {rows.length} rows ready · {new Set(rows.map((r) => r.slug || r.name)).size} products
+            </p>
+          )}
           <Button
             className="w-full"
             disabled={!rows.length || pending}

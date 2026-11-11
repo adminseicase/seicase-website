@@ -26,6 +26,13 @@ export async function GET(request: NextRequest) {
     error = "Missing code";
   }
 
-  const dest = new URL(error ? `/login?error=${encodeURIComponent("That link has expired. Please try again.")}` : type === "recovery" ? "/reset-password" : next, url.origin);
+  const dest = new URL(
+    error
+      ? `/login?error=${encodeURIComponent("That link has expired. Please try again.")}`
+      : type === "recovery"
+        ? "/reset-password"
+        : next,
+    url.origin,
+  );
   return NextResponse.redirect(dest);
 }

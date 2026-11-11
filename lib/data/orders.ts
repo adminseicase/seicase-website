@@ -24,7 +24,10 @@ function tokenOk(a: string, b: string | null | undefined) {
  * Returns an order if the viewer may see it: the signed-in owner, staff,
  * or anyone holding the order's private access token (guest email link).
  */
-export async function getOrderForViewer(orderNumber: string, token?: string | null): Promise<{ order: ViewableOrder; viaToken: boolean } | null> {
+export async function getOrderForViewer(
+  orderNumber: string,
+  token?: string | null,
+): Promise<{ order: ViewableOrder; viaToken: boolean } | null> {
   if (!isServiceRoleConfigured() || !/^SC\d{3,12}$/.test(orderNumber)) return null;
   const { data } = await createAdminClient().from("orders").select(ORDER_SELECT).eq("order_number", orderNumber).maybeSingle();
   if (!data) return null;

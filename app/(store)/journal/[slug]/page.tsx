@@ -22,7 +22,13 @@ export async function generateMetadata({ params }: PageProps<"/journal/[slug]">)
     title: p.seo_title || p.title,
     description,
     alternates: { canonical: `/journal/${p.slug}` },
-    openGraph: { type: "article", title: p.title, description, publishedTime: p.published_at ?? undefined, images: p.cover_image ? [p.cover_image] : undefined },
+    openGraph: {
+      type: "article",
+      title: p.title,
+      description,
+      publishedTime: p.published_at ?? undefined,
+      images: p.cover_image ? [p.cover_image] : undefined,
+    },
   };
 }
 
@@ -35,17 +41,26 @@ async function Post({ params }: Pick<PageProps<"/journal/[slug]">, "params">) {
     <article>
       <Container className="max-w-4xl pt-8 md:pt-12">
         <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Journal", href: "/journal" }, { label: post.title }]} />
-        <p className="mt-8 text-xs uppercase tracking-[0.16em] text-muted">
+        <p className="text-muted mt-8 text-xs tracking-[0.16em] uppercase">
           {post.tags.join(" · ")} · {formatDate(post.published_at)}
         </p>
         <h1 className="mt-3 text-4xl md:text-6xl">{post.title}</h1>
-        {post.excerpt && <p className="mt-4 font-serif text-xl italic text-muted md:text-2xl">{post.excerpt}</p>}
-        <p className="mt-4 text-sm text-muted">By {post.author}</p>
+        {post.excerpt && <p className="text-muted mt-4 font-serif text-xl italic md:text-2xl">{post.excerpt}</p>}
+        <p className="text-muted mt-4 text-sm">By {post.author}</p>
       </Container>
       {post.cover_image && (
         <Container className="mt-8 max-w-5xl">
           <div className="relative aspect-[3/2] overflow-hidden rounded-2xl">
-            <Image src={post.cover_image} alt="" fill sizes="(max-width: 1100px) 100vw, 1000px" preload className="object-cover" placeholder="blur" blurDataURL={BLUR_DATA_URL} />
+            <Image
+              src={post.cover_image}
+              alt=""
+              fill
+              sizes="(max-width: 1100px) 100vw, 1000px"
+              preload
+              className="object-cover"
+              placeholder="blur"
+              blurDataURL={BLUR_DATA_URL}
+            />
           </div>
         </Container>
       )}
@@ -59,8 +74,14 @@ async function Post({ params }: Pick<PageProps<"/journal/[slug]">, "params">) {
             {more.map((p) => (
               <li key={p.id}>
                 <Link href={`/journal/${p.slug}`} className="group flex gap-4">
-                  <Image src={p.cover_image || "/images/placeholder.webp"} alt="" width={160} height={107} className="h-[107px] w-40 shrink-0 rounded-lg object-cover" />
-                  <span className="font-serif text-xl leading-tight group-hover:text-cognac">{p.title}</span>
+                  <Image
+                    src={p.cover_image || "/images/placeholder.webp"}
+                    alt=""
+                    width={160}
+                    height={107}
+                    className="h-[107px] w-40 shrink-0 rounded-lg object-cover"
+                  />
+                  <span className="group-hover:text-cognac font-serif text-xl leading-tight">{p.title}</span>
                 </Link>
               </li>
             ))}
@@ -87,7 +108,13 @@ async function Post({ params }: Pick<PageProps<"/journal/[slug]">, "params">) {
 
 export default function JournalPostPage(props: PageProps<"/journal/[slug]">) {
   return (
-    <Suspense fallback={<Container className="max-w-4xl pt-12"><Skeleton className="h-96" /></Container>}>
+    <Suspense
+      fallback={
+        <Container className="max-w-4xl pt-12">
+          <Skeleton className="h-96" />
+        </Container>
+      }
+    >
       <Post params={props.params} />
     </Suspense>
   );

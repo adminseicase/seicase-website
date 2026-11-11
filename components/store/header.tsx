@@ -6,7 +6,11 @@ import { HeaderActions, MobileMenuButton, StickyHeader } from "./header-client";
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <Link href="/" aria-label="seicase home" className={`font-serif text-[2rem] leading-none tracking-tight text-foreground md:text-[2.4rem] ${className}`}>
+    <Link
+      href="/"
+      aria-label="seicase home"
+      className={`text-foreground font-serif text-[2rem] leading-none tracking-tight md:text-[2.4rem] ${className}`}
+    >
       seicase
     </Link>
   );

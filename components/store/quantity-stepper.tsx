@@ -22,7 +22,7 @@ export function QuantityStepper({
     size === "sm" ? "size-9" : "size-11",
   );
   return (
-    <div className="inline-flex items-center rounded-md border border-border-strong bg-surface" role="group" aria-label={label}>
+    <div className="border-border-strong bg-surface inline-flex items-center rounded-md border" role="group" aria-label={label}>
       <button type="button" className={btn} aria-label="Decrease quantity" onClick={() => onChange(value - 1)} disabled={value <= 1}>
         <Minus className="size-3.5 stroke-[1.5]" />
       </button>

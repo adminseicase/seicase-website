@@ -42,10 +42,13 @@ export function ImageManager({
   const gallery = images.filter((i) => i.kind === "gallery").sort((a, b) => a.sort_order - b.sort_order);
   const spin = images.filter((i) => i.kind === "spin").sort((a, b) => a.sort_order - b.sort_order);
 
-  const commit = (g: ManagedImage[], s: ManagedImage[] = spin) => onChange([...g.map((im, i) => ({ ...im, sort_order: i })), ...s.map((im, i) => ({ ...im, sort_order: i }))]);
+  const commit = (g: ManagedImage[], s: ManagedImage[] = spin) =>
+    onChange([...g.map((im, i) => ({ ...im, sort_order: i })), ...s.map((im, i) => ({ ...im, sort_order: i }))]);
 
   const upload = async (files: FileList | File[], kind: "gallery" | "spin") => {
-    const list = [...files].filter((f) => f.type.startsWith("image/")).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    const list = [...files]
+      .filter((f) => f.type.startsWith("image/"))
+      .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
     if (!list.length) return;
     setUploading((n) => n + list.length);
     const added: ManagedImage[] = [];
@@ -70,7 +73,8 @@ export function ImageManager({
     if (ok.length) toast.success(`${ok.length} image${ok.length > 1 ? "s" : ""} uploaded`);
   };
 
-  const update = (id: string, patch: Partial<ManagedImage>) => commit(gallery.map((i) => (i.id === id ? { ...i, ...patch } : patch.is_primary ? { ...i, is_primary: false } : i)));
+  const update = (id: string, patch: Partial<ManagedImage>) =>
+    commit(gallery.map((i) => (i.id === id ? { ...i, ...patch } : patch.is_primary ? { ...i, is_primary: false } : i)));
   const move = (from: number, to: number) => {
     if (to < 0 || to >= gallery.length) return;
     const next = [...gallery];
@@ -92,12 +96,25 @@ export function ImageManager({
           setDrag(false);
           if (e.dataTransfer.files.length) upload(e.dataTransfer.files, "gallery");
         }}
-        className={cn("flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-8 text-center text-sm transition-colors", drag ? "border-cognac bg-surface-muted" : "border-border-strong hover:border-foreground")}
+        className={cn(
+          "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-8 text-center text-sm transition-colors",
+          drag ? "border-cognac bg-surface-muted" : "border-border-strong hover:border-foreground",
+        )}
       >
-        {uploading ? <LoaderCircle className="size-6 animate-spin text-cognac" /> : <ImagePlus className="size-6 stroke-[1.5] text-muted" />}
+        {uploading ? (
+          <LoaderCircle className="text-cognac size-6 animate-spin" />
+        ) : (
+          <ImagePlus className="text-muted size-6 stroke-[1.5]" />
+        )}
         <span>{uploading ? `Uploading ${uploading}…` : "Drag & drop photos here, or click to choose"}</span>
-        <span className="text-xs text-muted">JPG, PNG or WebP. Automatically resized and compressed.</span>
-        <input type="file" multiple accept="image/*" className="sr-only" onChange={(e) => e.target.files && upload(e.target.files, "gallery").then(() => (e.target.value = ""))} />
+        <span className="text-muted text-xs">JPG, PNG or WebP. Automatically resized and compressed.</span>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          className="sr-only"
+          onChange={(e) => e.target.files && upload(e.target.files, "gallery").then(() => (e.target.value = ""))}
+        />
       </label>
 
       {gallery.length > 0 && (
@@ -113,14 +130,27 @@ export function ImageManager({
                 if (from >= 0) move(from, i);
                 setDragId(null);
               }}
-              className={cn("rounded-xl border bg-surface p-2", img.is_primary && "ring-2 ring-cognac")}
+              className={cn("bg-surface rounded-xl border p-2", img.is_primary && "ring-cognac ring-2")}
             >
-              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-surface-muted">
+              <div className="bg-surface-muted relative aspect-[4/5] overflow-hidden rounded-lg">
                 <Image src={img.url} alt={img.alt ?? ""} fill sizes="200px" className="object-cover" />
-                {img.is_primary && <span className="absolute left-2 top-2 rounded-full bg-cognac px-2 py-0.5 text-[10px] text-white">Primary</span>}
+                {img.is_primary && (
+                  <span className="bg-cognac absolute top-2 left-2 rounded-full px-2 py-0.5 text-[10px] text-white">Primary</span>
+                )}
               </div>
-              <input value={img.alt ?? ""} onChange={(e) => update(img.id, { alt: e.target.value })} placeholder="Alt text (describe the photo)" aria-label="Alt text" className="mt-2 h-8 w-full rounded-md border bg-background px-2 text-xs" />
-              <select value={img.variant_id ?? ""} onChange={(e) => update(img.id, { variant_id: e.target.value || null })} aria-label="Colour for this image" className="mt-1 h-8 w-full rounded-md border bg-background px-1 text-xs">
+              <input
+                value={img.alt ?? ""}
+                onChange={(e) => update(img.id, { alt: e.target.value })}
+                placeholder="Alt text (describe the photo)"
+                aria-label="Alt text"
+                className="bg-background mt-2 h-8 w-full rounded-md border px-2 text-xs"
+              />
+              <select
+                value={img.variant_id ?? ""}
+                onChange={(e) => update(img.id, { variant_id: e.target.value || null })}
+                aria-label="Colour for this image"
+                className="bg-background mt-1 h-8 w-full rounded-md border px-1 text-xs"
+              >
                 <option value="">All colours</option>
                 {variants.map((v) => (
                   <option key={v.id} value={v.id}>
@@ -130,18 +160,39 @@ export function ImageManager({
               </select>
               <div className="mt-1 flex items-center justify-between">
                 <div className="flex">
-                  <button type="button" onClick={() => move(i, i - 1)} className="inline-flex size-8 items-center justify-center rounded hover:bg-surface-muted" aria-label="Move left">
+                  <button
+                    type="button"
+                    onClick={() => move(i, i - 1)}
+                    className="hover:bg-surface-muted inline-flex size-8 items-center justify-center rounded"
+                    aria-label="Move left"
+                  >
                     <ArrowLeft className="size-3.5" />
                   </button>
-                  <button type="button" onClick={() => move(i, i + 1)} className="inline-flex size-8 items-center justify-center rounded hover:bg-surface-muted" aria-label="Move right">
+                  <button
+                    type="button"
+                    onClick={() => move(i, i + 1)}
+                    className="hover:bg-surface-muted inline-flex size-8 items-center justify-center rounded"
+                    aria-label="Move right"
+                  >
                     <ArrowRight className="size-3.5" />
                   </button>
                 </div>
                 <div className="flex">
-                  <button type="button" onClick={() => update(img.id, { is_primary: true })} className="inline-flex size-8 items-center justify-center rounded hover:bg-surface-muted" aria-label="Set as primary image" title="Set as primary">
+                  <button
+                    type="button"
+                    onClick={() => update(img.id, { is_primary: true })}
+                    className="hover:bg-surface-muted inline-flex size-8 items-center justify-center rounded"
+                    aria-label="Set as primary image"
+                    title="Set as primary"
+                  >
                     <Star className={cn("size-3.5", img.is_primary && "fill-cognac stroke-cognac")} />
                   </button>
-                  <button type="button" onClick={() => commit(gallery.filter((g) => g.id !== img.id))} className="inline-flex size-8 items-center justify-center rounded text-danger hover:bg-danger-bg" aria-label="Remove image">
+                  <button
+                    type="button"
+                    onClick={() => commit(gallery.filter((g) => g.id !== img.id))}
+                    className="text-danger hover:bg-danger-bg inline-flex size-8 items-center justify-center rounded"
+                    aria-label="Remove image"
+                  >
                     <Trash className="size-3.5" />
                   </button>
                 </div>
@@ -151,28 +202,41 @@ export function ImageManager({
         </ul>
       )}
 
-      <div className="rounded-xl border bg-surface-muted/40 p-4">
+      <div className="bg-surface-muted/40 rounded-xl border p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="flex items-center gap-2 text-sm font-medium">
               <Rotate3d className="size-4" /> 360° image sequence (optional)
             </p>
-            <p className="text-xs text-muted">Upload 24–36 photos taken while turning the product. They&apos;re ordered by file name (01, 02, 03…).</p>
+            <p className="text-muted text-xs">
+              Upload 24–36 photos taken while turning the product. They&apos;re ordered by file name (01, 02, 03…).
+            </p>
           </div>
           <div className="flex gap-2">
             {spin.length > 0 && (
-              <button type="button" onClick={() => commit(gallery, [])} className="h-9 rounded-md border px-3 text-xs text-danger">
+              <button type="button" onClick={() => commit(gallery, [])} className="text-danger h-9 rounded-md border px-3 text-xs">
                 Remove all ({spin.length})
               </button>
             )}
-            <button type="button" onClick={() => spinInput.current?.click()} className="h-9 rounded-md bg-foreground px-3 text-xs text-background">
+            <button
+              type="button"
+              onClick={() => spinInput.current?.click()}
+              className="bg-foreground text-background h-9 rounded-md px-3 text-xs"
+            >
               Upload sequence
             </button>
-            <input ref={spinInput} type="file" multiple accept="image/*" className="sr-only" onChange={(e) => e.target.files && upload(e.target.files, "spin").then(() => (e.target.value = ""))} />
+            <input
+              ref={spinInput}
+              type="file"
+              multiple
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => e.target.files && upload(e.target.files, "spin").then(() => (e.target.value = ""))}
+            />
           </div>
         </div>
         {spin.length > 0 && (
-          <ul className="scrollbar-none mt-3 flex gap-1 overflow-x-auto">
+          <ul className="mt-3 flex scrollbar-none gap-1 overflow-x-auto">
             {spin.map((s) => (
               <li key={s.id} className="shrink-0">
                 <Image src={s.url} alt="" width={56} height={56} className="size-14 rounded object-cover" />

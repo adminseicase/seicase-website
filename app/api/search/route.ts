@@ -7,9 +7,7 @@ const POPULAR = ["tote", "crossbody", "wallet", "olive", "coin purse", "burgundy
 export async function GET(request: NextRequest) {
   const q = (request.nextUrl.searchParams.get("q") ?? "").slice(0, 80);
   const all = await getAllProducts();
-  const matches = q.trim()
-    ? searchProducts(all, q, 50)
-    : [...all].filter((p) => p.is_trending).sort((a, b) => b.total_sold - a.total_sold);
+  const matches = q.trim() ? searchProducts(all, q, 50) : [...all].filter((p) => p.is_trending).sort((a, b) => b.total_sold - a.total_sold);
   const results = matches.slice(0, 8).map((p) => ({
     id: p.id,
     name: p.name,

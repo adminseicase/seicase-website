@@ -12,7 +12,10 @@ export const metadata = { title: "Analytics" };
 
 function Export({ report, from, to }: { report: string; from: string; to: string }) {
   return (
-    <a href={`/api/admin/export?type=analytics&section=${report}&from=${from}&to=${to}`} className="inline-flex items-center gap-1 text-xs text-muted hover:text-foreground">
+    <a
+      href={`/api/admin/export?type=analytics&section=${report}&from=${from}&to=${to}`}
+      className="text-muted hover:text-foreground inline-flex items-center gap-1 text-xs"
+    >
       <Download className="size-3.5" /> CSV
     </a>
   );
@@ -21,13 +24,24 @@ function Export({ report, from, to }: { report: string; from: string; to: string
 export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/analytics">) {
   const sp = await searchParams;
   const r = dateRange(sp, 30);
-  const grain = (typeof sp.grain === "string" && ["day", "week", "month"].includes(sp.grain) ? sp.grain : pickGrain(r.days)) as "day" | "week" | "month";
-  const [kpi, prev, series, prevSeries, rep] = await Promise.all([getKpis(r.from, r.to), getKpis(r.prevFrom, r.prevTo), getSeries(r.from, r.to, grain), getSeries(r.prevFrom, r.prevTo, grain), getReport(r.from, r.to)]);
+  const grain = (typeof sp.grain === "string" && ["day", "week", "month"].includes(sp.grain) ? sp.grain : pickGrain(r.days)) as
+    "day" | "week" | "month";
+  const [kpi, prev, series, prevSeries, rep] = await Promise.all([
+    getKpis(r.from, r.to),
+    getKpis(r.prevFrom, r.prevTo),
+    getSeries(r.from, r.to, grain),
+    getSeries(r.prevFrom, r.prevTo, grain),
+    getReport(r.from, r.to),
+  ]);
   const ex = (s: string) => <Export report={s} from={r.from} to={r.to} />;
   const grainLink = (g: string) => {
     const p = new URLSearchParams({ from: r.fromStr, to: r.toStr, grain: g });
     return (
-      <a key={g} href={`?${p}`} className={`rounded-md px-2 py-1 text-xs capitalize ${grain === g ? "bg-foreground text-background" : "text-muted hover:text-foreground"}`}>
+      <a
+        key={g}
+        href={`?${p}`}
+        className={`rounded-md px-2 py-1 text-xs capitalize ${grain === g ? "bg-foreground text-background" : "text-muted hover:text-foreground"}`}
+      >
         {g}
       </a>
     );
@@ -52,18 +66,42 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
         <StatCard label="Revenue" value={formatCompactINR(kpi.revenue)} delta={pctChange(kpi.revenue, prev.revenue)} />
         <StatCard label="Orders" value={formatNumber(kpi.orders)} delta={pctChange(kpi.orders, prev.orders)} />
         <StatCard label="AOV" value={formatINR(kpi.aov)} delta={pctChange(kpi.aov, prev.aov)} />
-        <StatCard label="Conversion" value={`${kpi.conversion_rate.toFixed(2)}%`} delta={pctChange(kpi.conversion_rate, prev.conversion_rate)} />
+        <StatCard
+          label="Conversion"
+          value={`${kpi.conversion_rate.toFixed(2)}%`}
+          delta={pctChange(kpi.conversion_rate, prev.conversion_rate)}
+        />
         <StatCard label="Sessions" value={formatNumber(kpi.sessions)} delta={pctChange(kpi.sessions, prev.sessions)} />
         <StatCard label="Gross profit" value={formatCompactINR(kpi.gross_profit)} delta={pctChange(kpi.gross_profit, prev.gross_profit)} />
         <StatCard label="Units sold" value={formatNumber(kpi.units)} delta={pctChange(kpi.units, prev.units)} />
         <StatCard label="New customers" value={formatNumber(kpi.new_customers)} delta={pctChange(kpi.new_customers, prev.new_customers)} />
-        <StatCard label="Returning customers" value={formatNumber(kpi.returning_customers)} delta={pctChange(kpi.returning_customers, prev.returning_customers)} />
-        <StatCard label="Repeat purchase rate" value={`${rep.repeat.repeat_rate}%`} hint={`${rep.repeat.repeat_customers} of ${rep.repeat.customers}`} />
+        <StatCard
+          label="Returning customers"
+          value={formatNumber(kpi.returning_customers)}
+          delta={pctChange(kpi.returning_customers, prev.returning_customers)}
+        />
+        <StatCard
+          label="Repeat purchase rate"
+          value={`${rep.repeat.repeat_rate}%`}
+          hint={`${rep.repeat.repeat_customers} of ${rep.repeat.customers}`}
+        />
         <StatCard label="Refund rate" value={`${kpi.refund_rate.toFixed(1)}%`} />
-        <StatCard label="Discounts given" value={formatCompactINR(kpi.discount_total)} delta={pctChange(kpi.discount_total, prev.discount_total)} />
+        <StatCard
+          label="Discounts given"
+          value={formatCompactINR(kpi.discount_total)}
+          delta={pctChange(kpi.discount_total, prev.discount_total)}
+        />
       </div>
 
-      <Card className="mt-6" title="Sales over time" actions={<div className="flex items-center gap-1">{["day", "week", "month"].map(grainLink)} {ex("sales")}</div>}>
+      <Card
+        className="mt-6"
+        title="Sales over time"
+        actions={
+          <div className="flex items-center gap-1">
+            {["day", "week", "month"].map(grainLink)} {ex("sales")}
+          </div>
+        }
+      >
         <SalesChart data={series} compare={prevSeries} />
       </Card>
 
@@ -104,13 +142,23 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card title="Top cities (visitors)" actions={ex("cities")}>
-          <BarList rows={rep.cities.map((c) => ({ label: `${c.city}${c.region ? `, ${c.region}` : ""}`, value: c.sessions }))} empty="City data appears once you're live on Vercel." />
+          <BarList
+            rows={rep.cities.map((c) => ({ label: `${c.city}${c.region ? `, ${c.region}` : ""}`, value: c.sessions }))}
+            empty="City data appears once you're live on Vercel."
+          />
         </Card>
         <Card title="Top states (orders)" actions={ex("states")}>
           <BarList rows={rep.states.map((s) => ({ label: s.state ?? "Unknown", value: s.orders, sub: formatCompactINR(s.revenue) }))} />
         </Card>
         <Card title="UTM campaigns" actions={ex("campaigns")}>
-          <BarList rows={rep.campaigns.map((c) => ({ label: `${c.campaign} (${c.source ?? "—"}/${c.medium ?? "—"})`, value: c.sessions, sub: `${c.orders} orders · ${formatCompactINR(c.revenue)}` }))} empty="Tag links with ?utm_campaign= to see campaigns here." />
+          <BarList
+            rows={rep.campaigns.map((c) => ({
+              label: `${c.campaign} (${c.source ?? "—"}/${c.medium ?? "—"})`,
+              value: c.sessions,
+              sub: `${c.orders} orders · ${formatCompactINR(c.revenue)}`,
+            }))}
+            empty="Tag links with ?utm_campaign= to see campaigns here."
+          />
         </Card>
       </div>
 
@@ -120,7 +168,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
         </Card>
         <Card title="Searches with no results" actions={ex("zero_result_searches")}>
           <BarList rows={rep.zero_result_searches.map((s) => ({ label: s.term, value: s.count }))} empty="Every search found something." />
-          <p className="mt-3 text-xs text-muted">Tip: these are products or words customers expect — consider adding them.</p>
+          <p className="text-muted mt-3 text-xs">Tip: these are products or words customers expect — consider adding them.</p>
         </Card>
         <Card title="Most wishlisted" actions={ex("wishlisted")}>
           <BarList rows={rep.wishlisted.map((w) => ({ label: w.name, value: w.saved, sub: `+${w.added_in_period} this period` }))} />
@@ -147,7 +195,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
               <dd className="text-2xl">{rep.abandoned.recovery_rate}%</dd>
             </div>
           </dl>
-          <a href="/admin/abandoned-carts" className="mt-4 inline-block text-xs text-muted hover:text-foreground">
+          <a href="/admin/abandoned-carts" className="text-muted hover:text-foreground mt-4 inline-block text-xs">
             Follow up →
           </a>
         </Card>
@@ -166,7 +214,10 @@ export default async function AnalyticsPage({ searchParams }: PageProps<"/admin/
       </div>
 
       <Card className="mt-6" title="Customer cohorts (customers who ordered again, by months after first order)" actions={ex("cohorts")}>
-        <Table head={["First order", "Customers", "+1 month", "+2 months", "+3 months", "+4–6 months"]} empty="Cohorts build up as customers return.">
+        <Table
+          head={["First order", "Customers", "+1 month", "+2 months", "+3 months", "+4–6 months"]}
+          empty="Cohorts build up as customers return."
+        >
           {rep.cohorts.map((c) => {
             const pct = (n: number) => (c.customers ? `${n} (${Math.round((n / c.customers) * 100)}%)` : "0");
             return (

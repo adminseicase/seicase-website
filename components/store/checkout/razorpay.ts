@@ -10,7 +10,10 @@ interface RazorpayResponse {
 }
 interface RazorpayInstance {
   open: () => void;
-  on: (event: "payment.failed", cb: (r: { error: { code: string; description: string; metadata?: { payment_id?: string } } }) => void) => void;
+  on: (
+    event: "payment.failed",
+    cb: (r: { error: { code: string; description: string; metadata?: { payment_id?: string } } }) => void,
+  ) => void;
 }
 declare global {
   interface Window {

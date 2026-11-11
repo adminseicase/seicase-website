@@ -49,11 +49,21 @@ export function EmailLayout({ preview, children, siteUrl }: { preview: string; c
           </Section>
           <Section style={s.card}>{children}</Section>
           <Section style={{ textAlign: "center", padding: "26px 10px 0" }}>
-            <Text style={{ ...s.small, fontFamily: serif, fontSize: "18px", color: colors.text }}>More than a bag. A part of your story.</Text>
+            <Text style={{ ...s.small, fontFamily: serif, fontSize: "18px", color: colors.text }}>
+              More than a bag. A part of your story.
+            </Text>
             <Text style={s.small}>
-              <Link href={`${siteUrl}/help`} style={{ color: colors.subtle }}>Help Centre</Link> ·{" "}
-              <Link href={`${siteUrl}/returns-and-exchanges`} style={{ color: colors.subtle }}>Returns</Link> ·{" "}
-              <Link href={`${siteUrl}/contact`} style={{ color: colors.subtle }}>Contact</Link>
+              <Link href={`${siteUrl}/help`} style={{ color: colors.subtle }}>
+                Help Centre
+              </Link>{" "}
+              ·{" "}
+              <Link href={`${siteUrl}/returns-and-exchanges`} style={{ color: colors.subtle }}>
+                Returns
+              </Link>{" "}
+              ·{" "}
+              <Link href={`${siteUrl}/contact`} style={{ color: colors.subtle }}>
+                Contact
+              </Link>
             </Text>
             <Hr style={s.hr} />
             <Text style={{ ...s.small, fontSize: "12px" }}>seicase · 12, Fashion Street, Chennai 600001 · India</Text>

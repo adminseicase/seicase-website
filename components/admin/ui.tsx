@@ -8,16 +8,26 @@ export function PageHeader({ title, description, actions }: { title: string; des
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
         <h1 className="text-3xl md:text-4xl">{title}</h1>
-        {description && <p className="mt-1 text-sm text-muted">{description}</p>}
+        {description && <p className="text-muted mt-1 text-sm">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
   );
 }
 
-export function Card({ title, actions, children, className }: { title?: React.ReactNode; actions?: React.ReactNode; children: React.ReactNode; className?: string }) {
+export function Card({
+  title,
+  actions,
+  children,
+  className,
+}: {
+  title?: React.ReactNode;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <section className={cn("rounded-xl border bg-surface p-5", className)}>
+    <section className={cn("bg-surface rounded-xl border p-5", className)}>
       {(title || actions) && (
         <div className="mb-4 flex items-center justify-between gap-3">
           {title && <h2 className="font-sans text-sm font-medium">{title}</h2>}
@@ -32,8 +42,8 @@ export function Card({ title, actions, children, className }: { title?: React.Re
 export function StatCard({ label, value, delta, hint }: { label: string; value: string; delta?: number | null; hint?: string }) {
   const up = (delta ?? 0) >= 0;
   return (
-    <div className="rounded-xl border bg-surface p-4">
-      <p className="text-xs text-muted">{label}</p>
+    <div className="bg-surface rounded-xl border p-4">
+      <p className="text-muted text-xs">{label}</p>
       <p className="mt-1.5 text-2xl font-medium tabular-nums">{value}</p>
       <div className="mt-1 flex items-center gap-2 text-xs">
         {delta != null && Number.isFinite(delta) && (
@@ -56,12 +66,12 @@ export function pctChange(cur: number, prev: number) {
 export function Table({ head, children, empty }: { head: React.ReactNode[]; children: React.ReactNode; empty?: string }) {
   const hasRows = Array.isArray(children) ? children.length > 0 : !!children;
   return (
-    <div className="overflow-x-auto rounded-xl border bg-surface">
+    <div className="bg-surface overflow-x-auto rounded-xl border">
       <table className="w-full min-w-[640px] text-left text-sm">
-        <thead className="border-b bg-surface-muted/50 text-xs text-muted">
+        <thead className="bg-surface-muted/50 text-muted border-b text-xs">
           <tr>
             {head.map((h, i) => (
-              <th key={i} scope="col" className="whitespace-nowrap px-4 py-3 font-medium">
+              <th key={i} scope="col" className="px-4 py-3 font-medium whitespace-nowrap">
                 {h}
               </th>
             ))}
@@ -72,7 +82,7 @@ export function Table({ head, children, empty }: { head: React.ReactNode[]; chil
             children
           ) : (
             <tr>
-              <td colSpan={head.length} className="px-4 py-12 text-center text-muted">
+              <td colSpan={head.length} className="text-muted px-4 py-12 text-center">
                 {empty ?? "Nothing here yet."}
               </td>
             </tr>
@@ -87,7 +97,19 @@ export function Td({ children, className }: { children?: React.ReactNode; classN
   return <td className={cn("px-4 py-3 align-middle", className)}>{children}</td>;
 }
 
-export function Pagination({ page, total, pageSize, basePath, params }: { page: number; total: number; pageSize: number; basePath: string; params: Record<string, string | string[] | undefined> }) {
+export function Pagination({
+  page,
+  total,
+  pageSize,
+  basePath,
+  params,
+}: {
+  page: number;
+  total: number;
+  pageSize: number;
+  basePath: string;
+  params: Record<string, string | string[] | undefined>;
+}) {
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const href = (p: number) => {
     const sp = new URLSearchParams();
@@ -96,15 +118,31 @@ export function Pagination({ page, total, pageSize, basePath, params }: { page: 
     return `${basePath}?${sp}`;
   };
   return (
-    <div className="mt-4 flex items-center justify-between text-sm text-muted">
+    <div className="text-muted mt-4 flex items-center justify-between text-sm">
       <p>
         {total.toLocaleString("en-IN")} result{total === 1 ? "" : "s"} · Page {page} of {pages}
       </p>
       <div className="flex gap-1">
-        <Link aria-disabled={page <= 1} href={href(Math.max(1, page - 1))} className={cn("inline-flex size-9 items-center justify-center rounded-lg border bg-surface", page <= 1 && "pointer-events-none opacity-40")} aria-label="Previous page">
+        <Link
+          aria-disabled={page <= 1}
+          href={href(Math.max(1, page - 1))}
+          className={cn(
+            "bg-surface inline-flex size-9 items-center justify-center rounded-lg border",
+            page <= 1 && "pointer-events-none opacity-40",
+          )}
+          aria-label="Previous page"
+        >
           <ChevronLeft className="size-4" />
         </Link>
-        <Link aria-disabled={page >= pages} href={href(Math.min(pages, page + 1))} className={cn("inline-flex size-9 items-center justify-center rounded-lg border bg-surface", page >= pages && "pointer-events-none opacity-40")} aria-label="Next page">
+        <Link
+          aria-disabled={page >= pages}
+          href={href(Math.min(pages, page + 1))}
+          className={cn(
+            "bg-surface inline-flex size-9 items-center justify-center rounded-lg border",
+            page >= pages && "pointer-events-none opacity-40",
+          )}
+          aria-label="Next page"
+        >
           <ChevronRight className="size-4" />
         </Link>
       </div>
@@ -112,15 +150,34 @@ export function Pagination({ page, total, pageSize, basePath, params }: { page: 
   );
 }
 
-export function FilterLinks({ basePath, param, value, options, params }: { basePath: string; param: string; value: string; options: { value: string; label: string; count?: number }[]; params: Record<string, string | string[] | undefined> }) {
+export function FilterLinks({
+  basePath,
+  param,
+  value,
+  options,
+  params,
+}: {
+  basePath: string;
+  param: string;
+  value: string;
+  options: { value: string; label: string; count?: number }[];
+  params: Record<string, string | string[] | undefined>;
+}) {
   return (
-    <div className="scrollbar-none -mx-1 mb-4 flex gap-1 overflow-x-auto px-1">
+    <div className="-mx-1 mb-4 flex scrollbar-none gap-1 overflow-x-auto px-1">
       {options.map((o) => {
         const sp = new URLSearchParams();
         Object.entries(params).forEach(([k, v]) => typeof v === "string" && k !== param && k !== "page" && sp.set(k, v));
         if (o.value) sp.set(param, o.value);
         return (
-          <Link key={o.value} href={`${basePath}${sp.size ? `?${sp}` : ""}`} className={cn("inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-xs", value === o.value ? "border-foreground bg-foreground text-background" : "bg-surface hover:border-foreground")}>
+          <Link
+            key={o.value}
+            href={`${basePath}${sp.size ? `?${sp}` : ""}`}
+            className={cn(
+              "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-xs",
+              value === o.value ? "border-foreground bg-foreground text-background" : "bg-surface hover:border-foreground",
+            )}
+          >
             {o.label}
             {o.count != null && <span className="opacity-70">{o.count}</span>}
           </Link>
@@ -133,7 +190,7 @@ export function FilterLinks({ basePath, param, value, options, params }: { baseP
 export function AdminSkeleton() {
   return (
     <div className="flex min-h-dvh">
-      <div className="hidden w-64 border-r bg-surface lg:block" />
+      <div className="bg-surface hidden w-64 border-r lg:block" />
       <div className="flex-1 space-y-4 p-8">
         <Skeleton className="h-10 w-64" />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -148,5 +205,5 @@ export function AdminSkeleton() {
 }
 
 export function EmptyNote({ children }: { children: React.ReactNode }) {
-  return <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted">{children}</p>;
+  return <p className="text-muted rounded-lg border border-dashed p-6 text-center text-sm">{children}</p>;
 }

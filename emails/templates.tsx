@@ -8,7 +8,8 @@ import { Btn, EmailLayout, colors, s } from "./layout";
  */
 
 const inr = (n: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(n);
-const abs = (siteUrl: string, url: string | null) => (!url ? `${siteUrl}/images/placeholder.webp` : url.startsWith("http") ? url : `${siteUrl}${url}`);
+const abs = (siteUrl: string, url: string | null) =>
+  !url ? `${siteUrl}/images/placeholder.webp` : url.startsWith("http") ? url : `${siteUrl}${url}`;
 
 export interface EmailOrderItem {
   name: string;
@@ -37,7 +38,13 @@ function Items({ items, siteUrl }: { items: EmailOrderItem[]; siteUrl: string })
       {items.map((it, i) => (
         <Row key={i} style={{ marginBottom: "12px" }}>
           <Column style={{ width: "76px", verticalAlign: "top" }}>
-            <Img src={abs(siteUrl, it.image)} width="64" height="80" alt="" style={{ borderRadius: "8px", objectFit: "cover", background: colors.muted }} />
+            <Img
+              src={abs(siteUrl, it.image)}
+              width="64"
+              height="80"
+              alt=""
+              style={{ borderRadius: "8px", objectFit: "cover", background: colors.muted }}
+            />
           </Column>
           <Column style={{ verticalAlign: "top" }}>
             <Text style={{ ...s.p, margin: "0", fontSize: "15px" }}>{it.name}</Text>
@@ -112,8 +119,14 @@ const STATUS_COPY: Record<string, { title: string; body: string }> = {
   confirmed: { title: "Your order is confirmed", body: "Good news — we've confirmed your order and our artisans are getting it ready." },
   shipped: { title: "Your order is on its way", body: "Your seicase piece has left our studio and is on its way to you." },
   out_for_delivery: { title: "Out for delivery today", body: "Your order is out for delivery and should reach you today." },
-  delivered: { title: "Delivered — we hope you love it", body: "Your order has been delivered. We'd love to hear what you think — leave a review any time from your account." },
-  cancelled: { title: "Your order was cancelled", body: "Your order has been cancelled. If you paid online, your refund has been initiated and will reach you in 5–7 business days." },
+  delivered: {
+    title: "Delivered — we hope you love it",
+    body: "Your order has been delivered. We'd love to hear what you think — leave a review any time from your account.",
+  },
+  cancelled: {
+    title: "Your order was cancelled",
+    body: "Your order has been cancelled. If you paid online, your refund has been initiated and will reach you in 5–7 business days.",
+  },
   returned: { title: "Your return is complete", body: "We've received your return. Your refund is being processed." },
 };
 
@@ -207,7 +220,8 @@ export function ReturnUpdateEmail({
         {status === "approved" && "We'll arrange a free pickup within 2–3 business days. Please pack the item with its tags and dust bag."}
         {status === "requested" && "Our team will review your request within one business day."}
         {status === "received" && "Our studio is inspecting your return. We'll update you shortly."}
-        {status === "refunded" && `A refund${refundAmount ? ` of ${inr(refundAmount)}` : ""} has been issued to your original payment method. It may take 5–7 business days to appear.`}
+        {status === "refunded" &&
+          `A refund${refundAmount ? ` of ${inr(refundAmount)}` : ""} has been issued to your original payment method. It may take 5–7 business days to appear.`}
         {status === "exchanged" && "Your replacement is being prepared and will ship soon."}
         {status === "rejected" && "Unfortunately we couldn't approve this return."}
       </Text>
@@ -232,8 +246,8 @@ export function AbandonedCartEmail({
     <EmailLayout preview="You left something beautiful behind." siteUrl={siteUrl}>
       <Text style={s.h1}>Still thinking it over?</Text>
       <Text style={s.p}>
-        {name ? `Hi ${name.split(" ")[0]}, y` : "Y"}our bag is waiting for you. Pieces are made in small batches, so we can&apos;t hold them for
-        long.
+        {name ? `Hi ${name.split(" ")[0]}, y` : "Y"}our bag is waiting for you. Pieces are made in small batches, so we can&apos;t hold them
+        for long.
       </Text>
       <Items items={items} siteUrl={siteUrl} />
       <Hr style={s.hr} />
@@ -306,8 +320,8 @@ export function LowStockEmail({
       <Text style={s.p}>These variants are at or below their low-stock threshold:</Text>
       {items.map((i) => (
         <Text key={i.sku} style={{ ...s.small, margin: "4px 0" }}>
-          <strong style={{ color: i.stock === 0 ? "#9B2C2C" : colors.text }}>{i.stock === 0 ? "OUT" : `${i.stock} left`}</strong> — {i.product} ({i.colour}) ·{" "}
-          {i.sku}
+          <strong style={{ color: i.stock === 0 ? "#9B2C2C" : colors.text }}>{i.stock === 0 ? "OUT" : `${i.stock} left`}</strong> —{" "}
+          {i.product} ({i.colour}) · {i.sku}
         </Text>
       ))}
       <Hr style={s.hr} />

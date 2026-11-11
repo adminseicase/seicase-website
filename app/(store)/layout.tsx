@@ -31,7 +31,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
     <StoreConfigProvider value={config}>
       <a
         href="#main"
-        className="sr-only z-[60] rounded-md bg-foreground px-4 py-2 text-background focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className="bg-foreground text-background sr-only z-[60] rounded-md px-4 py-2 focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
       >
         Skip to content
       </a>

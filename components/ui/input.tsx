@@ -28,18 +28,18 @@ export function NativeSelect({ className, children, style, ...props }: React.Sel
 }
 
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return <label className={cn("mb-1.5 block text-sm font-medium text-foreground", className)} {...props} />;
+  return <label className={cn("text-foreground mb-1.5 block text-sm font-medium", className)} {...props} />;
 }
 
 export function FieldError({ message, id }: { message?: string; id?: string }) {
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="mt-1.5 text-xs text-danger">
+    <p id={id} role="alert" className="text-danger mt-1.5 text-xs">
       {message}
     </p>
   );
 }
 
 export function Checkbox({ className, ...props }: Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">) {
-  return <input type="checkbox" className={cn("size-4 shrink-0 rounded border-border-strong accent-foreground", className)} {...props} />;
+  return <input type="checkbox" className={cn("border-border-strong accent-foreground size-4 shrink-0 rounded", className)} {...props} />;
 }

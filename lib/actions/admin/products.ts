@@ -8,7 +8,9 @@ import { audit, cleanHtml, fail, refresh, type ActionResult } from "@/lib/admin/
 import { slugify } from "@/lib/utils";
 
 const num = z.coerce.number();
-const optNum = z.union([z.literal(""), z.null(), z.undefined(), z.coerce.number()]).transform((v) => (v === "" || v == null ? null : Number(v)));
+const optNum = z
+  .union([z.literal(""), z.null(), z.undefined(), z.coerce.number()])
+  .transform((v) => (v === "" || v == null ? null : Number(v)));
 
 const variantSchema = z.object({
   id: z.string().uuid(),
@@ -71,7 +73,9 @@ export async function saveProduct(input: unknown): Promise<ActionResult<{ id: st
     const d = parsed.data;
     const supabase = await createClient();
     const slug = slugify(d.slug || d.name);
-    const { data: before } = d.id ? await supabase.from("products").select("slug, price, status").eq("id", d.id).maybeSingle() : { data: null };
+    const { data: before } = d.id
+      ? await supabase.from("products").select("slug, price, status").eq("id", d.id).maybeSingle()
+      : { data: null };
 
     const row = {
       name: d.name,
@@ -81,7 +85,8 @@ export async function saveProduct(input: unknown): Promise<ActionResult<{ id: st
       category_id: d.category_id || null,
       collection_id: d.collection_id || null,
       material: d.material || null,
-      dimensions: d.dimensions || (d.width_cm && d.height_cm ? `${d.width_cm} × ${d.height_cm}${d.depth_cm ? ` × ${d.depth_cm}` : ""} cm` : null),
+      dimensions:
+        d.dimensions || (d.width_cm && d.height_cm ? `${d.width_cm} × ${d.height_cm}${d.depth_cm ? ` × ${d.depth_cm}` : ""} cm` : null),
       width_cm: d.width_cm,
       height_cm: d.height_cm,
       depth_cm: d.depth_cm,
@@ -104,13 +109,18 @@ export async function saveProduct(input: unknown): Promise<ActionResult<{ id: st
     };
     const { data: saved, error } = d.id
       ? await supabase.from("products").update(row).eq("id", d.id).select("id").single()
-      : await supabase.from("products").insert({ ...row, created_by: user.id }).select("id").single();
+      : await supabase
+          .from("products")
+          .insert({ ...row, created_by: user.id })
+          .select("id")
+          .single();
     if (error || !saved) throw error ?? new Error("Save failed");
     const productId = saved.id;
 
     // Styles
     await supabase.from("product_styles").delete().eq("product_id", productId);
-    if (d.style_ids.length) await supabase.from("product_styles").insert(d.style_ids.map((style_id) => ({ product_id: productId, style_id })));
+    if (d.style_ids.length)
+      await supabase.from("product_styles").insert(d.style_ids.map((style_id) => ({ product_id: productId, style_id })));
 
     // Variants: upsert details, then log stock changes through set_stock()
     const { data: existing } = await supabase.from("product_variants").select("id, stock").eq("product_id", productId);
@@ -120,15 +130,25 @@ export async function saveProduct(input: unknown): Promise<ActionResult<{ id: st
     if (removed.length) await supabase.from("product_variants").delete().in("id", removed);
     const hasDefault = d.variants.some((v) => v.is_default);
     for (const [i, v] of d.variants.entries()) {
-      const base = { product_id: productId, colour_name: v.colour_name, colour_hex: v.colour_hex.toUpperCase(), sku: v.sku.toUpperCase(), price_override: v.price_override, is_default: hasDefault ? v.is_default : i === 0, sort_order: i };
+      const base = {
+        product_id: productId,
+        colour_name: v.colour_name,
+        colour_hex: v.colour_hex.toUpperCase(),
+        sku: v.sku.toUpperCase(),
+        price_override: v.price_override,
+        is_default: hasDefault ? v.is_default : i === 0,
+        sort_order: i,
+      };
       if (existingMap.has(v.id)) {
         const { error: ve } = await supabase.from("product_variants").update(base).eq("id", v.id);
         if (ve) throw ve;
-        if (existingMap.get(v.id) !== v.stock) await supabase.rpc("set_stock", { p_variant_id: v.id, p_stock: v.stock, p_reason: "Edited in product form" });
+        if (existingMap.get(v.id) !== v.stock)
+          await supabase.rpc("set_stock", { p_variant_id: v.id, p_stock: v.stock, p_reason: "Edited in product form" });
       } else {
         const { error: ve } = await supabase.from("product_variants").insert({ ...base, id: v.id, stock: 0 });
         if (ve) throw ve;
-        if (v.stock > 0) await supabase.rpc("adjust_stock", { p_variant_id: v.id, p_change: v.stock, p_type: "restock", p_reason: "Initial stock" });
+        if (v.stock > 0)
+          await supabase.rpc("adjust_stock", { p_variant_id: v.id, p_change: v.stock, p_type: "restock", p_reason: "Initial stock" });
       }
     }
 
@@ -166,21 +186,59 @@ export async function duplicateProduct(id: string): Promise<ActionResult<{ id: s
   try {
     const user = await assertStaff();
     const supabase = await createClient();
-    const { data: p } = await supabase.from("products").select("*, product_variants(*), product_images(*), product_styles(style_id)").eq("id", id).single();
+    const { data: p } = await supabase
+      .from("products")
+      .select("*, product_variants(*), product_images(*), product_styles(style_id)")
+      .eq("id", id)
+      .single();
     if (!p) return { ok: false, message: "Product not found" };
-    const { product_variants, product_images, product_styles, id: _id, created_at: _c, updated_at: _u, search_text: _s, rating_avg: _r, rating_count: _rc, total_sold: _t, ...rest } = p;
+    const { product_variants, product_images, product_styles, ...all } = p;
+    const rest = Object.fromEntries(
+      Object.entries(all).filter(
+        ([k]) => !["id", "created_at", "updated_at", "search_text", "rating_avg", "rating_count", "total_sold"].includes(k),
+      ),
+    ) as Omit<typeof all, "id" | "created_at" | "updated_at" | "search_text" | "rating_avg" | "rating_count" | "total_sold">;
     const suffix = Math.random().toString(36).slice(2, 6);
-    const { data: copy, error } = await supabase.from("products").insert({ ...rest, name: `${p.name} (Copy)`, slug: `${p.slug}-copy-${suffix}`, status: "draft", created_by: user.id }).select("id").single();
+    const { data: copy, error } = await supabase
+      .from("products")
+      .insert({ ...rest, name: `${p.name} (Copy)`, slug: `${p.slug}-copy-${suffix}`, status: "draft", created_by: user.id })
+      .select("id")
+      .single();
     if (error || !copy) throw error;
     const idMap = new Map<string, string>();
     for (const v of product_variants) {
       const nid = crypto.randomUUID();
       idMap.set(v.id, nid);
-      await supabase.from("product_variants").insert({ id: nid, product_id: copy.id, colour_name: v.colour_name, colour_hex: v.colour_hex, sku: `${v.sku}-${suffix}`.toUpperCase(), stock: 0, price_override: v.price_override, is_default: v.is_default, sort_order: v.sort_order });
+      await supabase
+        .from("product_variants")
+        .insert({
+          id: nid,
+          product_id: copy.id,
+          colour_name: v.colour_name,
+          colour_hex: v.colour_hex,
+          sku: `${v.sku}-${suffix}`.toUpperCase(),
+          stock: 0,
+          price_override: v.price_override,
+          is_default: v.is_default,
+          sort_order: v.sort_order,
+        });
     }
     if (product_images.length)
-      await supabase.from("product_images").insert(product_images.map((im) => ({ product_id: copy.id, url: im.url, alt: im.alt, kind: im.kind, sort_order: im.sort_order, is_primary: im.is_primary, variant_id: im.variant_id ? idMap.get(im.variant_id) ?? null : null })));
-    if (product_styles.length) await supabase.from("product_styles").insert(product_styles.map((s) => ({ product_id: copy.id, style_id: s.style_id })));
+      await supabase
+        .from("product_images")
+        .insert(
+          product_images.map((im) => ({
+            product_id: copy.id,
+            url: im.url,
+            alt: im.alt,
+            kind: im.kind,
+            sort_order: im.sort_order,
+            is_primary: im.is_primary,
+            variant_id: im.variant_id ? (idMap.get(im.variant_id) ?? null) : null,
+          })),
+        );
+    if (product_styles.length)
+      await supabase.from("product_styles").insert(product_styles.map((s) => ({ product_id: copy.id, style_id: s.style_id })));
     await audit(user, "product.duplicate", "product", copy.id, `Duplicated ${p.name}`);
     return { ok: true, message: "Duplicated as a draft", data: { id: copy.id } };
   } catch (e) {
@@ -188,7 +246,10 @@ export async function duplicateProduct(id: string): Promise<ActionResult<{ id: s
   }
 }
 
-export async function bulkProducts(ids: string[], action: "publish" | "draft" | "archive" | "delete" | "feature" | "unfeature"): Promise<ActionResult> {
+export async function bulkProducts(
+  ids: string[],
+  action: "publish" | "draft" | "archive" | "delete" | "feature" | "unfeature",
+): Promise<ActionResult> {
   try {
     const user = await assertStaff();
     const list = z.array(z.string().uuid()).min(1).max(500).parse(ids);
@@ -196,8 +257,16 @@ export async function bulkProducts(ids: string[], action: "publish" | "draft" | 
     const { data: rows } = await supabase.from("products").select("slug").in("id", list);
     let error;
     if (action === "delete") ({ error } = await supabase.from("products").delete().in("id", list));
-    else if (action === "feature" || action === "unfeature") ({ error } = await supabase.from("products").update({ is_featured: action === "feature" }).in("id", list));
-    else ({ error } = await supabase.from("products").update({ status: action === "publish" ? "published" : action === "draft" ? "draft" : "archived" }).in("id", list));
+    else if (action === "feature" || action === "unfeature")
+      ({ error } = await supabase
+        .from("products")
+        .update({ is_featured: action === "feature" })
+        .in("id", list));
+    else
+      ({ error } = await supabase
+        .from("products")
+        .update({ status: action === "publish" ? "published" : action === "draft" ? "draft" : "archived" })
+        .in("id", list));
     if (error) throw error;
     await audit(user, `product.bulk_${action}`, "product", null, `${action} ${list.length} products`, { ids: list });
     refresh(TAGS.products, ...(rows ?? []).map((r) => TAGS.product(r.slug)));
@@ -211,7 +280,11 @@ export async function setVariantStock(variantId: string, stock: number): Promise
   try {
     const user = await assertStaff();
     const supabase = await createClient();
-    const { data, error } = await supabase.rpc("set_stock", { p_variant_id: z.string().uuid().parse(variantId), p_stock: z.number().int().min(0).max(100000).parse(stock), p_reason: "Inline edit" });
+    const { data, error } = await supabase.rpc("set_stock", {
+      p_variant_id: z.string().uuid().parse(variantId),
+      p_stock: z.number().int().min(0).max(100000).parse(stock),
+      p_reason: "Inline edit",
+    });
     if (error) throw error;
     const { data: v } = await supabase.from("product_variants").select("sku, products(slug)").eq("id", variantId).single();
     await audit(user, "inventory.set", "variant", variantId, `Set ${v?.sku} stock to ${data}`);
@@ -225,9 +298,21 @@ export async function setVariantStock(variantId: string, stock: number): Promise
 export async function adjustStock(input: unknown): Promise<ActionResult> {
   try {
     const user = await assertStaff();
-    const d = z.object({ variantId: z.string().uuid(), change: z.number().int().min(-100000).max(100000), type: z.enum(["restock", "return", "adjustment"]), reason: z.string().trim().min(2, "Please add a reason").max(200) }).parse(input);
+    const d = z
+      .object({
+        variantId: z.string().uuid(),
+        change: z.number().int().min(-100000).max(100000),
+        type: z.enum(["restock", "return", "adjustment"]),
+        reason: z.string().trim().min(2, "Please add a reason").max(200),
+      })
+      .parse(input);
     const supabase = await createClient();
-    const { data, error } = await supabase.rpc("adjust_stock", { p_variant_id: d.variantId, p_change: d.change, p_type: d.type, p_reason: d.reason });
+    const { data, error } = await supabase.rpc("adjust_stock", {
+      p_variant_id: d.variantId,
+      p_change: d.change,
+      p_type: d.type,
+      p_reason: d.reason,
+    });
     if (error) throw error;
     await audit(user, "inventory.adjust", "variant", d.variantId, `${d.change > 0 ? "+" : ""}${d.change} (${d.type}): ${d.reason}`);
     refresh(TAGS.products);
@@ -269,20 +354,37 @@ export async function importProducts(rows: Record<string, string>[]): Promise<Ac
         short_description: r.short_description || null,
         category_id: cats?.find((c) => c.slug === r.category)?.id ?? null,
       };
-      const { data: p, error } = existing ? await supabase.from("products").update(row).eq("id", existing.id).select("id").single() : await supabase.from("products").insert({ ...row, created_by: user.id }).select("id").single();
+      const { data: p, error } = existing
+        ? await supabase.from("products").update(row).eq("id", existing.id).select("id").single()
+        : await supabase
+            .from("products")
+            .insert({ ...row, created_by: user.id })
+            .select("id")
+            .single();
       if (error || !p) continue;
-      existing ? updated++ : created++;
+      if (existing) updated++;
+      else created++;
       for (const [i, v] of list.entries()) {
         if (!v.sku) continue;
         const { data: ev } = await supabase.from("product_variants").select("id").eq("sku", v.sku.toUpperCase()).maybeSingle();
-        const vrow = { product_id: p.id, colour_name: v.colour_name || "Default", colour_hex: /^#[0-9a-f]{6}$/i.test(v.colour_hex) ? v.colour_hex : "#9C5A33", sku: v.sku.toUpperCase(), price_override: v.price_override ? Number(v.price_override) : null, sort_order: i, is_default: i === 0 };
+        const vrow = {
+          product_id: p.id,
+          colour_name: v.colour_name || "Default",
+          colour_hex: /^#[0-9a-f]{6}$/i.test(v.colour_hex) ? v.colour_hex : "#9C5A33",
+          sku: v.sku.toUpperCase(),
+          price_override: v.price_override ? Number(v.price_override) : null,
+          sort_order: i,
+          is_default: i === 0,
+        };
         if (ev) {
           await supabase.from("product_variants").update(vrow).eq("id", ev.id);
-          if (v.stock !== undefined && v.stock !== "") await supabase.rpc("set_stock", { p_variant_id: ev.id, p_stock: Number(v.stock), p_reason: "CSV import" });
+          if (v.stock !== undefined && v.stock !== "")
+            await supabase.rpc("set_stock", { p_variant_id: ev.id, p_stock: Number(v.stock), p_reason: "CSV import" });
         } else {
           const id = crypto.randomUUID();
           await supabase.from("product_variants").insert({ ...vrow, id, stock: 0 });
-          if (Number(v.stock) > 0) await supabase.rpc("adjust_stock", { p_variant_id: id, p_change: Number(v.stock), p_type: "restock", p_reason: "CSV import" });
+          if (Number(v.stock) > 0)
+            await supabase.rpc("adjust_stock", { p_variant_id: id, p_change: Number(v.stock), p_type: "restock", p_reason: "CSV import" });
         }
       }
     }

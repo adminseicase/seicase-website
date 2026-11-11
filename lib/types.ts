@@ -5,15 +5,7 @@
  */
 
 export type PublishStatus = "draft" | "published" | "archived";
-export type OrderStatus =
-  | "pending"
-  | "placed"
-  | "confirmed"
-  | "shipped"
-  | "out_for_delivery"
-  | "delivered"
-  | "cancelled"
-  | "returned";
+export type OrderStatus = "pending" | "placed" | "confirmed" | "shipped" | "out_for_delivery" | "delivered" | "cancelled" | "returned";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded" | "partially_refunded";
 export type PaymentMethod = "razorpay" | "cod";
 export type ReturnStatus = "requested" | "approved" | "rejected" | "received" | "refunded" | "exchanged";
@@ -308,15 +300,7 @@ export interface SocialSettings {
   facebook: string | null;
 }
 
-export type HomepageSectionId =
-  | "hero"
-  | "trust"
-  | "categories"
-  | "crafted"
-  | "trending"
-  | "styles"
-  | "lifestyle"
-  | "newsletter";
+export type HomepageSectionId = "hero" | "trust" | "categories" | "crafted" | "trending" | "styles" | "lifestyle" | "newsletter";
 
 export interface HomepageSettings {
   sections: { id: HomepageSectionId; visible: boolean }[];

@@ -48,14 +48,14 @@ export async function Footer() {
   ];
 
   return (
-    <footer className="mt-20 border-t bg-surface/60">
-      <div className="mx-auto max-w-[1440px] px-4 pb-8 pt-14 md:px-8">
+    <footer className="bg-surface/60 mt-20 border-t">
+      <div className="mx-auto max-w-[1440px] px-4 pt-14 pb-8 md:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.3fr_repeat(3,1fr)_1.3fr]">
           <div>
             <Link href="/" className="font-serif text-4xl" aria-label="seicase home">
               seicase
             </Link>
-            <p className="mt-3 max-w-xs font-serif text-lg italic text-muted">More than a bag. A part of your story.</p>
+            <p className="text-muted mt-3 max-w-xs font-serif text-lg italic">More than a bag. A part of your story.</p>
             <ul className="mt-6 flex gap-1" aria-label="Follow seicase">
               {socials.map(({ href, label, Icon }) => (
                 <li key={label}>
@@ -64,7 +64,7 @@ export async function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="inline-flex size-11 items-center justify-center rounded-full text-foreground hover:bg-surface-muted hover:text-cognac"
+                    className="text-foreground hover:bg-surface-muted hover:text-cognac inline-flex size-11 items-center justify-center rounded-full"
                   >
                     <Icon />
                   </a>
@@ -74,11 +74,11 @@ export async function Footer() {
           </div>
           {cols.map((col) => (
             <nav key={col.title} aria-label={col.title}>
-              <h2 className="mb-4 font-sans text-xs font-medium uppercase tracking-[0.16em]">{col.title}</h2>
+              <h2 className="mb-4 font-sans text-xs font-medium tracking-[0.16em] uppercase">{col.title}</h2>
               <ul className="space-y-1">
                 {col.links.map((l) => (
                   <li key={l.href + l.label}>
-                    <Link href={l.href} className="inline-flex min-h-9 items-center text-sm text-muted hover:text-foreground">
+                    <Link href={l.href} className="text-muted hover:text-foreground inline-flex min-h-9 items-center text-sm">
                       {l.label}
                     </Link>
                   </li>
@@ -87,15 +87,15 @@ export async function Footer() {
             </nav>
           ))}
           <div>
-            <h2 className="mb-4 font-sans text-xs font-medium uppercase tracking-[0.16em]">Customer Care</h2>
-            <ul className="space-y-3 text-sm text-muted">
+            <h2 className="mb-4 font-sans text-xs font-medium tracking-[0.16em] uppercase">Customer Care</h2>
+            <ul className="text-muted space-y-3 text-sm">
               <li>
-                <a href={`tel:${store.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:text-foreground">
+                <a href={`tel:${store.phone.replace(/\s/g, "")}`} className="hover:text-foreground flex items-center gap-3">
                   <Phone className="size-4 stroke-[1.5]" aria-hidden="true" /> {store.phone}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${store.email}`} className="flex items-center gap-3 hover:text-foreground">
+                <a href={`mailto:${store.email}`} className="hover:text-foreground flex items-center gap-3">
                   <Mail className="size-4 stroke-[1.5]" aria-hidden="true" /> {store.email}
                 </a>
               </li>
@@ -105,7 +105,7 @@ export async function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-12 flex flex-col gap-4 border-t pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-muted mt-12 flex flex-col gap-4 border-t pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
           <p>© {YEAR} seicase. All rights reserved. Made with care in Chennai.</p>
           <div className="flex items-center gap-4">
             <Link href="/privacy-policy" className="hover:text-foreground">

@@ -35,7 +35,13 @@ function fnv(str: string, seed: number): number {
   return h >>> 0;
 }
 export function stableId(key: string): string {
-  const hex = [1, 2, 3, 4].map((s) => fnv(key, s * 0x9e3779b1).toString(16).padStart(8, "0")).join("");
+  const hex = [1, 2, 3, 4]
+    .map((s) =>
+      fnv(key, s * 0x9e3779b1)
+        .toString(16)
+        .padStart(8, "0"),
+    )
+    .join("");
   // format as RFC 4122 v4-looking uuid
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
@@ -78,11 +84,31 @@ const tax = (name: string, sort: number, description: string, image: string | nu
 });
 
 export const categories: Taxonomy[] = [
-  tax("Handbags", 1, "Structured totes, soft hobos and everyday carry-alls in full-grain leather.", "/images/products/the-tulip-tote/tan-front.webp"),
-  tax("Purses", 2, "Pouches and clutches for evenings, errands and everything in between.", "/images/products/the-petal-clutch/ivory-front.webp"),
+  tax(
+    "Handbags",
+    1,
+    "Structured totes, soft hobos and everyday carry-alls in full-grain leather.",
+    "/images/products/the-tulip-tote/tan-front.webp",
+  ),
+  tax(
+    "Purses",
+    2,
+    "Pouches and clutches for evenings, errands and everything in between.",
+    "/images/products/the-petal-clutch/ivory-front.webp",
+  ),
   tax("Wallets", 3, "Slim, considered wallets that age beautifully with you.", "/images/products/the-fold-wallet/tan-front.webp"),
-  tax("Coin Purses", 4, "Little leather keepers for coins, keys and small treasures.", "/images/products/the-pebble-coin-purse/tan-front.webp"),
-  tax("Men's Essentials", 5, "Bifolds, messengers and folios with quiet, lasting design.", "/images/products/the-voyager-messenger/dark-brown-front.webp"),
+  tax(
+    "Coin Purses",
+    4,
+    "Little leather keepers for coins, keys and small treasures.",
+    "/images/products/the-pebble-coin-purse/tan-front.webp",
+  ),
+  tax(
+    "Men's Essentials",
+    5,
+    "Bifolds, messengers and folios with quiet, lasting design.",
+    "/images/products/the-voyager-messenger/dark-brown-front.webp",
+  ),
   tax("Accessories", 6, "Charms, key fobs and finishing touches.", "/images/products/the-daisy-bag-charm/ivory-front.webp"),
 ];
 
@@ -90,7 +116,12 @@ export const styles: Taxonomy[] = [
   tax("Work Ready", 1, "Polished pieces that carry your laptop, notebook and day.", "/images/products/the-tulip-tote/tan-front.webp"),
   tax("Everyday Chic", 2, "Soft shapes for coffee runs, lunches and long walks.", "/images/products/the-crescent-bag/cognac-front.webp"),
   tax("On the Go", 3, "Hands-free crossbodies and bags made for travel.", "/images/products/the-mini-crossbody/olive-front.webp"),
-  tax("Little Luxuries", 4, "Small leather goods that make every day a little better.", "/images/products/the-pebble-coin-purse/tan-front.webp"),
+  tax(
+    "Little Luxuries",
+    4,
+    "Small leather goods that make every day a little better.",
+    "/images/products/the-pebble-coin-purse/tan-front.webp",
+  ),
 ];
 
 export const collections: Taxonomy[] = [
@@ -156,7 +187,7 @@ export const seedProducts: SeedProduct[] = [
     cost_price: 3600,
     short: "A modern classic, inspired by the elegance of a tulip.",
     description:
-      "<p>Our signature tote, shaped like a tulip in bloom. Cut from a single hide of full-grain, vegetable-tanned leather, it softens and deepens in colour with every year you carry it.</p><p>Inside, a suede-lined main compartment fits a 13\" laptop, with a zip pocket and two slip pockets for the things you reach for most. A magnetic closure keeps everything secure without slowing you down.</p><ul><li>Full-grain vegetable-tanned leather</li><li>Fits a 13\" laptop</li><li>Interior zip pocket + 2 slip pockets</li><li>Hand-stitched handle tabs</li></ul>",
+      '<p>Our signature tote, shaped like a tulip in bloom. Cut from a single hide of full-grain, vegetable-tanned leather, it softens and deepens in colour with every year you carry it.</p><p>Inside, a suede-lined main compartment fits a 13" laptop, with a zip pocket and two slip pockets for the things you reach for most. A magnetic closure keeps everything secure without slowing you down.</p><ul><li>Full-grain vegetable-tanned leather</li><li>Fits a 13" laptop</li><li>Interior zip pocket + 2 slip pockets</li><li>Hand-stitched handle tabs</li></ul>',
     material: "Full-grain vegetable-tanned leather, suede lining",
     dims: { w: 34, h: 28, d: 14, strap: 22 },
     weight_g: 820,
@@ -446,7 +477,7 @@ export const seedProducts: SeedProduct[] = [
     styles: ["Work Ready"],
     price: 6490,
     cost_price: 2500,
-    short: "A zip-around folio for a 14\" laptop, charger and notebook.",
+    short: 'A zip-around folio for a 14" laptop, charger and notebook.',
     description: "<p>Felt-lined and softly padded, with a slim cut-out handle and a front document pocket.</p>",
     material: "Full-grain leather, wool felt lining",
     dims: { w: 36, h: 26, d: 3 },
@@ -508,8 +539,7 @@ export const colourSlug = (c: string) => slugify(c);
 export const productSlug = (name: string) => slugify(name);
 export const productImagePath = (slug: string, colour: string, view: "front" | "angle" | "detail") =>
   `/images/products/${slug}/${colourSlug(colour)}-${view}.webp`;
-export const spinFramePath = (slug: string, frame: number) =>
-  `/images/products/${slug}/spin/${String(frame).padStart(2, "0")}.webp`;
+export const spinFramePath = (slug: string, frame: number) => `/images/products/${slug}/spin/${String(frame).padStart(2, "0")}.webp`;
 export const SPIN_FRAMES = 24;
 
 /* -------------------------------------------------------------------------- */
@@ -517,7 +547,15 @@ export const SPIN_FRAMES = 24;
 /* -------------------------------------------------------------------------- */
 export const seedCharms = [
   { name: "Flower Charm", shape: "flower", price: 890, cost: 260, stock: 60, colour: "#E6D8C3", description: "A hand-cut leather bloom." },
-  { name: "Leaf Charm", shape: "leaf", price: 790, cost: 220, stock: 60, colour: "#5F5D3B", description: "A single olive leaf, edge-painted by hand." },
+  {
+    name: "Leaf Charm",
+    shape: "leaf",
+    price: 790,
+    cost: 220,
+    stock: 60,
+    colour: "#5F5D3B",
+    description: "A single olive leaf, edge-painted by hand.",
+  },
   { name: "Tassel Charm", shape: "tassel", price: 690, cost: 180, stock: 80, colour: "#9C5A33", description: "A swingy suede tassel." },
   { name: "Heart Charm", shape: "heart", price: 890, cost: 260, stock: 45, colour: "#B07A5A", description: "A woven leather heart." },
 ].map((c, i) => ({
@@ -590,20 +628,96 @@ const faq = (category: string, question: string, answer: string, sort: number, p
 });
 
 export const faqs: Faq[] = [
-  faq("Shipping", "How long does shipping take?", "Orders are dispatched within 1–2 business days from our Chennai studio. Delivery takes 2–4 business days to metro cities and 4–7 business days to the rest of India. You'll receive a tracking link by email as soon as your order ships.", 1, true),
-  faq("Shipping", "Is shipping free?", "Yes — shipping is free on all orders above ₹2,000. A flat ₹99 shipping fee applies to smaller orders.", 2, true),
-  faq("Shipping", "Do you offer Cash on Delivery?", "Yes, Cash on Delivery is available across most pincodes in India for orders up to ₹15,000. A small COD handling fee of ₹49 applies.", 3),
-  faq("Shipping", "Do you ship internationally?", "We currently ship within India only. International shipping is coming soon — join our newsletter to be the first to know.", 4),
-  faq("Returns", "Can I return or exchange my order?", "Of course. You can request a return or exchange within 15 days of delivery from My Orders in your account. Items must be unused, with tags and the dust bag included.", 1, true),
-  faq("Returns", "What is your return policy?", "We offer easy 15-day returns. Once we receive and inspect your return, refunds are issued to your original payment method within 5–7 business days. For COD orders, we refund to your bank account or UPI ID.", 2, true),
-  faq("Returns", "Are charms and sale items returnable?", "Personalised items (bags with an attached charm) can be exchanged but not refunded. Sale items can be returned within 15 days like any other order.", 3),
-  faq("Orders", "How do I track my order?", "Log in and visit My Orders, then tap Track Order to see each step from dispatch to delivery. Guests can use the tracking link in their shipping email.", 1, true),
-  faq("Orders", "Can I cancel my order?", "You can cancel any order that hasn't shipped yet from My Orders, or by contacting us. Refunds for prepaid orders are processed immediately.", 2),
-  faq("Payments", "Which payment methods do you accept?", "We accept UPI, all major credit and debit cards, net banking and popular wallets through Razorpay, as well as Cash on Delivery.", 1),
-  faq("Payments", "Is it safe to pay on seicase?", "Yes. Payments are processed by Razorpay, a PCI-DSS compliant gateway. We never see or store your card details.", 2),
-  faq("Product Care", "How do I care for my leather bag?", "Wipe with a soft dry cloth, keep away from direct heat and water, and condition every few months with a neutral leather balm. Store it in its dust bag when not in use.", 1, true),
-  faq("Product Care", "Will the colour change over time?", "Yes, beautifully. Our vegetable-tanned leathers develop a rich patina with use and sunlight — that's part of their character.", 2),
-  faq("Product Care", "Is your leather genuine?", "Every seicase piece is made from genuine full-grain or top-grain leather sourced from LWG-certified tanneries in Tamil Nadu.", 3),
+  faq(
+    "Shipping",
+    "How long does shipping take?",
+    "Orders are dispatched within 1–2 business days from our Chennai studio. Delivery takes 2–4 business days to metro cities and 4–7 business days to the rest of India. You'll receive a tracking link by email as soon as your order ships.",
+    1,
+    true,
+  ),
+  faq(
+    "Shipping",
+    "Is shipping free?",
+    "Yes — shipping is free on all orders above ₹2,000. A flat ₹99 shipping fee applies to smaller orders.",
+    2,
+    true,
+  ),
+  faq(
+    "Shipping",
+    "Do you offer Cash on Delivery?",
+    "Yes, Cash on Delivery is available across most pincodes in India for orders up to ₹15,000. A small COD handling fee of ₹49 applies.",
+    3,
+  ),
+  faq(
+    "Shipping",
+    "Do you ship internationally?",
+    "We currently ship within India only. International shipping is coming soon — join our newsletter to be the first to know.",
+    4,
+  ),
+  faq(
+    "Returns",
+    "Can I return or exchange my order?",
+    "Of course. You can request a return or exchange within 15 days of delivery from My Orders in your account. Items must be unused, with tags and the dust bag included.",
+    1,
+    true,
+  ),
+  faq(
+    "Returns",
+    "What is your return policy?",
+    "We offer easy 15-day returns. Once we receive and inspect your return, refunds are issued to your original payment method within 5–7 business days. For COD orders, we refund to your bank account or UPI ID.",
+    2,
+    true,
+  ),
+  faq(
+    "Returns",
+    "Are charms and sale items returnable?",
+    "Personalised items (bags with an attached charm) can be exchanged but not refunded. Sale items can be returned within 15 days like any other order.",
+    3,
+  ),
+  faq(
+    "Orders",
+    "How do I track my order?",
+    "Log in and visit My Orders, then tap Track Order to see each step from dispatch to delivery. Guests can use the tracking link in their shipping email.",
+    1,
+    true,
+  ),
+  faq(
+    "Orders",
+    "Can I cancel my order?",
+    "You can cancel any order that hasn't shipped yet from My Orders, or by contacting us. Refunds for prepaid orders are processed immediately.",
+    2,
+  ),
+  faq(
+    "Payments",
+    "Which payment methods do you accept?",
+    "We accept UPI, all major credit and debit cards, net banking and popular wallets through Razorpay, as well as Cash on Delivery.",
+    1,
+  ),
+  faq(
+    "Payments",
+    "Is it safe to pay on seicase?",
+    "Yes. Payments are processed by Razorpay, a PCI-DSS compliant gateway. We never see or store your card details.",
+    2,
+  ),
+  faq(
+    "Product Care",
+    "How do I care for my leather bag?",
+    "Wipe with a soft dry cloth, keep away from direct heat and water, and condition every few months with a neutral leather balm. Store it in its dust bag when not in use.",
+    1,
+    true,
+  ),
+  faq(
+    "Product Care",
+    "Will the colour change over time?",
+    "Yes, beautifully. Our vegetable-tanned leathers develop a rich patina with use and sunlight — that's part of their character.",
+    2,
+  ),
+  faq(
+    "Product Care",
+    "Is your leather genuine?",
+    "Every seicase piece is made from genuine full-grain or top-grain leather sourced from LWG-certified tanneries in Tamil Nadu.",
+    3,
+  ),
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -700,7 +814,7 @@ export const journalPosts: JournalPost[] = [
     id: stableId("post:what-fits"),
     title: "What Fits in the Tulip Tote?",
     slug: "what-fits-in-the-tulip-tote",
-    excerpt: "A 13\" laptop, a water bottle, a book and more — we packed it for a full workday.",
+    excerpt: 'A 13" laptop, a water bottle, a book and more — we packed it for a full workday.',
     content:
       "<p>The Tulip Tote is our most-loved bag, and the question we're asked most is simple: what fits?</p><h2>A full workday, packed</h2><ul><li>13\" laptop and charger</li><li>A 500ml water bottle</li><li>A paperback and a notebook</li><li>The Fold Wallet and Pebble Coin Purse</li><li>Sunglasses, lip balm and keys in the inner pockets</li></ul><p>And it still closes neatly with its magnetic snap.</p>",
     cover_image: "/images/journal/what-fits.webp",
@@ -805,13 +919,55 @@ export const defaultSettings: SiteSettings = {
 
 /** Sample reviews (approved) shown on product pages. */
 export const seedReviews = [
-  { product: "The Tulip Tote", author: "Prakkanthi R.", rating: 5, title: "Worth every rupee", body: "The leather is buttery and the stitching is perfect. Fits my 13\" MacBook with room to spare. I get compliments every day." },
-  { product: "The Tulip Tote", author: "Ananya S.", rating: 5, title: "My everyday bag now", body: "Beautiful colour, even better in person. It has already started to soften after a month." },
-  { product: "The Tulip Tote", author: "Meera K.", rating: 4, title: "Lovely, slightly heavy", body: "Gorgeous bag. It's a little heavier than my old canvas tote, but the quality is on another level." },
-  { product: "The Crescent Bag", author: "Divya N.", rating: 5, title: "So elegant", body: "The burgundy is rich and the shape sits so nicely on the shoulder." },
-  { product: "The Mini Crossbody", author: "Rhea P.", rating: 5, title: "Perfect travel bag", body: "Took it to Jaipur — hands-free and fits everything I need." },
-  { product: "The Fold Wallet", author: "Karthik V.", rating: 5, title: "Great gift", body: "Bought it for my wife, she loves it. Beautiful packaging too." },
-  { product: "The Heritage Satchel", author: "Lakshmi M.", rating: 5, title: "Heirloom quality", body: "This is the kind of bag you pass down. Absolutely stunning." },
+  {
+    product: "The Tulip Tote",
+    author: "Prakkanthi R.",
+    rating: 5,
+    title: "Worth every rupee",
+    body: 'The leather is buttery and the stitching is perfect. Fits my 13" MacBook with room to spare. I get compliments every day.',
+  },
+  {
+    product: "The Tulip Tote",
+    author: "Ananya S.",
+    rating: 5,
+    title: "My everyday bag now",
+    body: "Beautiful colour, even better in person. It has already started to soften after a month.",
+  },
+  {
+    product: "The Tulip Tote",
+    author: "Meera K.",
+    rating: 4,
+    title: "Lovely, slightly heavy",
+    body: "Gorgeous bag. It's a little heavier than my old canvas tote, but the quality is on another level.",
+  },
+  {
+    product: "The Crescent Bag",
+    author: "Divya N.",
+    rating: 5,
+    title: "So elegant",
+    body: "The burgundy is rich and the shape sits so nicely on the shoulder.",
+  },
+  {
+    product: "The Mini Crossbody",
+    author: "Rhea P.",
+    rating: 5,
+    title: "Perfect travel bag",
+    body: "Took it to Jaipur — hands-free and fits everything I need.",
+  },
+  {
+    product: "The Fold Wallet",
+    author: "Karthik V.",
+    rating: 5,
+    title: "Great gift",
+    body: "Bought it for my wife, she loves it. Beautiful packaging too.",
+  },
+  {
+    product: "The Heritage Satchel",
+    author: "Lakshmi M.",
+    rating: 5,
+    title: "Heirloom quality",
+    body: "This is the kind of bag you pass down. Absolutely stunning.",
+  },
 ];
 
 /* -------------------------------------------------------------------------- */

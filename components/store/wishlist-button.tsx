@@ -48,8 +48,8 @@ export function WishlistButton({
       className={cn(
         "inline-flex items-center justify-center transition-colors",
         variant === "floating"
-          ? "size-10 rounded-full bg-surface/85 text-foreground backdrop-blur hover:bg-surface"
-          : "size-12 rounded-md border border-border-strong bg-surface hover:border-foreground",
+          ? "bg-surface/85 text-foreground hover:bg-surface size-10 rounded-full backdrop-blur"
+          : "border-border-strong bg-surface hover:border-foreground size-12 rounded-md border",
         className,
       )}
     >

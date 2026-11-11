@@ -23,7 +23,7 @@ export function ProductCard({
   return (
     <article className={cn("group relative", className)}>
       <Link href={`/product/${product.slug}`} className="block" prefetch={false}>
-        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-surface-muted">
+        <div className="bg-surface-muted relative aspect-[4/5] overflow-hidden rounded-xl">
           <Image
             src={product.image || "/images/placeholder.webp"}
             alt={product.image_alt}
@@ -45,10 +45,14 @@ export function ProductCard({
               className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 max-md:hidden"
             />
           )}
-          <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-            {product.is_new && <span className="rounded-full bg-surface/90 px-2.5 py-1 text-[11px] uppercase tracking-wider">New</span>}
-            {onSale && <span className="rounded-full bg-burgundy px-2.5 py-1 text-[11px] uppercase tracking-wider text-white">Sale</span>}
-            {!product.in_stock && <span className="rounded-full bg-foreground/80 px-2.5 py-1 text-[11px] uppercase tracking-wider text-background">Sold out</span>}
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+            {product.is_new && <span className="bg-surface/90 rounded-full px-2.5 py-1 text-[11px] tracking-wider uppercase">New</span>}
+            {onSale && <span className="bg-burgundy rounded-full px-2.5 py-1 text-[11px] tracking-wider text-white uppercase">Sale</span>}
+            {!product.in_stock && (
+              <span className="bg-foreground/80 text-background rounded-full px-2.5 py-1 text-[11px] tracking-wider uppercase">
+                Sold out
+              </span>
+            )}
           </div>
         </div>
         <div className="mt-3 space-y-1 px-0.5">
@@ -58,8 +62,8 @@ export function ProductCard({
             {onSale && <span className="text-muted line-through">{formatINR(product.compare_at_price)}</span>}
           </p>
           {showRating && product.rating_count > 0 && (
-            <p className="flex items-center gap-1 text-xs text-muted">
-              <Star className="size-3 fill-foreground stroke-foreground" aria-hidden="true" />
+            <p className="text-muted flex items-center gap-1 text-xs">
+              <Star className="fill-foreground stroke-foreground size-3" aria-hidden="true" />
               {product.rating_avg.toFixed(1)} <span>({product.rating_count})</span>
             </p>
           )}
@@ -68,14 +72,21 @@ export function ProductCard({
               {product.colours.slice(0, 5).map((c) => (
                 <li key={c.name} className="size-3.5 rounded-full border border-black/10" style={{ background: c.hex }} title={c.name} />
               ))}
-              {product.colours.length > 5 && <li className="text-xs text-muted">+{product.colours.length - 5}</li>}
+              {product.colours.length > 5 && <li className="text-muted text-xs">+{product.colours.length - 5}</li>}
             </ul>
           )}
         </div>
       </Link>
       <WishlistButton
-        className="absolute right-3 top-3"
-        product={{ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.image, variantId: product.default_variant_id }}
+        className="absolute top-3 right-3"
+        product={{
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          variantId: product.default_variant_id,
+        }}
       />
     </article>
   );

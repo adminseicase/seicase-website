@@ -20,7 +20,7 @@ export function SectionHeading({
   id?: string;
 }) {
   const link = href && (
-    <Link href={href} className="group inline-flex shrink-0 items-center gap-2 pb-1 text-sm hover:text-cognac">
+    <Link href={href} className="group hover:text-cognac inline-flex shrink-0 items-center gap-2 pb-1 text-sm">
       {linkLabel}
       <ArrowRight className="size-4 stroke-[1.5] transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
     </Link>
@@ -48,7 +48,7 @@ export function SectionHeading({
 
 export function Breadcrumbs({ items }: { items: { label: string; href?: string }[] }) {
   return (
-    <nav aria-label="Breadcrumb" className="text-xs text-muted">
+    <nav aria-label="Breadcrumb" className="text-muted text-xs">
       <ol className="flex flex-wrap items-center gap-1.5">
         {items.map((it, i) => (
           <li key={it.label} className="flex items-center gap-1.5">

@@ -5,9 +5,7 @@ import type { NextConfig } from "next";
  * needs them (Supabase, Razorpay checkout, optional GA4 / Meta Pixel /
  * Turnstile, YouTube embeds and the OpenStreetMap contact map).
  */
-const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
-  : "";
+const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin : "";
 const supabaseWs = supabaseOrigin.replace(/^https/, "wss");
 
 const csp = [
@@ -33,7 +31,7 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(self \"https://checkout.razorpay.com\")" },
+  { key: "Permissions-Policy", value: 'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.razorpay.com")' },
   { key: "X-DNS-Prefetch-Control", value: "on" },
 ];
 

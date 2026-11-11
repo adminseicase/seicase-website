@@ -62,10 +62,7 @@ export async function getJournalPosts(): Promise<JournalPost[]> {
   cacheLife("hours");
   cacheTag(TAGS.journal);
   if (!isSupabaseConfigured) return demoPosts;
-  const { data } = await createPublicClient()
-    .from("journal_posts")
-    .select("*")
-    .order("published_at", { ascending: false });
+  const { data } = await createPublicClient().from("journal_posts").select("*").order("published_at", { ascending: false });
   return (data ?? []) as JournalPost[];
 }
 

@@ -31,7 +31,15 @@ export function VideoCard({
 
   const inner = (
     <>
-      <Image src={poster} alt="" fill sizes="(max-width: 768px) 100vw, 45vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" placeholder="blur" blurDataURL={BLUR_DATA_URL} />
+      <Image
+        src={poster}
+        alt=""
+        fill
+        sizes="(max-width: 768px) 100vw, 45vw"
+        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+        placeholder="blur"
+        blurDataURL={BLUR_DATA_URL}
+      />
       <div className="absolute inset-0 bg-[#1f1a17]/25" />
       <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-[#F6EEE7]">
         <span className="inline-flex size-16 items-center justify-center rounded-full border border-[#F6EEE7]/80 bg-[#1f1a17]/20 backdrop-blur-sm transition-transform group-hover:scale-105">
@@ -63,7 +71,11 @@ export function VideoCard({
   if (!videoUrl) {
     // No video configured yet (Admin → Content → Banners) — link to the process story instead.
     return (
-      <Link href={fallbackHref} className="group relative block min-h-[320px] overflow-hidden rounded-2xl md:min-h-[400px]" aria-label={`${label} — read about our process`}>
+      <Link
+        href={fallbackHref}
+        className="group relative block min-h-[320px] overflow-hidden rounded-2xl md:min-h-[400px]"
+        aria-label={`${label} — read about our process`}
+      >
         {inner}
       </Link>
     );

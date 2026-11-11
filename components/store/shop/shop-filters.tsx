@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Check, SlidersHorizontal, X } from "lucide-react";
-import { Sheet } from "@/components/ui/sheet";
+import { LazySheet as Sheet } from "@/components/ui/lazy-sheet";
 import { Button } from "@/components/ui/button";
 import { NativeSelect } from "@/components/ui/input";
 import { cn, formatINR } from "@/lib/utils";
@@ -65,14 +65,29 @@ export function ShopFilters(props: Props) {
     <div className="space-y-7">
       {props.categories.length > 0 && (
         <fieldset>
-          <legend className="mb-3 text-xs uppercase tracking-[0.16em] text-muted">Category</legend>
+          <legend className="text-muted mb-3 text-xs tracking-[0.16em] uppercase">Category</legend>
           <ul className="space-y-1">
             {props.categories.map((c) => {
               const on = params.get("category") === c.value;
               return (
                 <li key={c.value}>
-                  <button type="button" onClick={() => setSingle("category", on ? null : c.value)} className={cn("flex min-h-9 items-center gap-2 text-sm", on ? "font-medium" : "text-foreground/80 hover:text-foreground")} aria-pressed={on}>
-                    <span className={cn("inline-flex size-4 items-center justify-center rounded-sm border", on && "border-foreground bg-foreground text-background")}>{on && <Check className="size-3" />}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSingle("category", on ? null : c.value)}
+                    className={cn(
+                      "flex min-h-9 items-center gap-2 text-sm",
+                      on ? "font-medium" : "text-foreground/80 hover:text-foreground",
+                    )}
+                    aria-pressed={on}
+                  >
+                    <span
+                      className={cn(
+                        "inline-flex size-4 items-center justify-center rounded-sm border",
+                        on && "border-foreground bg-foreground text-background",
+                      )}
+                    >
+                      {on && <Check className="size-3" />}
+                    </span>
                     {c.label}
                   </button>
                 </li>
@@ -83,14 +98,29 @@ export function ShopFilters(props: Props) {
       )}
       {props.styles.length > 0 && (
         <fieldset>
-          <legend className="mb-3 text-xs uppercase tracking-[0.16em] text-muted">Style</legend>
+          <legend className="text-muted mb-3 text-xs tracking-[0.16em] uppercase">Style</legend>
           <ul className="space-y-1">
             {props.styles.map((s) => {
               const on = params.get("style") === s.value;
               return (
                 <li key={s.value}>
-                  <button type="button" onClick={() => setSingle("style", on ? null : s.value)} className={cn("flex min-h-9 items-center gap-2 text-sm", on ? "font-medium" : "text-foreground/80 hover:text-foreground")} aria-pressed={on}>
-                    <span className={cn("inline-flex size-4 items-center justify-center rounded-sm border", on && "border-foreground bg-foreground text-background")}>{on && <Check className="size-3" />}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSingle("style", on ? null : s.value)}
+                    className={cn(
+                      "flex min-h-9 items-center gap-2 text-sm",
+                      on ? "font-medium" : "text-foreground/80 hover:text-foreground",
+                    )}
+                    aria-pressed={on}
+                  >
+                    <span
+                      className={cn(
+                        "inline-flex size-4 items-center justify-center rounded-sm border",
+                        on && "border-foreground bg-foreground text-background",
+                      )}
+                    >
+                      {on && <Check className="size-3" />}
+                    </span>
                     {s.label}
                   </button>
                 </li>
@@ -100,10 +130,12 @@ export function ShopFilters(props: Props) {
         </fieldset>
       )}
       <fieldset>
-        <legend className="mb-3 text-xs uppercase tracking-[0.16em] text-muted">Colour</legend>
+        <legend className="text-muted mb-3 text-xs tracking-[0.16em] uppercase">Colour</legend>
         <ul className="flex flex-wrap gap-2">
           {props.colours.map((c) => {
-            const on = getList("colour").map((x) => x.toLowerCase()).includes(c.name.toLowerCase());
+            const on = getList("colour")
+              .map((x) => x.toLowerCase())
+              .includes(c.name.toLowerCase());
             return (
               <li key={c.name}>
                 <button
@@ -112,7 +144,10 @@ export function ShopFilters(props: Props) {
                   aria-pressed={on}
                   aria-label={c.name}
                   title={c.name}
-                  className={cn("inline-flex size-11 items-center justify-center rounded-full border-2 transition-colors", on ? "border-foreground" : "border-transparent hover:border-border-strong")}
+                  className={cn(
+                    "inline-flex size-11 items-center justify-center rounded-full border-2 transition-colors",
+                    on ? "border-foreground" : "hover:border-border-strong border-transparent",
+                  )}
                 >
                   <span className="size-7 rounded-full border border-black/10" style={{ background: c.hex }} />
                 </button>
@@ -122,7 +157,7 @@ export function ShopFilters(props: Props) {
         </ul>
       </fieldset>
       <fieldset>
-        <legend className="mb-3 text-xs uppercase tracking-[0.16em] text-muted">Price</legend>
+        <legend className="text-muted mb-3 text-xs tracking-[0.16em] uppercase">Price</legend>
         <ul className="space-y-1">
           {PRICE_PRESETS.map((pr) => {
             const on = (curMin ?? "") === String(pr.min ?? "") && (curMax ?? "") === String(pr.max ?? "");
@@ -143,27 +178,47 @@ export function ShopFilters(props: Props) {
                   }
                   className={cn("flex min-h-9 items-center gap-2 text-sm", on ? "font-medium" : "text-foreground/80 hover:text-foreground")}
                 >
-                  <span className={cn("inline-flex size-4 items-center justify-center rounded-full border", on && "border-[5px] border-foreground")} />
+                  <span
+                    className={cn(
+                      "inline-flex size-4 items-center justify-center rounded-full border",
+                      on && "border-foreground border-[5px]",
+                    )}
+                  />
                   {pr.label}
                 </button>
               </li>
             );
           })}
         </ul>
-        <p className="mt-2 text-xs text-muted">
+        <p className="text-muted mt-2 text-xs">
           Range in this edit: {formatINR(props.priceBounds[0])} – {formatINR(props.priceBounds[1])}
         </p>
       </fieldset>
       {props.materials.length > 0 && (
         <fieldset>
-          <legend className="mb-3 text-xs uppercase tracking-[0.16em] text-muted">Material</legend>
+          <legend className="text-muted mb-3 text-xs tracking-[0.16em] uppercase">Material</legend>
           <ul className="space-y-1">
             {props.materials.map((m) => {
               const on = getList("material").includes(m.toLowerCase());
               return (
                 <li key={m}>
-                  <button type="button" onClick={() => toggleInList("material", m.toLowerCase())} aria-pressed={on} className={cn("flex min-h-9 items-center gap-2 text-sm", on ? "font-medium" : "text-foreground/80 hover:text-foreground")}>
-                    <span className={cn("inline-flex size-4 items-center justify-center rounded-sm border", on && "border-foreground bg-foreground text-background")}>{on && <Check className="size-3" />}</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleInList("material", m.toLowerCase())}
+                    aria-pressed={on}
+                    className={cn(
+                      "flex min-h-9 items-center gap-2 text-sm",
+                      on ? "font-medium" : "text-foreground/80 hover:text-foreground",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "inline-flex size-4 items-center justify-center rounded-sm border",
+                        on && "border-foreground bg-foreground text-background",
+                      )}
+                    >
+                      {on && <Check className="size-3" />}
+                    </span>
                     {m} leather
                   </button>
                 </li>
@@ -173,11 +228,11 @@ export function ShopFilters(props: Props) {
         </fieldset>
       )}
       <fieldset>
-        <legend className="mb-3 text-xs uppercase tracking-[0.16em] text-muted">Availability</legend>
+        <legend className="text-muted mb-3 text-xs tracking-[0.16em] uppercase">Availability</legend>
         <label className="flex min-h-9 cursor-pointer items-center gap-3 text-sm">
           <input
             type="checkbox"
-            className="size-4 accent-foreground"
+            className="accent-foreground size-4"
             checked={params.get("availability") === "in-stock"}
             onChange={(e) => setSingle("availability", e.target.checked ? "in-stock" : null)}
           />
@@ -185,7 +240,11 @@ export function ShopFilters(props: Props) {
         </label>
       </fieldset>
       {activeCount > 0 && (
-        <button type="button" onClick={() => start(() => router.replace(pathname, { scroll: false }))} className="inline-flex items-center gap-1.5 text-sm underline underline-offset-4">
+        <button
+          type="button"
+          onClick={() => start(() => router.replace(pathname, { scroll: false }))}
+          className="inline-flex items-center gap-1.5 text-sm underline underline-offset-4"
+        >
           <X className="size-3.5" /> Clear all filters
         </button>
       )}
@@ -198,39 +257,41 @@ export function ShopFilters(props: Props) {
         <div className="sticky top-24">{panel}</div>
       </aside>
       <div>
-      <div className="mb-6 flex items-center justify-between gap-3 border-y py-3 lg:border-t-0 lg:pt-0">
-        <button type="button" onClick={() => setOpen(true)} className="inline-flex h-11 items-center gap-2 text-sm lg:hidden">
-          <SlidersHorizontal className="size-4 stroke-[1.5]" /> Filter{activeCount ? ` (${activeCount})` : ""}
-        </button>
-        <p className="hidden text-sm text-muted lg:block" aria-live="polite">
-          {pending ? "Updating…" : `${props.total} ${props.total === 1 ? "piece" : "pieces"}`}
-        </p>
-        <label className="flex items-center gap-2 text-sm">
-          <span className="hidden text-muted sm:inline">Sort by</span>
-          <NativeSelect
-            aria-label="Sort products"
-            className="h-10 w-48 text-sm"
-            value={params.get("sort") ?? "featured"}
-            onChange={(e) => setSingle("sort", e.target.value === "featured" ? null : e.target.value)}
-          >
-            {SORTS.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </NativeSelect>
-        </label>
-      </div>
-      {props.children}
-      </div>
-      <Sheet open={open} onOpenChange={setOpen} side="left" title="Filter" description="Filter products">
-        <div className="flex-1 overflow-y-auto p-5">{panel}</div>
-        <div className="border-t p-5">
-          <Button className="w-full" size="lg" onClick={() => setOpen(false)}>
-            Show {props.total} {props.total === 1 ? "piece" : "pieces"}
-          </Button>
+        <div className="mb-6 flex items-center justify-between gap-3 border-y py-3 lg:border-t-0 lg:pt-0">
+          <button type="button" onClick={() => setOpen(true)} className="inline-flex h-11 items-center gap-2 text-sm lg:hidden">
+            <SlidersHorizontal className="size-4 stroke-[1.5]" /> Filter{activeCount ? ` (${activeCount})` : ""}
+          </button>
+          <p className="text-muted hidden text-sm lg:block" aria-live="polite">
+            {pending ? "Updating…" : `${props.total} ${props.total === 1 ? "piece" : "pieces"}`}
+          </p>
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-muted hidden sm:inline">Sort by</span>
+            <NativeSelect
+              aria-label="Sort products"
+              className="h-10 w-48 text-sm"
+              value={params.get("sort") ?? "featured"}
+              onChange={(e) => setSingle("sort", e.target.value === "featured" ? null : e.target.value)}
+            >
+              {SORTS.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </NativeSelect>
+          </label>
         </div>
-      </Sheet>
+        {props.children}
+      </div>
+      {open && (
+        <Sheet open={open} onOpenChange={setOpen} side="left" title="Filter" description="Filter products">
+          <div className="flex-1 overflow-y-auto p-5">{panel}</div>
+          <div className="border-t p-5">
+            <Button className="w-full" size="lg" onClick={() => setOpen(false)}>
+              Show {props.total} {props.total === 1 ? "piece" : "pieces"}
+            </Button>
+          </div>
+        </Sheet>
+      )}
     </div>
   );
 }

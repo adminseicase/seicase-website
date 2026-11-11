@@ -3,11 +3,29 @@
 import { Area, AreaChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { formatCompactINR, formatINR } from "@/lib/utils";
 
-const C = { ink: "#9C5A33", soft: "#D9B89C", grid: "rgba(125,110,100,0.18)", olive: "#5F5D3B", burgundy: "#6D2430", brown: "#3F2618", tan: "#C9A86A" };
+const C = {
+  ink: "#9C5A33",
+  soft: "#D9B89C",
+  grid: "rgba(125,110,100,0.18)",
+  olive: "#5F5D3B",
+  burgundy: "#6D2430",
+  brown: "#3F2618",
+  tan: "#C9A86A",
+};
 const PIE = [C.ink, C.olive, C.burgundy, C.tan, C.brown, "#8B7D72"];
 
-export function SalesChart({ data, compare }: { data: { date: string; revenue: number; orders: number }[]; compare?: { date: string; revenue: number }[] }) {
-  const merged = data.map((d, i) => ({ ...d, previous: compare?.[i]?.revenue ?? null, label: new Date(d.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) }));
+export function SalesChart({
+  data,
+  compare,
+}: {
+  data: { date: string; revenue: number; orders: number }[];
+  compare?: { date: string; revenue: number }[];
+}) {
+  const merged = data.map((d, i) => ({
+    ...d,
+    previous: compare?.[i]?.revenue ?? null,
+    label: new Date(d.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" }),
+  }));
   return (
     <div className="h-72 w-full" role="img" aria-label="Revenue over time">
       <ResponsiveContainer>
@@ -19,11 +37,32 @@ export function SalesChart({ data, compare }: { data: { date: string; revenue: n
             </linearGradient>
           </defs>
           <CartesianGrid stroke={C.grid} vertical={false} />
-          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "currentColor", opacity: 0.6 }} tickLine={false} axisLine={false} minTickGap={24} />
-          <YAxis tickFormatter={(v) => formatCompactINR(Number(v))} tick={{ fontSize: 11, fill: "currentColor", opacity: 0.6 }} tickLine={false} axisLine={false} width={56} />
+          <XAxis
+            dataKey="label"
+            tick={{ fontSize: 11, fill: "currentColor", opacity: 0.6 }}
+            tickLine={false}
+            axisLine={false}
+            minTickGap={24}
+          />
+          <YAxis
+            tickFormatter={(v) => formatCompactINR(Number(v))}
+            tick={{ fontSize: 11, fill: "currentColor", opacity: 0.6 }}
+            tickLine={false}
+            axisLine={false}
+            width={56}
+          />
           <Tooltip
-            contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 12, color: "var(--foreground)" }}
-            formatter={(v, name) => [name === "orders" ? v : formatINR(Number(v)), name === "revenue" ? "Revenue" : name === "previous" ? "Previous period" : "Orders"]}
+            contentStyle={{
+              background: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: 10,
+              fontSize: 12,
+              color: "var(--foreground)",
+            }}
+            formatter={(v, name) => [
+              name === "orders" ? v : formatINR(Number(v)),
+              name === "revenue" ? "Revenue" : name === "previous" ? "Previous period" : "Orders",
+            ]}
           />
           {compare && <Area type="monotone" dataKey="previous" stroke={C.soft} strokeDasharray="4 4" fill="none" strokeWidth={1.5} />}
           <Area type="monotone" dataKey="revenue" stroke={C.ink} fill="url(#rev)" strokeWidth={2} />

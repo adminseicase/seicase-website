@@ -10,7 +10,12 @@ export const metadata = { title: "Address Book" };
 async function Addresses() {
   const user = await requireUser("/account/addresses");
   const supabase = await createClient();
-  const { data } = await supabase.from("addresses").select("*").eq("user_id", user.id).order("is_default", { ascending: false }).order("created_at");
+  const { data } = await supabase
+    .from("addresses")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("is_default", { ascending: false })
+    .order("created_at");
   return <AddressBook addresses={(data ?? []) as SavedAddress[]} />;
 }
 

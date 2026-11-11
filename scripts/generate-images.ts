@@ -12,15 +12,7 @@
 import sharp from "sharp";
 import { mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
-import {
-  COLOURS,
-  SPIN_FRAMES,
-  colourSlug,
-  productSlug,
-  seedCharms,
-  seedProducts,
-  type BagShape,
-} from "../lib/demo/seed-data.ts";
+import { COLOURS, SPIN_FRAMES, colourSlug, productSlug, seedCharms, seedProducts, type BagShape } from "../lib/demo/seed-data.ts";
 
 const PUBLIC = join(import.meta.dirname, "..", "public");
 const FORCE = process.argv.includes("--force");
@@ -225,7 +217,12 @@ function shapeSvg(shape: BagShape, c: string, uid: string, opts: { back?: boolea
   }
 }
 
-function background(w: number, h: number, uid: string, opts: { plinth?: { cx: number; top: number; rx: number }; leaves?: "right" | "left" | "none"; tone?: number } = {}) {
+function background(
+  w: number,
+  h: number,
+  uid: string,
+  opts: { plinth?: { cx: number; top: number; rx: number }; leaves?: "right" | "left" | "none"; tone?: number } = {},
+) {
   const tone = opts.tone ?? 0;
   const wallTop = mix("#EBDCCB", "#F3E7DA", tone);
   const leaves =
@@ -354,7 +351,9 @@ function heroSvg(w: number, h: number, shape: BagShape, colour: string, variant:
             const x = w * 0.95 - Math.sin(i * 0.9) * 90;
             const y = h * 0.08 + i * h * 0.05;
             return `<ellipse cx="${x}" cy="${y}" rx="${w * 0.035}" ry="${w * 0.012}" transform="rotate(${-30 + i * 27} ${x} ${y})"/>`;
-          }).join("")}<path d="M ${w * 0.97} 0 Q ${w * 0.88} ${h * 0.4} ${w * 0.93} ${h * 0.8}" stroke="#5F5D3B" stroke-width="6" fill="none"/></g>`
+          }).join(
+            "",
+          )}<path d="M ${w * 0.97} 0 Q ${w * 0.88} ${h * 0.4} ${w * 0.93} ${h * 0.8}" stroke="#5F5D3B" stroke-width="6" fill="none"/></g>`
         : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
     ${background(w, h, uid, { plinth: { cx, top, rx: mobile ? w * 0.42 : w * 0.24 }, leaves: "right", tone: variant / 4 })}
@@ -424,7 +423,10 @@ function journalSvg(kind: "patina" | "studio" | "what-fits") {
   const h = 800;
   if (kind === "studio") {
     const swatches = Object.values(COLOURS)
-      .map((c, i) => `<rect x="${150 + i * 115}" y="${300 + (i % 2) * 40}" width="100" height="260" rx="14" fill="${c}" transform="rotate(${-8 + i * 3} ${200 + i * 115} 430)"/>`)
+      .map(
+        (c, i) =>
+          `<rect x="${150 + i * 115}" y="${300 + (i % 2) * 40}" width="100" height="260" rx="14" fill="${c}" transform="rotate(${-8 + i * 3} ${200 + i * 115} 430)"/>`,
+      )
       .join("");
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
       ${background(w, h, uid, { leaves: "right" })}<defs>${defs(COLOURS.Tan, uid)}</defs>
@@ -453,14 +455,21 @@ function charmSvg(shape: string, colour: string) {
   let body = "";
   if (shape === "flower") {
     body =
-      Array.from({ length: 6 }, (_, i) => `<ellipse cx="400" cy="330" rx="62" ry="115" fill="${B}" stroke="${darken(colour, 0.2)}" stroke-width="3" transform="rotate(${i * 60} 400 440)"/>`).join("") +
-      `<circle cx="400" cy="440" r="52" fill="${G}"/>`;
+      Array.from(
+        { length: 6 },
+        (_, i) =>
+          `<ellipse cx="400" cy="330" rx="62" ry="115" fill="${B}" stroke="${darken(colour, 0.2)}" stroke-width="3" transform="rotate(${i * 60} 400 440)"/>`,
+      ).join("") + `<circle cx="400" cy="440" r="52" fill="${G}"/>`;
   } else if (shape === "leaf") {
     body = `<path d="M 400 260 C 250 380, 280 600, 400 680 C 520 600, 550 380, 400 260 Z" fill="${B}"/><path d="M 400 280 L 400 670 M 400 400 L 340 360 M 400 470 L 330 430 M 400 540 L 345 505 M 400 400 L 460 360 M 400 470 L 470 430 M 400 540 L 455 505" stroke="${lighten(colour, 0.35)}" stroke-width="4" fill="none"/>`;
   } else if (shape === "tassel") {
     body =
       `<rect x="360" y="270" width="80" height="90" rx="20" fill="${darken(colour, 0.1)}"/>` +
-      Array.from({ length: 15 }, (_, i) => `<path d="M ${364 + i * 5} 360 L ${330 + i * 10} 690" stroke="${i % 2 ? colour : lighten(colour, 0.15)}" stroke-width="9" stroke-linecap="round"/>`).join("");
+      Array.from(
+        { length: 15 },
+        (_, i) =>
+          `<path d="M ${364 + i * 5} 360 L ${330 + i * 10} 690" stroke="${i % 2 ? colour : lighten(colour, 0.15)}" stroke-width="9" stroke-linecap="round"/>`,
+      ).join("");
   } else {
     body = `<path d="M 400 680 C 230 560, 230 330, 330 330 C 370 330, 395 360, 400 390 C 405 360, 430 330, 470 330 C 570 330, 570 560, 400 680 Z" fill="url(#weave${uid})"/><path d="M 400 680 C 230 560, 230 330, 330 330 C 370 330, 395 360, 400 390 C 405 360, 430 330, 470 330 C 570 330, 570 560, 400 680 Z" fill="${B}" opacity="0.35"/>`;
   }

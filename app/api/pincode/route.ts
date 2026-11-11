@@ -26,9 +26,13 @@ export async function GET(request: NextRequest) {
 
   let city: string | undefined;
   try {
-    const r = await fetch(`https://api.postalpincode.in/pincode/${pin}`, { signal: AbortSignal.timeout(2500), next: { revalidate: 86400 } });
+    const r = await fetch(`https://api.postalpincode.in/pincode/${pin}`, {
+      signal: AbortSignal.timeout(2500),
+      next: { revalidate: 86400 },
+    });
     const j = (await r.json()) as { Status: string; PostOffice?: { District: string; State: string }[] }[];
-    if (j?.[0]?.Status === "Error") return NextResponse.json({ ok: false, message: "We couldn't find that pincode. Please check and try again." });
+    if (j?.[0]?.Status === "Error")
+      return NextResponse.json({ ok: false, message: "We couldn't find that pincode. Please check and try again." });
     const po = j?.[0]?.PostOffice?.[0];
     if (po) city = `${po.District}, ${po.State}`;
   } catch {

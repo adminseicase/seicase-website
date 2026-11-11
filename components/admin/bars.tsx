@@ -1,9 +1,17 @@
 import { formatINR, formatNumber } from "@/lib/utils";
 
 /** Horizontal bar list (server-rendered, no JS). */
-export function BarList({ rows, money = false, empty = "No data for this period yet." }: { rows: { label: string; value: number; sub?: string; color?: string }[]; money?: boolean; empty?: string }) {
+export function BarList({
+  rows,
+  money = false,
+  empty = "No data for this period yet.",
+}: {
+  rows: { label: string; value: number; sub?: string; color?: string }[];
+  money?: boolean;
+  empty?: string;
+}) {
   const max = Math.max(1, ...rows.map((r) => r.value));
-  if (!rows.length) return <p className="py-6 text-center text-sm text-muted">{empty}</p>;
+  if (!rows.length) return <p className="text-muted py-6 text-center text-sm">{empty}</p>;
   return (
     <ul className="space-y-2.5">
       {rows.map((r) => (
@@ -15,11 +23,11 @@ export function BarList({ rows, money = false, empty = "No data for this period 
             </span>
             <span className="shrink-0 tabular-nums">
               {money ? formatINR(r.value) : formatNumber(r.value)}
-              {r.sub && <span className="ml-2 text-xs text-muted">{r.sub}</span>}
+              {r.sub && <span className="text-muted ml-2 text-xs">{r.sub}</span>}
             </span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-surface-muted">
-            <div className="h-full rounded-full bg-cognac" style={{ width: `${(r.value / max) * 100}%` }} />
+          <div className="bg-surface-muted h-1.5 overflow-hidden rounded-full">
+            <div className="bg-cognac h-full rounded-full" style={{ width: `${(r.value / max) * 100}%` }} />
           </div>
         </li>
       ))}
@@ -39,11 +47,14 @@ export function Funnel({ steps }: { steps: { step: string; sessions: number }[] 
             <div className="mb-1 flex justify-between text-sm">
               <span>{s.step}</span>
               <span className="tabular-nums">
-                {formatNumber(s.sessions)} {i > 0 && <span className="text-xs text-muted">({conv.toFixed(1)}% of previous)</span>}
+                {formatNumber(s.sessions)} {i > 0 && <span className="text-muted text-xs">({conv.toFixed(1)}% of previous)</span>}
               </span>
             </div>
-            <div className="h-7 overflow-hidden rounded-md bg-surface-muted">
-              <div className="h-full rounded-md bg-gradient-to-r from-brown to-cognac" style={{ width: `${Math.max(2, (s.sessions / top) * 100)}%` }} />
+            <div className="bg-surface-muted h-7 overflow-hidden rounded-md">
+              <div
+                className="from-brown to-cognac h-full rounded-md bg-gradient-to-r"
+                style={{ width: `${Math.max(2, (s.sessions / top) * 100)}%` }}
+              />
             </div>
           </li>
         );

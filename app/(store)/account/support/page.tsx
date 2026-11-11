@@ -19,21 +19,21 @@ export default async function SupportPage() {
       <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map(({ href, title, body, Icon }) => (
           <li key={title}>
-            <Link href={href} className="flex h-full gap-4 rounded-2xl border bg-surface p-5 hover:border-foreground">
-              <Icon className="size-6 shrink-0 stroke-[1.25] text-brown" aria-hidden="true" />
+            <Link href={href} className="bg-surface hover:border-foreground flex h-full gap-4 rounded-2xl border p-5">
+              <Icon className="text-brown size-6 shrink-0 stroke-[1.25]" aria-hidden="true" />
               <span>
                 <span className="block font-serif text-xl">{title}</span>
-                <span className="text-sm text-muted">{body}</span>
+                <span className="text-muted text-sm">{body}</span>
               </span>
             </Link>
           </li>
         ))}
       </ul>
-      <div className="mt-8 flex flex-wrap items-center gap-4 rounded-2xl bg-surface-muted p-6">
+      <div className="bg-surface-muted mt-8 flex flex-wrap items-center gap-4 rounded-2xl p-6">
         <Headset className="size-8 stroke-1" aria-hidden="true" />
         <div className="flex-1">
           <p className="font-serif text-2xl">Talk to our team</p>
-          <p className="text-sm text-muted">
+          <p className="text-muted text-sm">
             {store.phone} · {store.email} · {store.hours}
           </p>
         </div>

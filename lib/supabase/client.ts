@@ -8,10 +8,7 @@ let client: ReturnType<typeof createBrowserClient<Database>> | null = null;
 /** Supabase client for Client Components (uses the logged-in user's session). */
 export function createClient() {
   if (!client) {
-    client = createBrowserClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
+    client = createBrowserClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
   }
   return client;
 }

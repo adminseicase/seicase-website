@@ -26,13 +26,25 @@ export async function signInWithPassword(input: unknown): Promise<Result> {
   if (!(await rateLimit("login", 10, 600))) return { ok: false, message: "Too many attempts. Please wait a few minutes." };
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email: d.data.email, password: d.data.password });
-  if (error) return { ok: false, message: error.message === "Email not confirmed" ? "Please confirm your email first — check your inbox." : "Incorrect email or password." };
+  if (error)
+    return {
+      ok: false,
+      message:
+        error.message === "Email not confirmed" ? "Please confirm your email first — check your inbox." : "Incorrect email or password.",
+    };
   return { ok: true, message: "Welcome back", redirect: safeNext(d.data.next) };
 }
 
 export async function signUp(input: unknown): Promise<Result> {
   if (!isSupabaseConfigured) return notConfigured;
-  const d = z.object({ full_name: z.string().trim().min(2, "Please enter your name").max(80), email: emailSchema, password: passwordSchema, marketing: z.boolean().optional() }).safeParse(input);
+  const d = z
+    .object({
+      full_name: z.string().trim().min(2, "Please enter your name").max(80),
+      email: emailSchema,
+      password: passwordSchema,
+      marketing: z.boolean().optional(),
+    })
+    .safeParse(input);
   if (!d.success) return { ok: false, message: d.error.issues[0]?.message ?? "Please check your details." };
   if (!(await rateLimit("signup", 5, 3600))) return { ok: false, message: "Too many sign-ups from this network. Please try later." };
   const supabase = await createClient();
@@ -53,7 +65,10 @@ export async function sendMagicLink(input: unknown): Promise<Result> {
   if (!d.success) return { ok: false, message: "Please enter a valid email." };
   if (!(await rateLimit("magic", 5, 900))) return { ok: false, message: "Please wait a few minutes before requesting another link." };
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({ email: d.data.email, options: { emailRedirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(safeNext(d.data.next))}` } });
+  const { error } = await supabase.auth.signInWithOtp({
+    email: d.data.email,
+    options: { emailRedirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(safeNext(d.data.next))}` },
+  });
   if (error) return { ok: false, message: error.message };
   return { ok: true, message: "Check your inbox — we've sent you a sign-in link." };
 }
@@ -65,13 +80,16 @@ export async function sendPhoneOtp(input: unknown): Promise<Result> {
   if (!(await rateLimit("otp", 5, 900))) return { ok: false, message: "Please wait before requesting another code." };
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({ phone: `+91${d.data.phone}` });
-  if (error) return { ok: false, message: error.message.includes("provider") ? "Phone login isn't enabled yet. Please use email." : error.message };
+  if (error)
+    return { ok: false, message: error.message.includes("provider") ? "Phone login isn't enabled yet. Please use email." : error.message };
   return { ok: true, message: "We've sent a 6-digit code to your phone." };
 }
 
 export async function verifyPhoneOtp(input: unknown): Promise<Result> {
   if (!isSupabaseConfigured) return notConfigured;
-  const d = z.object({ phone: z.string().regex(/^[6-9]\d{9}$/), token: z.string().regex(/^\d{6}$/), next: z.string().optional() }).safeParse(input);
+  const d = z
+    .object({ phone: z.string().regex(/^[6-9]\d{9}$/), token: z.string().regex(/^\d{6}$/), next: z.string().optional() })
+    .safeParse(input);
   if (!d.success) return { ok: false, message: "Enter the 6-digit code." };
   if (!(await rateLimit("otp-verify", 10, 900))) return { ok: false, message: "Too many attempts." };
   const supabase = await createClient();

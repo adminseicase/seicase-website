@@ -10,7 +10,8 @@ const COGNAC = rgb(0.61, 0.35, 0.2);
 
 // Standard PDF fonts can't render "₹", so amounts use "Rs." in the PDF.
 const money = (n: number) => `Rs. ${Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-const clean = (s: string | null | undefined) => (s ?? "").replace(/[^\x20-\x7E]/g, (c) => (c === "₹" ? "Rs." : c === "×" ? "x" : c === "–" || c === "—" ? "-" : ""));
+const clean = (s: string | null | undefined) =>
+  (s ?? "").replace(/[^\x20-\x7E]/g, (c) => (c === "₹" ? "Rs." : c === "×" ? "x" : c === "–" || c === "—" ? "-" : ""));
 
 /** Tax invoice (GST inclusive) as a PDF, also used for the packing slip copy. */
 export async function buildInvoicePdf(order: ViewableOrder, store: StoreSettings, kind: "invoice" | "packing" = "invoice") {
@@ -25,7 +26,12 @@ export async function buildInvoicePdf(order: ViewableOrder, store: StoreSettings
   const M = 48;
   let y = 790;
 
-  const text = (t: string, x: number, yy: number, opts: { size?: number; font?: typeof sans; color?: typeof INK; align?: "left" | "right" } = {}) => {
+  const text = (
+    t: string,
+    x: number,
+    yy: number,
+    opts: { size?: number; font?: typeof sans; color?: typeof INK; align?: "left" | "right" } = {},
+  ) => {
     const size = opts.size ?? 10;
     const font = opts.font ?? sans;
     const s = clean(t);
@@ -43,7 +49,12 @@ export async function buildInvoicePdf(order: ViewableOrder, store: StoreSettings
   text(`${store.address_line}, ${store.city}, ${store.state} ${store.pincode}`, M, y, { size: 9, color: MUTED });
   y -= 12;
   text(`${store.email}  |  ${store.phone}${store.gstin ? `  |  GSTIN ${store.gstin}` : ""}`, M, y, { size: 9, color: MUTED });
-  text(`Date: ${new Date(order.placed_at ?? order.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`, width - M, y, { size: 9, align: "right", color: MUTED });
+  text(
+    `Date: ${new Date(order.placed_at ?? order.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`,
+    width - M,
+    y,
+    { size: 9, align: "right", color: MUTED },
+  );
   y -= 22;
   hr(y);
   y -= 22;
@@ -54,7 +65,9 @@ export async function buildInvoicePdf(order: ViewableOrder, store: StoreSettings
     let yy = y;
     text(title, x, yy, { size: 8, font: bold, color: MUTED });
     yy -= 14;
-    for (const l of [addr.full_name, addr.line1, addr.line2, `${addr.city}, ${addr.state} ${addr.pincode}`, addr.phone].filter(Boolean) as string[]) {
+    for (const l of [addr.full_name, addr.line1, addr.line2, `${addr.city}, ${addr.state} ${addr.pincode}`, addr.phone].filter(
+      Boolean,
+    ) as string[]) {
       text(l, x, yy, { size: 10 });
       yy -= 13;
     }
@@ -63,7 +76,10 @@ export async function buildInvoicePdf(order: ViewableOrder, store: StoreSettings
   const y1 = block("SHIP TO", a, M);
   const y2 = kind === "invoice" ? block("BILL TO", b, 300) : y1;
   y = Math.min(y1, y2) - 14;
-  text(`Payment: ${order.payment_method === "cod" ? "Cash on Delivery" : "Prepaid (Razorpay)"}  |  ${order.email}`, M, y, { size: 9, color: MUTED });
+  text(`Payment: ${order.payment_method === "cod" ? "Cash on Delivery" : "Prepaid (Razorpay)"}  |  ${order.email}`, M, y, {
+    size: 9,
+    color: MUTED,
+  });
   y -= 20;
 
   // Table header
@@ -98,7 +114,8 @@ export async function buildInvoicePdf(order: ViewableOrder, store: StoreSettings
       y -= 16;
     };
     row("Subtotal", money(order.subtotal));
-    if (Number(order.discount_total) > 0) row(`Discount${order.coupon_code ? ` (${order.coupon_code})` : ""}`, `- ${money(order.discount_total)}`);
+    if (Number(order.discount_total) > 0)
+      row(`Discount${order.coupon_code ? ` (${order.coupon_code})` : ""}`, `- ${money(order.discount_total)}`);
     row("Shipping", Number(order.shipping_total) === 0 ? "FREE" : money(order.shipping_total));
     if (Number(order.cod_fee) > 0) row("COD fee", money(order.cod_fee));
     y -= 4;
@@ -106,12 +123,11 @@ export async function buildInvoicePdf(order: ViewableOrder, store: StoreSettings
     const gst = Number(order.tax_total);
     const intra = (a.state ?? "").toLowerCase() === store.state.toLowerCase();
     y -= 6;
-    text(
-      intra ? `Includes CGST ${money(gst / 2)} + SGST ${money(gst / 2)}` : `Includes IGST ${money(gst)}`,
-      width - M - 8,
-      y,
-      { size: 9, align: "right", color: MUTED },
-    );
+    text(intra ? `Includes CGST ${money(gst / 2)} + SGST ${money(gst / 2)}` : `Includes IGST ${money(gst)}`, width - M - 8, y, {
+      size: 9,
+      align: "right",
+      color: MUTED,
+    });
     y -= 13;
     text("All prices are inclusive of GST. HSN 4202 (leather articles).", width - M - 8, y, { size: 8, align: "right", color: MUTED });
   } else {

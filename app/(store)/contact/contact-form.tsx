@@ -11,7 +11,10 @@ import { useStoreConfig } from "@/components/store/store-config";
 
 declare global {
   interface Window {
-    turnstile?: { render: (el: HTMLElement, opts: { sitekey: string; callback: (t: string) => void }) => string; reset: (id?: string) => void };
+    turnstile?: {
+      render: (el: HTMLElement, opts: { sitekey: string; callback: (t: string) => void }) => string;
+      reset: (id?: string) => void;
+    };
   }
 }
 
@@ -39,9 +42,9 @@ export function ContactForm() {
   if (done) {
     return (
       <div className="flex h-full flex-col items-center justify-center py-12 text-center" role="status">
-        <CircleCheck className="size-12 stroke-1 text-success" aria-hidden="true" />
+        <CircleCheck className="text-success size-12 stroke-1" aria-hidden="true" />
         <p className="mt-4 font-serif text-3xl">Message sent</p>
-        <p className="mt-2 text-muted">{done}</p>
+        <p className="text-muted mt-2">{done}</p>
       </div>
     );
   }
@@ -49,7 +52,13 @@ export function ContactForm() {
   const f = (k: keyof typeof form, label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
     <div>
       <Label htmlFor={`c-${k}`}>{label}</Label>
-      <Input id={`c-${k}`} value={form[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} aria-invalid={!!errors[k]} {...props} />
+      <Input
+        id={`c-${k}`}
+        value={form[k]}
+        onChange={(e) => setForm({ ...form, [k]: e.target.value })}
+        aria-invalid={!!errors[k]}
+        {...props}
+      />
       <FieldError message={errors[k]} />
     </div>
   );
@@ -82,11 +91,27 @@ export function ContactForm() {
       </div>
       <div>
         <Label htmlFor="c-message">Your message *</Label>
-        <Textarea id="c-message" rows={6} required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} aria-invalid={!!errors.message} />
+        <Textarea
+          id="c-message"
+          rows={6}
+          required
+          value={form.message}
+          onChange={(e) => setForm({ ...form, message: e.target.value })}
+          aria-invalid={!!errors.message}
+        />
         <FieldError message={errors.message} />
       </div>
       {/* Honeypot */}
-      <input type="text" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+      <input
+        type="text"
+        name="website"
+        value={form.website}
+        onChange={(e) => setForm({ ...form, website: e.target.value })}
+        tabIndex={-1}
+        autoComplete="off"
+        className="hidden"
+        aria-hidden="true"
+      />
       {turnstileSiteKey && <div ref={widget} />}
       <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Sending…" : "Send Message"} <ArrowRight />

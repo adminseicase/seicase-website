@@ -10,7 +10,7 @@ export async function AnnouncementBar() {
       {announcement.messages.map((m, i) => (
         <span key={m} className={i > 0 ? "hidden sm:inline" : undefined}>
           {i > 0 && (
-            <span className="mr-3 text-muted" aria-hidden="true">
+            <span className="text-muted mr-3" aria-hidden="true">
               |
             </span>
           )}
@@ -20,7 +20,7 @@ export async function AnnouncementBar() {
     </span>
   );
   return (
-    <div className="bg-surface-muted text-center text-[0.78rem] tracking-wide text-foreground">
+    <div className="bg-surface-muted text-foreground text-center text-[0.78rem] tracking-wide">
       <div className="mx-auto flex min-h-9 max-w-[1440px] items-center justify-center px-4 py-1.5">
         {announcement.link ? (
           <Link href={announcement.link} className="hover:underline hover:underline-offset-4">

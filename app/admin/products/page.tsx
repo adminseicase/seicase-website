@@ -17,7 +17,10 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
   const supabase = await createClient();
   let query = supabase
     .from("products")
-    .select("id, name, slug, status, price, is_featured, is_trending, updated_at, categories(name), product_variants(id, sku, colour_name, colour_hex, stock), product_images(url, is_primary, sort_order, kind)", { count: "exact" })
+    .select(
+      "id, name, slug, status, price, is_featured, is_trending, updated_at, categories(name), product_variants(id, sku, colour_name, colour_hex, stock), product_images(url, is_primary, sort_order, kind)",
+      { count: "exact" },
+    )
     .order("sort_order")
     .order("created_at", { ascending: false })
     .range(from, to);
@@ -25,7 +28,9 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
   if (status) query = query.eq("status", status as "draft" | "published" | "archived");
   const { data, count } = await query;
   const rows = (data ?? []).map((p) => {
-    const img = p.product_images.filter((i) => i.kind === "gallery").sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
+    const img = p.product_images
+      .filter((i) => i.kind === "gallery")
+      .sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
     return {
       id: p.id,
       name: p.name,

@@ -9,6 +9,8 @@ interface UiState {
   lastAdded: CartLine | null;
   searchOpen: boolean;
   menuOpen: boolean;
+  /** lazily-loaded drawers stay mounted once opened */
+  mounted: { search: boolean; cart: boolean; menu: boolean };
   openMiniCart: (line?: CartLine | null) => void;
   setMiniCart: (open: boolean) => void;
   setSearch: (open: boolean) => void;
@@ -20,10 +22,11 @@ export const useUi = create<UiState>()((set) => ({
   lastAdded: null,
   searchOpen: false,
   menuOpen: false,
-  openMiniCart: (line = null) => set({ miniCartOpen: true, lastAdded: line }),
-  setMiniCart: (miniCartOpen) => set({ miniCartOpen }),
-  setSearch: (searchOpen) => set({ searchOpen }),
-  setMenu: (menuOpen) => set({ menuOpen }),
+  mounted: { search: false, cart: false, menu: false },
+  openMiniCart: (line = null) => set((s) => ({ miniCartOpen: true, lastAdded: line, mounted: { ...s.mounted, cart: true } })),
+  setMiniCart: (miniCartOpen) => set((s) => ({ miniCartOpen, mounted: { ...s.mounted, cart: s.mounted.cart || miniCartOpen } })),
+  setSearch: (searchOpen) => set((s) => ({ searchOpen, mounted: { ...s.mounted, search: s.mounted.search || searchOpen } })),
+  setMenu: (menuOpen) => set((s) => ({ menuOpen, mounted: { ...s.mounted, menu: s.mounted.menu || menuOpen } })),
 }));
 
 const subscribe = () => () => {};

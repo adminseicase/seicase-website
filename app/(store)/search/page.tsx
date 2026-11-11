@@ -13,8 +13,8 @@ async function Heading({ searchParams }: { searchParams: PageProps<"/search">["s
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.slice(0, 80) : "";
   return (
-    <header className="mb-8 mt-4">
-      <p className="text-xs uppercase tracking-[0.16em] text-muted">Search results</p>
+    <header className="mt-4 mb-8">
+      <p className="text-muted text-xs tracking-[0.16em] uppercase">Search results</p>
       <h1 className="mt-2 text-4xl md:text-5xl">{q ? `“${q}”` : "All products"}</h1>
       <SearchTracker q={q} />
     </header>
@@ -23,8 +23,8 @@ async function Heading({ searchParams }: { searchParams: PageProps<"/search">["s
 
 export default function Page({ searchParams }: PageProps<"/search">) {
   return (
-    <Container className="pb-8 pt-6 md:pt-10">
-      <Suspense fallback={<div className="mb-8 mt-4 h-24" />}>
+    <Container className="pt-6 pb-8 md:pt-10">
+      <Suspense fallback={<div className="mt-4 mb-8 h-24" />}>
         <Heading searchParams={searchParams} />
       </Suspense>
       <Suspense fallback={<ShopResultsSkeleton />}>

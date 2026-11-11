@@ -8,7 +8,11 @@ function Stars({ value, className }: { value: number; className?: string }) {
   return (
     <span className={cn("flex", className)} aria-label={`${value} out of 5 stars`} role="img">
       {Array.from({ length: 5 }, (_, i) => (
-        <Star key={i} className={cn("size-4", i < Math.round(value) ? "fill-foreground stroke-foreground" : "stroke-border-strong")} aria-hidden="true" />
+        <Star
+          key={i}
+          className={cn("size-4", i < Math.round(value) ? "fill-foreground stroke-foreground" : "stroke-border-strong")}
+          aria-hidden="true"
+        />
       ))}
     </span>
   );
@@ -41,54 +45,60 @@ export function Reviews({
             <span className="font-serif text-5xl">{ratingAvg.toFixed(1)}</span>
             <div>
               <Stars value={ratingAvg} />
-              <p className="mt-1 text-sm text-muted">Based on {ratingCount} reviews</p>
+              <p className="text-muted mt-1 text-sm">Based on {ratingCount} reviews</p>
             </div>
           </div>
           <ul className="mt-5 space-y-1.5" aria-label="Rating distribution">
             {dist.map(({ s, n }) => (
               <li key={s} className="flex items-center gap-3 text-xs">
                 <span className="w-3">{s}</span>
-                <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
-                  <span className="block h-full bg-foreground" style={{ width: `${(n / total) * 100}%` }} />
+                <span className="bg-border h-1.5 flex-1 overflow-hidden rounded-full">
+                  <span className="bg-foreground block h-full" style={{ width: `${(n / total) * 100}%` }} />
                 </span>
-                <span className="w-6 text-right text-muted">{n}</span>
+                <span className="text-muted w-6 text-right">{n}</span>
               </li>
             ))}
           </ul>
           <WriteReview productId={productId} productName={productName} />
         </div>
         <ul className="divide-y">
-          {reviews.length === 0 && <li className="py-6 text-muted">No written reviews yet — be the first to share yours.</li>}
+          {reviews.length === 0 && <li className="text-muted py-6">No written reviews yet — be the first to share yours.</li>}
           {reviews.map((r) => (
             <li key={r.id} className="py-6 first:pt-0">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <Stars value={r.rating} />
                 {r.title && <p className="font-medium">{r.title}</p>}
               </div>
-              {r.body && <p className="mt-2 leading-relaxed text-foreground/85">{r.body}</p>}
+              {r.body && <p className="text-foreground/85 mt-2 leading-relaxed">{r.body}</p>}
               {r.images.length > 0 && (
                 <ul className="mt-3 flex gap-2">
                   {r.images.map((src) => (
                     <li key={src}>
                       <a href={src} target="_blank" rel="noopener noreferrer">
-                        <Image src={src} alt={`Photo from ${r.author_name}`} width={88} height={88} className="size-[88px] rounded-md object-cover" />
+                        <Image
+                          src={src}
+                          alt={`Photo from ${r.author_name}`}
+                          width={88}
+                          height={88}
+                          className="size-[88px] rounded-md object-cover"
+                        />
                       </a>
                     </li>
                   ))}
                 </ul>
               )}
-              <p className="mt-3 flex items-center gap-2 text-xs text-muted">
+              <p className="text-muted mt-3 flex items-center gap-2 text-xs">
                 {r.author_name}
                 {r.is_verified && (
-                  <span className="inline-flex items-center gap-1 text-success">
+                  <span className="text-success inline-flex items-center gap-1">
                     <BadgeCheck className="size-3.5" aria-hidden="true" /> Verified buyer
                   </span>
                 )}
                 <span aria-hidden="true">·</span> {formatDate(r.created_at)}
               </p>
               {r.admin_reply && (
-                <div className="mt-3 rounded-lg bg-surface-muted p-3 text-sm">
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted">Reply from seicase</p>
+                <div className="bg-surface-muted mt-3 rounded-lg p-3 text-sm">
+                  <p className="text-muted text-xs font-medium tracking-wider uppercase">Reply from seicase</p>
                   <p className="mt-1">{r.admin_reply}</p>
                 </div>
               )}

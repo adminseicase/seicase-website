@@ -9,9 +9,9 @@ export function FreeShippingBar({ subtotal }: { subtotal: number }) {
   const remaining = Math.max(0, freeShippingThreshold - subtotal);
   const pct = Math.min(100, (subtotal / freeShippingThreshold) * 100);
   return (
-    <div className="rounded-lg bg-surface-muted/70 p-3">
+    <div className="bg-surface-muted/70 rounded-lg p-3">
       <p className="mb-2 flex items-center gap-2 text-sm">
-        <Truck className="size-4 stroke-[1.5] text-cognac" aria-hidden="true" />
+        <Truck className="text-cognac size-4 stroke-[1.5]" aria-hidden="true" />
         {remaining > 0 ? (
           <span>
             Add <strong className="font-medium">{formatINR(remaining)}</strong> more for free shipping
@@ -21,14 +21,14 @@ export function FreeShippingBar({ subtotal }: { subtotal: number }) {
         )}
       </p>
       <div
-        className="h-1.5 overflow-hidden rounded-full bg-border"
+        className="bg-border h-1.5 overflow-hidden rounded-full"
         role="progressbar"
         aria-label="Progress towards free shipping"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(pct)}
       >
-        <div className="h-full rounded-full bg-cognac transition-[width] duration-500" style={{ width: `${pct}%` }} />
+        <div className="bg-cognac h-full rounded-full transition-[width] duration-500" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

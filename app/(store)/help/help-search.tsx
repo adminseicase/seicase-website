@@ -16,18 +16,30 @@ export function HelpSearch({ faqs }: { faqs: { id: string; question: string; ans
       <label htmlFor="help-search" className="sr-only">
         Search for help
       </label>
-      <div className="flex h-12 items-center gap-2 rounded-full border border-border-strong bg-surface px-4 focus-within:border-cognac">
-        <Search className="size-4 stroke-[1.5] text-muted" aria-hidden="true" />
-        <input id="help-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search for help…" className="flex-1 bg-transparent text-sm focus:outline-none" autoComplete="off" />
+      <div className="border-border-strong bg-surface focus-within:border-cognac flex h-12 items-center gap-2 rounded-full border px-4">
+        <Search className="text-muted size-4 stroke-[1.5]" aria-hidden="true" />
+        <input
+          id="help-search"
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search for help…"
+          className="flex-1 bg-transparent text-sm focus:outline-none"
+          autoComplete="off"
+        />
       </div>
       {q.trim().length >= 2 && (
-        <ul className="absolute inset-x-0 top-14 z-10 overflow-hidden rounded-xl border bg-surface shadow-lift" role="listbox" aria-label="Matching questions">
-          {results.length === 0 && <li className="p-4 text-sm text-muted">No answers found — try another word or contact us.</li>}
+        <ul
+          className="bg-surface shadow-lift absolute inset-x-0 top-14 z-10 overflow-hidden rounded-xl border"
+          role="listbox"
+          aria-label="Matching questions"
+        >
+          {results.length === 0 && <li className="text-muted p-4 text-sm">No answers found — try another word or contact us.</li>}
           {results.map((f) => (
             <li key={f.id}>
               <button
                 type="button"
-                className="block w-full px-4 py-3 text-left text-sm hover:bg-surface-muted"
+                className="hover:bg-surface-muted block w-full px-4 py-3 text-left text-sm"
                 onClick={() => {
                   const el = document.getElementById(`q-${f.id}`) as HTMLDetailsElement | null;
                   if (el) {

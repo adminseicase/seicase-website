@@ -45,7 +45,15 @@ export interface ProductFormValue {
   low_stock_threshold: string;
   seo_title: string;
   seo_description: string;
-  variants: { id: string; colour_name: string; colour_hex: string; sku: string; stock: string; price_override: string; is_default: boolean }[];
+  variants: {
+    id: string;
+    colour_name: string;
+    colour_hex: string;
+    sku: string;
+    stock: string;
+    price_override: string;
+    is_default: boolean;
+  }[];
   images: ManagedImage[];
 }
 
@@ -62,15 +70,25 @@ const PRESET_COLOURS = [
 
 function Section({ title, children, description }: { title: string; description?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border bg-surface p-5">
+    <section className="bg-surface rounded-xl border p-5">
       <h2 className="font-sans text-sm font-medium">{title}</h2>
-      {description && <p className="mt-0.5 text-xs text-muted">{description}</p>}
+      {description && <p className="text-muted mt-0.5 text-xs">{description}</p>}
       <div className="mt-4 space-y-4">{children}</div>
     </section>
   );
 }
 
-export function ProductForm({ initial, categories, collections, styles }: { initial: ProductFormValue; categories: Option[]; collections: Option[]; styles: Option[] }) {
+export function ProductForm({
+  initial,
+  categories,
+  collections,
+  styles,
+}: {
+  initial: ProductFormValue;
+  categories: Option[];
+  collections: Option[];
+  styles: Option[];
+}) {
   const router = useRouter();
   const [v, setV] = useState(initial);
   const [slugTouched, setSlugTouched] = useState(!!initial.id);
@@ -80,14 +98,19 @@ export function ProductForm({ initial, categories, collections, styles }: { init
     <div>
       <Label htmlFor={`pf-${k}`}>{label}</Label>
       <Input id={`pf-${k}`} value={v[k] as string} onChange={(e) => set(k, e.target.value as never)} {...props} />
-      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
+      {hint && <p className="text-muted mt-1 text-xs">{hint}</p>}
     </div>
   );
-  const margin = Number(v.price) && Number(v.cost_price) ? Math.round(((Number(v.price) - Number(v.cost_price)) / Number(v.price)) * 100) : null;
+  const margin =
+    Number(v.price) && Number(v.cost_price) ? Math.round(((Number(v.price) - Number(v.cost_price)) / Number(v.price)) * 100) : null;
 
   const save = () =>
     start(async () => {
-      const r = await saveProduct({ ...v, variants: v.variants.map((x, i) => ({ ...x, sort_order: i })), publish_at: v.publish_at || null });
+      const r = await saveProduct({
+        ...v,
+        variants: v.variants.map((x, i) => ({ ...x, sort_order: i })),
+        publish_at: v.publish_at || null,
+      });
       if (!r.ok) return void toast.error(r.message);
       toast.success(r.message);
       if (!v.id && r.data) router.replace(`/admin/products/${r.data.id}`);
@@ -96,8 +119,24 @@ export function ProductForm({ initial, categories, collections, styles }: { init
 
   const addVariant = (name = "", hex = "#9C5A33") => {
     const base = v.slug || slugify(v.name) || "item";
-    const code = base.replace(/^the-/, "").split("-").map((w) => w.slice(0, 3)).join("").toUpperCase();
-    set("variants", [...v.variants, { id: crypto.randomUUID(), colour_name: name, colour_hex: hex, sku: name ? `SC-${code}-${slugify(name).replace(/-/g, "").slice(0, 4).toUpperCase()}` : "", stock: "0", price_override: "", is_default: v.variants.length === 0 }]);
+    const code = base
+      .replace(/^the-/, "")
+      .split("-")
+      .map((w) => w.slice(0, 3))
+      .join("")
+      .toUpperCase();
+    set("variants", [
+      ...v.variants,
+      {
+        id: crypto.randomUUID(),
+        colour_name: name,
+        colour_hex: hex,
+        sku: name ? `SC-${code}-${slugify(name).replace(/-/g, "").slice(0, 4).toUpperCase()}` : "",
+        stock: "0",
+        price_override: "",
+        is_default: v.variants.length === 0,
+      },
+    ]);
   };
 
   return (
@@ -119,8 +158,8 @@ export function ProductForm({ initial, categories, collections, styles }: { init
           })}
           <div>
             <Label htmlFor="pf-slug">URL slug</Label>
-            <div className="flex items-center rounded-md border border-border-strong bg-surface focus-within:border-cognac">
-              <span className="pl-3 text-sm text-muted">/product/</span>
+            <div className="border-border-strong bg-surface focus-within:border-cognac flex items-center rounded-md border">
+              <span className="text-muted pl-3 text-sm">/product/</span>
               <input
                 id="pf-slug"
                 value={v.slug}
@@ -134,7 +173,14 @@ export function ProductForm({ initial, categories, collections, styles }: { init
           </div>
           <div>
             <Label htmlFor="pf-short">Short description</Label>
-            <Textarea id="pf-short" rows={2} className="min-h-16" maxLength={300} value={v.short_description} onChange={(e) => set("short_description", e.target.value)} />
+            <Textarea
+              id="pf-short"
+              rows={2}
+              className="min-h-16"
+              maxLength={300}
+              value={v.short_description}
+              onChange={(e) => set("short_description", e.target.value)}
+            />
           </div>
           <div>
             <Label htmlFor="pf-desc">Full description</Label>
@@ -142,14 +188,23 @@ export function ProductForm({ initial, categories, collections, styles }: { init
           </div>
         </Section>
 
-        <Section title="Photos" description="The first photo (or the one marked primary) is used on product cards. Tag photos to a colour so they swap when shoppers pick a swatch.">
-          <ImageManager images={v.images} onChange={(imgs) => set("images", imgs)} variants={v.variants} folder={`products/${v.slug || "new"}`} productName={v.name} />
+        <Section
+          title="Photos"
+          description="The first photo (or the one marked primary) is used on product cards. Tag photos to a colour so they swap when shoppers pick a swatch."
+        >
+          <ImageManager
+            images={v.images}
+            onChange={(imgs) => set("images", imgs)}
+            variants={v.variants}
+            folder={`products/${v.slug || "new"}`}
+            productName={v.name}
+          />
         </Section>
 
         <Section title="Colours & stock" description="Each colour has its own SKU, stock and optional price.">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">
-              <thead className="text-left text-xs text-muted">
+              <thead className="text-muted text-left text-xs">
                 <tr>
                   <th className="pb-2 font-medium">Colour</th>
                   <th className="pb-2 font-medium">Swatch</th>
@@ -162,32 +217,89 @@ export function ProductForm({ initial, categories, collections, styles }: { init
               </thead>
               <tbody>
                 {v.variants.map((x, i) => {
-                  const upd = (patch: Partial<typeof x>) => set("variants", v.variants.map((y, j) => (j === i ? { ...y, ...patch } : patch.is_default ? { ...y, is_default: false } : y)));
+                  const upd = (patch: Partial<typeof x>) =>
+                    set(
+                      "variants",
+                      v.variants.map((y, j) => (j === i ? { ...y, ...patch } : patch.is_default ? { ...y, is_default: false } : y)),
+                    );
                   return (
                     <tr key={x.id} className="border-t">
                       <td className="py-2 pr-2">
-                        <Input aria-label="Colour name" value={x.colour_name} onChange={(e) => upd({ colour_name: e.target.value })} className="h-9" />
+                        <Input
+                          aria-label="Colour name"
+                          value={x.colour_name}
+                          onChange={(e) => upd({ colour_name: e.target.value })}
+                          className="h-9"
+                        />
                       </td>
                       <td className="py-2 pr-2">
                         <div className="flex items-center gap-1">
-                          <input type="color" aria-label="Swatch colour" value={x.colour_hex} onChange={(e) => upd({ colour_hex: e.target.value })} className="h-9 w-10 cursor-pointer rounded border bg-transparent" />
-                          <Input aria-label="Hex" value={x.colour_hex} onChange={(e) => upd({ colour_hex: e.target.value })} className="h-9 w-24 font-mono text-xs" />
+                          <input
+                            type="color"
+                            aria-label="Swatch colour"
+                            value={x.colour_hex}
+                            onChange={(e) => upd({ colour_hex: e.target.value })}
+                            className="h-9 w-10 cursor-pointer rounded border bg-transparent"
+                          />
+                          <Input
+                            aria-label="Hex"
+                            value={x.colour_hex}
+                            onChange={(e) => upd({ colour_hex: e.target.value })}
+                            className="h-9 w-24 font-mono text-xs"
+                          />
                         </div>
                       </td>
                       <td className="py-2 pr-2">
-                        <Input aria-label="SKU" value={x.sku} onChange={(e) => upd({ sku: e.target.value.toUpperCase() })} className="h-9 font-mono text-xs" />
+                        <Input
+                          aria-label="SKU"
+                          value={x.sku}
+                          onChange={(e) => upd({ sku: e.target.value.toUpperCase() })}
+                          className="h-9 font-mono text-xs"
+                        />
                       </td>
                       <td className="py-2 pr-2">
-                        <Input aria-label="Stock" type="number" min={0} value={x.stock} onChange={(e) => upd({ stock: e.target.value })} className={cn("h-9 w-24", Number(x.stock) <= Number(v.low_stock_threshold) && "border-warning")} />
+                        <Input
+                          aria-label="Stock"
+                          type="number"
+                          min={0}
+                          value={x.stock}
+                          onChange={(e) => upd({ stock: e.target.value })}
+                          className={cn("h-9 w-24", Number(x.stock) <= Number(v.low_stock_threshold) && "border-warning")}
+                        />
                       </td>
                       <td className="py-2 pr-2">
-                        <Input aria-label="Price override" type="number" min={0} placeholder="—" value={x.price_override} onChange={(e) => upd({ price_override: e.target.value })} className="h-9 w-28" />
+                        <Input
+                          aria-label="Price override"
+                          type="number"
+                          min={0}
+                          placeholder="—"
+                          value={x.price_override}
+                          onChange={(e) => upd({ price_override: e.target.value })}
+                          className="h-9 w-28"
+                        />
                       </td>
                       <td className="py-2 pr-2 text-center">
-                        <input type="radio" name="default-variant" aria-label="Default colour" checked={x.is_default} onChange={() => upd({ is_default: true })} className="accent-foreground" />
+                        <input
+                          type="radio"
+                          name="default-variant"
+                          aria-label="Default colour"
+                          checked={x.is_default}
+                          onChange={() => upd({ is_default: true })}
+                          className="accent-foreground"
+                        />
                       </td>
                       <td className="py-2">
-                        <button type="button" onClick={() => set("variants", v.variants.filter((_, j) => j !== i))} className="inline-flex size-9 items-center justify-center rounded text-danger hover:bg-danger-bg" aria-label="Remove colour">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            set(
+                              "variants",
+                              v.variants.filter((_, j) => j !== i),
+                            )
+                          }
+                          className="text-danger hover:bg-danger-bg inline-flex size-9 items-center justify-center rounded"
+                          aria-label="Remove colour"
+                        >
                           <Trash className="size-4" />
                         </button>
                       </td>
@@ -201,9 +313,14 @@ export function ProductForm({ initial, categories, collections, styles }: { init
             <Button type="button" size="sm" variant="outline" onClick={() => addVariant()}>
               <Plus /> Add colour
             </Button>
-            <span className="text-xs text-muted">Quick add:</span>
+            <span className="text-muted text-xs">Quick add:</span>
             {PRESET_COLOURS.filter(([n]) => !v.variants.some((x) => x.colour_name === n)).map(([n, h]) => (
-              <button key={n} type="button" onClick={() => addVariant(n, h)} className="inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-xs hover:border-foreground">
+              <button
+                key={n}
+                type="button"
+                onClick={() => addVariant(n, h)}
+                className="hover:border-foreground inline-flex h-8 items-center gap-1.5 rounded-full border px-2.5 text-xs"
+              >
                 <span className="size-3 rounded-full" style={{ background: h }} /> {n}
               </button>
             ))}
@@ -230,8 +347,16 @@ export function ProductForm({ initial, categories, collections, styles }: { init
           {field("seo_title", "SEO title", { maxLength: 70, placeholder: v.name }, `${v.seo_title.length}/70`)}
           <div>
             <Label htmlFor="pf-seo-desc">SEO description</Label>
-            <Textarea id="pf-seo-desc" rows={2} className="min-h-16" maxLength={170} value={v.seo_description} onChange={(e) => set("seo_description", e.target.value)} placeholder={v.short_description} />
-            <p className="mt-1 text-xs text-muted">{v.seo_description.length}/170</p>
+            <Textarea
+              id="pf-seo-desc"
+              rows={2}
+              className="min-h-16"
+              maxLength={170}
+              value={v.seo_description}
+              onChange={(e) => set("seo_description", e.target.value)}
+              placeholder={v.short_description}
+            />
+            <p className="text-muted mt-1 text-xs">{v.seo_description.length}/170</p>
           </div>
         </Section>
       </div>
@@ -239,7 +364,11 @@ export function ProductForm({ initial, categories, collections, styles }: { init
       <div className="space-y-6">
         <div className="sticky top-20 space-y-6">
           <Section title="Status">
-            <NativeSelect aria-label="Status" value={v.status} onChange={(e) => set("status", e.target.value as ProductFormValue["status"])}>
+            <NativeSelect
+              aria-label="Status"
+              value={v.status}
+              onChange={(e) => set("status", e.target.value as ProductFormValue["status"])}
+            >
               <option value="draft">Draft — hidden</option>
               <option value="published">Published</option>
               <option value="archived">Archived</option>
@@ -247,12 +376,13 @@ export function ProductForm({ initial, categories, collections, styles }: { init
             <div>
               <Label htmlFor="pf-publish">Schedule publish (optional)</Label>
               <Input id="pf-publish" type="datetime-local" value={v.publish_at} onChange={(e) => set("publish_at", e.target.value)} />
-              <p className="mt-1 text-xs text-muted">When set, a published product appears from this time.</p>
+              <p className="text-muted mt-1 text-xs">When set, a published product appears from this time.</p>
             </div>
             <div className="space-y-2">
               {(["is_featured", "is_trending", "is_new"] as const).map((k) => (
                 <label key={k} className="flex items-center gap-3 text-sm">
-                  <Checkbox checked={v[k]} onChange={(e) => set(k, e.target.checked)} /> {k === "is_featured" ? "Featured" : k === "is_trending" ? "Trending (homepage)" : "New In"}
+                  <Checkbox checked={v[k]} onChange={(e) => set(k, e.target.checked)} />{" "}
+                  {k === "is_featured" ? "Featured" : k === "is_trending" ? "Trending (homepage)" : "New In"}
                 </label>
               ))}
             </div>
@@ -281,7 +411,11 @@ export function ProductForm({ initial, categories, collections, styles }: { init
               )}
             </div>
             {v.id && v.status === "published" && (
-              <Link href={`/product/${v.slug}`} target="_blank" className="inline-flex items-center gap-1 text-xs text-muted hover:text-foreground">
+              <Link
+                href={`/product/${v.slug}`}
+                target="_blank"
+                className="text-muted hover:text-foreground inline-flex items-center gap-1 text-xs"
+              >
                 View on store <ExternalLink className="size-3" />
               </Link>
             )}
@@ -290,7 +424,12 @@ export function ProductForm({ initial, categories, collections, styles }: { init
           <Section title="Pricing (₹, GST inclusive)">
             {field("price", "Price", { type: "number", min: 0, required: true })}
             {field("compare_at_price", "Compare-at price", { type: "number", min: 0 }, "Shown crossed out when higher than price")}
-            {field("cost_price", "Cost price", { type: "number", min: 0 }, margin != null ? `Margin ${margin}% — used for profit reports` : "Private — used for profit reports")}
+            {field(
+              "cost_price",
+              "Cost price",
+              { type: "number", min: 0 },
+              margin != null ? `Margin ${margin}% — used for profit reports` : "Private — used for profit reports",
+            )}
             <div>
               <Label htmlFor="pf-gst">GST %</Label>
               <NativeSelect id="pf-gst" value={v.gst_rate} onChange={(e) => set("gst_rate", e.target.value)}>
@@ -333,7 +472,16 @@ export function ProductForm({ initial, categories, collections, styles }: { init
                 {styles.map((s) => {
                   const on = v.style_ids.includes(s.id);
                   return (
-                    <button key={s.id} type="button" aria-pressed={on} onClick={() => set("style_ids", on ? v.style_ids.filter((x) => x !== s.id) : [...v.style_ids, s.id])} className={cn("h-8 rounded-full border px-3 text-xs", on ? "border-foreground bg-foreground text-background" : "hover:border-foreground")}>
+                    <button
+                      key={s.id}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => set("style_ids", on ? v.style_ids.filter((x) => x !== s.id) : [...v.style_ids, s.id])}
+                      className={cn(
+                        "h-8 rounded-full border px-3 text-xs",
+                        on ? "border-foreground bg-foreground text-background" : "hover:border-foreground",
+                      )}
+                    >
                       {s.name}
                     </button>
                   );

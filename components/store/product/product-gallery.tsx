@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import type { ProductImage } from "@/lib/types";
 import { BLUR_DATA_URL, cn } from "@/lib/utils";
-import { Modal } from "@/components/ui/sheet";
+import { LazyModal as Modal } from "@/components/ui/lazy-sheet";
 
 /**
  * Gallery with vertical thumbnails (desktop), swipe (mobile), hover-zoom
@@ -26,11 +26,15 @@ export function ProductGallery({ images, name }: { images: ProductImage[]; name:
   };
 
   if (!count) {
-    return <div className="aspect-[4/5] rounded-2xl bg-surface-muted" />;
+    return <div className="bg-surface-muted aspect-[4/5] rounded-2xl" />;
   }
 
   return (
-    <div className="grid gap-3 self-start md:grid-cols-[84px_1fr] md:gap-4 lg:sticky lg:top-24" aria-roledescription="carousel" aria-label={`${name} images`}>
+    <div
+      className="grid gap-3 self-start md:grid-cols-[84px_1fr] md:gap-4 lg:sticky lg:top-24"
+      aria-roledescription="carousel"
+      aria-label={`${name} images`}
+    >
       <ul className="hidden max-h-[680px] flex-col gap-3 overflow-y-auto md:flex" aria-label="Thumbnails">
         {images.map((img, i) => (
           <li key={img.id}>
@@ -39,9 +43,20 @@ export function ProductGallery({ images, name }: { images: ProductImage[]; name:
               onClick={() => goTo(i)}
               aria-label={`Show image ${i + 1}`}
               aria-current={i === active}
-              className={cn("block overflow-hidden rounded-lg border-2 transition-colors", i === active ? "border-foreground" : "border-transparent hover:border-border-strong")}
+              className={cn(
+                "block overflow-hidden rounded-lg border-2 transition-colors",
+                i === active ? "border-foreground" : "hover:border-border-strong border-transparent",
+              )}
             >
-              <Image src={img.url} alt="" width={84} height={105} className="aspect-[4/5] w-full bg-surface-muted object-cover" placeholder="blur" blurDataURL={BLUR_DATA_URL} />
+              <Image
+                src={img.url}
+                alt=""
+                width={84}
+                height={105}
+                className="bg-surface-muted aspect-[4/5] w-full object-cover"
+                placeholder="blur"
+                blurDataURL={BLUR_DATA_URL}
+              />
             </button>
           </li>
         ))}
@@ -50,7 +65,7 @@ export function ProductGallery({ images, name }: { images: ProductImage[]; name:
       <div className="relative">
         <div
           ref={track}
-          className="scrollbar-none flex snap-x snap-mandatory overflow-x-auto rounded-2xl bg-surface-muted md:overflow-hidden"
+          className="bg-surface-muted flex snap-x snap-mandatory scrollbar-none overflow-x-auto rounded-2xl md:overflow-hidden"
           onScroll={(e) => {
             const el = e.currentTarget;
             const i = Math.round(el.scrollLeft / el.clientWidth);
@@ -61,7 +76,7 @@ export function ProductGallery({ images, name }: { images: ProductImage[]; name:
             <button
               key={img.id}
               type="button"
-              className="relative aspect-[4/5] w-full shrink-0 snap-center cursor-zoom-in overflow-hidden"
+              className="relative aspect-[4/5] w-full shrink-0 cursor-zoom-in snap-center overflow-hidden"
               onClick={() => setLightbox(true)}
               onMouseMove={(e) => {
                 if (i !== active) return;
@@ -87,38 +102,62 @@ export function ProductGallery({ images, name }: { images: ProductImage[]; name:
             </button>
           ))}
         </div>
-        <span className="pointer-events-none absolute right-3 top-3 inline-flex size-10 items-center justify-center rounded-full bg-surface/85" aria-hidden="true">
+        <span
+          className="bg-surface/85 pointer-events-none absolute top-3 right-3 inline-flex size-10 items-center justify-center rounded-full"
+          aria-hidden="true"
+        >
           <ZoomIn className="size-4 stroke-[1.5]" />
         </span>
         {count > 1 && (
           <>
-            <button type="button" onClick={() => goTo(active - 1)} className="absolute left-3 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface/90 shadow-soft hover:bg-surface md:inline-flex" aria-label="Previous image">
+            <button
+              type="button"
+              onClick={() => goTo(active - 1)}
+              className="bg-surface/90 shadow-soft hover:bg-surface absolute top-1/2 left-3 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full md:inline-flex"
+              aria-label="Previous image"
+            >
               <ChevronLeft className="size-5 stroke-[1.5]" />
             </button>
-            <button type="button" onClick={() => goTo(active + 1)} className="absolute right-3 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface/90 shadow-soft hover:bg-surface md:inline-flex" aria-label="Next image">
+            <button
+              type="button"
+              onClick={() => goTo(active + 1)}
+              className="bg-surface/90 shadow-soft hover:bg-surface absolute top-1/2 right-3 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full md:inline-flex"
+              aria-label="Next image"
+            >
               <ChevronRight className="size-5 stroke-[1.5]" />
             </button>
             <div className="mt-3 flex justify-center gap-1.5 md:hidden" aria-hidden="true">
               {images.map((img, i) => (
-                <span key={img.id} className={cn("h-1.5 rounded-full transition-all", i === active ? "w-5 bg-foreground" : "w-1.5 bg-border-strong")} />
+                <span
+                  key={img.id}
+                  className={cn("h-1.5 rounded-full transition-all", i === active ? "bg-foreground w-5" : "bg-border-strong w-1.5")}
+                />
               ))}
             </div>
           </>
         )}
       </div>
 
-      <Modal open={lightbox} onOpenChange={setLightbox} title={name} className="w-[min(96vw,900px)] p-3 md:p-5">
-        <div className="relative aspect-[4/5] max-h-[78dvh] w-full overflow-auto rounded-lg bg-surface-muted">
-          <Image src={images[active]?.url} alt={images[active]?.alt ?? name} fill sizes="900px" quality={85} className="object-contain" />
-        </div>
-        <div className="mt-3 flex justify-center gap-2">
-          {images.map((img, i) => (
-            <button key={img.id} type="button" onClick={() => setActive(i)} className={cn("size-12 overflow-hidden rounded-md border-2", i === active ? "border-foreground" : "border-transparent")} aria-label={`Show image ${i + 1}`}>
-              <Image src={img.url} alt="" width={48} height={48} className="h-full w-full object-cover" />
-            </button>
-          ))}
-        </div>
-      </Modal>
+      {lightbox && (
+        <Modal open={lightbox} onOpenChange={setLightbox} title={name} className="w-[min(96vw,900px)] p-3 md:p-5">
+          <div className="bg-surface-muted relative aspect-[4/5] max-h-[78dvh] w-full overflow-auto rounded-lg">
+            <Image src={images[active]?.url} alt={images[active]?.alt ?? name} fill sizes="900px" quality={85} className="object-contain" />
+          </div>
+          <div className="mt-3 flex justify-center gap-2">
+            {images.map((img, i) => (
+              <button
+                key={img.id}
+                type="button"
+                onClick={() => setActive(i)}
+                className={cn("size-12 overflow-hidden rounded-md border-2", i === active ? "border-foreground" : "border-transparent")}
+                aria-label={`Show image ${i + 1}`}
+              >
+                <Image src={img.url} alt="" width={48} height={48} className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

@@ -71,13 +71,17 @@ export async function quoteCheckout(input: unknown): Promise<Quote> {
         p_code: couponCode,
         p_subtotal: subtotal,
         p_user_id: user?.id,
-        p_email: cleanEmail?.success ? cleanEmail.data : user?.email ?? undefined,
+        p_email: cleanEmail?.success ? cleanEmail.data : (user?.email ?? undefined),
       });
       const r = data?.[0];
       coupon = { code: couponCode.toUpperCase(), message: r?.message ?? "This code is not valid.", valid: !!r?.coupon_id };
       if (r?.coupon_id) discount = Number(r.discount);
     } else {
-      const { data } = await admin.rpc("best_auto_coupon", { p_subtotal: subtotal, p_user_id: user?.id, p_email: cleanEmail?.success ? cleanEmail.data : undefined });
+      const { data } = await admin.rpc("best_auto_coupon", {
+        p_subtotal: subtotal,
+        p_user_id: user?.id,
+        p_email: cleanEmail?.success ? cleanEmail.data : undefined,
+      });
       const r = data?.[0];
       if (r?.coupon_id) {
         discount = Number(r.discount);
@@ -110,12 +114,20 @@ export async function quoteCheckout(input: unknown): Promise<Quote> {
 /* ------------------------------------------------------------------ */
 /* Checkout context (signed-in user + saved addresses)                 */
 /* ------------------------------------------------------------------ */
-export async function getCheckoutContext(): Promise<{ user: { email: string | null; name: string | null; phone: string | null } | null; addresses: SavedAddress[] }> {
+export async function getCheckoutContext(): Promise<{
+  user: { email: string | null; name: string | null; phone: string | null } | null;
+  addresses: SavedAddress[];
+}> {
   if (!isSupabaseConfigured) return { user: null, addresses: [] };
   const user = await getCurrentUser();
   if (!user) return { user: null, addresses: [] };
   const supabase = await createClient();
-  const { data } = await supabase.from("addresses").select("*").eq("user_id", user.id).order("is_default", { ascending: false }).order("created_at", { ascending: false });
+  const { data } = await supabase
+    .from("addresses")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("is_default", { ascending: false })
+    .order("created_at", { ascending: false });
   return { user: { email: user.email, name: user.fullName, phone: user.phone }, addresses: (data ?? []) as SavedAddress[] };
 }
 
@@ -192,7 +204,11 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
     const { count } = await supabase.from("addresses").select("id", { count: "exact", head: true }).eq("user_id", user.id);
     await supabase.from("addresses").insert({ user_id: user.id, ...toAddr(d.shipping), is_default: !count });
   }
-  if (user && !user.phone) await admin.from("profiles").update({ phone: d.phone, full_name: user.fullName ?? d.shipping.full_name }).eq("id", user.id);
+  if (user && !user.phone)
+    await admin
+      .from("profiles")
+      .update({ phone: d.phone, full_name: user.fullName ?? d.shipping.full_name })
+      .eq("id", user.id);
 
   if (d.paymentMethod === "cod") {
     await admin.from("payments").insert({ order_id: order.id, provider: "cod", amount: order.total, status: "created", method: "cod" });
@@ -206,7 +222,12 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
       metadata: { method: "cod" },
     });
     after(() => onOrderPlaced(order.id));
-    return { ok: true, kind: "cod", orderNumber: order.order_number, redirect: `/checkout/success?order=${order.order_number}&t=${order.access_token}` };
+    return {
+      ok: true,
+      kind: "cod",
+      orderNumber: order.order_number,
+      redirect: `/checkout/success?order=${order.order_number}&t=${order.access_token}`,
+    };
   }
 
   try {
@@ -260,7 +281,11 @@ export async function verifyPayment(input: unknown): Promise<{ ok: boolean; mess
     return { ok: false, message: "We couldn't verify this payment. If money was deducted, it will be refunded automatically." };
   }
   const admin = createAdminClient();
-  const { data: order } = await admin.from("orders").select("id, order_number, access_token, total, razorpay_order_id, user_id").eq("id", d.orderId).single();
+  const { data: order } = await admin
+    .from("orders")
+    .select("id, order_number, access_token, total, razorpay_order_id, user_id")
+    .eq("id", d.orderId)
+    .single();
   if (!order || order.access_token !== d.accessToken || order.razorpay_order_id !== d.razorpay_order_id) {
     return { ok: false, message: "Order not found." };
   }
@@ -304,7 +329,14 @@ export async function verifyPayment(input: unknown): Promise<{ ok: boolean; mess
 
 export async function reportPaymentFailure(input: unknown) {
   const d = z
-    .object({ orderId: z.string().uuid(), accessToken: z.string().max(80), code: z.string().max(80).optional(), description: z.string().max(500).optional(), paymentId: z.string().max(60).optional(), sessionId: z.string().max(80).optional() })
+    .object({
+      orderId: z.string().uuid(),
+      accessToken: z.string().max(80),
+      code: z.string().max(80).optional(),
+      description: z.string().max(500).optional(),
+      paymentId: z.string().max(60).optional(),
+      sessionId: z.string().max(80).optional(),
+    })
     .safeParse(input);
   if (!d.success || !isServiceRoleConfigured()) return;
   const admin = createAdminClient();
@@ -319,7 +351,16 @@ export async function reportPaymentFailure(input: unknown) {
     error_code: d.data.code ?? null,
     error_description: d.data.description ?? null,
   });
-  await admin.from("analytics_events").insert({ event_name: "payment_failed", session_id: d.data.sessionId ?? "server", order_id: order.id, value: Number(order.total), path: "/checkout", metadata: { code: d.data.code ?? null } });
+  await admin
+    .from("analytics_events")
+    .insert({
+      event_name: "payment_failed",
+      session_id: d.data.sessionId ?? "server",
+      order_id: order.id,
+      value: Number(order.total),
+      path: "/checkout",
+      metadata: { code: d.data.code ?? null },
+    });
 }
 
 /** Re-open Razorpay for an order that's still awaiting payment. */
@@ -327,15 +368,27 @@ export async function retryPayment(input: unknown): Promise<PlaceOrderResult> {
   const d = z.object({ orderNumber: z.string().max(20), accessToken: z.string().max(80) }).safeParse(input);
   if (!d.success || !isServiceRoleConfigured() || !isRazorpayConfigured()) return { ok: false, message: "Unable to retry payment." };
   const admin = createAdminClient();
-  const { data: o } = await admin.from("orders").select("id, order_number, access_token, total, status, razorpay_order_id, email, phone, customer_name").eq("order_number", d.data.orderNumber).single();
+  const { data: o } = await admin
+    .from("orders")
+    .select("id, order_number, access_token, total, status, razorpay_order_id, email, phone, customer_name")
+    .eq("order_number", d.data.orderNumber)
+    .single();
   if (!o || o.access_token !== d.data.accessToken) return { ok: false, message: "Order not found." };
-  if (o.status !== "pending" || !o.razorpay_order_id) return { ok: false, message: "This order can no longer be paid. Please place a new order." };
+  if (o.status !== "pending" || !o.razorpay_order_id)
+    return { ok: false, message: "This order can no longer be paid. Please place a new order." };
   return {
     ok: true,
     kind: "razorpay",
     orderId: o.id,
     orderNumber: o.order_number,
     accessToken: o.access_token,
-    razorpay: { keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!, orderId: o.razorpay_order_id, amount: toPaise(Number(o.total)), name: o.customer_name ?? "", email: o.email, contact: o.phone ?? "" },
+    razorpay: {
+      keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+      orderId: o.razorpay_order_id,
+      amount: toPaise(Number(o.total)),
+      name: o.customer_name ?? "",
+      email: o.email,
+      contact: o.phone ?? "",
+    },
   };
 }

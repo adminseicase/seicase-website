@@ -36,7 +36,10 @@ function insert(table: string, rows: Record<string, Val>[], conflict = "id", upd
   if (!rows.length) return "";
   const cols = Object.keys(rows[0]);
   const values = rows.map((r) => `  (${cols.map((c) => lit(r[c])).join(", ")})`).join(",\n");
-  const updates = cols.filter((c) => c !== conflict).map((c) => `${c} = excluded.${c}`).join(", ");
+  const updates = cols
+    .filter((c) => c !== conflict)
+    .map((c) => `${c} = excluded.${c}`)
+    .join(", ");
   const onConflict = update && updates ? `on conflict (${conflict}) do update set ${updates}` : `on conflict (${conflict}) do nothing`;
   return `insert into public.${table} (${cols.join(", ")}) values\n${values}\n${onConflict};\n\n`;
 }
@@ -103,7 +106,10 @@ sql += insert(
   "product_variants",
   cat.variants.map((v) => ({ ...v })),
 );
-sql += insert("product_images", cat.images.map((i) => ({ ...i })));
+sql += insert(
+  "product_images",
+  cat.images.map((i) => ({ ...i })),
+);
 sql += insert(
   "charms",
   cat.charms.map((c) => ({ ...c })),
@@ -127,7 +133,10 @@ sql += `-- Seed reviews are a sample; keep the headline rating counts from the c
 ${cat.products.map((p) => `update public.products set rating_avg = ${p.rating_avg}, rating_count = ${p.rating_count} where id = ${lit(p.id)};`).join("\n")}
 
 `;
-sql += insert("hero_slides", heroSlides.map((h) => ({ ...h })));
+sql += insert(
+  "hero_slides",
+  heroSlides.map((h) => ({ ...h })),
+);
 sql += insert(
   "site_settings",
   [
@@ -137,14 +146,49 @@ sql += insert(
   "key",
   false,
 );
-sql += insert("pages", pages.map((p) => ({ ...p })), "slug", false);
-sql += insert("journal_posts", journalPosts.map((p) => ({ ...p })), "slug", false);
-sql += insert("faqs", faqs.map((f) => ({ ...f })));
+sql += insert(
+  "pages",
+  pages.map((p) => ({ ...p })),
+  "slug",
+  false,
+);
+sql += insert(
+  "journal_posts",
+  journalPosts.map((p) => ({ ...p })),
+  "slug",
+  false,
+);
+sql += insert(
+  "faqs",
+  faqs.map((f) => ({ ...f })),
+);
 sql += insert(
   "coupons",
   [
-    { id: stableId("coupon:WELCOME10"), code: "WELCOME10", description: "10% off your first order (max ₹1,000)", type: "percentage", value: 10, min_order: 1500, max_discount: 1000, per_customer_limit: 1, is_active: true, auto_apply: false },
-    { id: stableId("coupon:FESTIVE500"), code: "FESTIVE500", description: "₹500 off orders above ₹6,000", type: "flat", value: 500, min_order: 6000, max_discount: null, per_customer_limit: null, is_active: true, auto_apply: false },
+    {
+      id: stableId("coupon:WELCOME10"),
+      code: "WELCOME10",
+      description: "10% off your first order (max ₹1,000)",
+      type: "percentage",
+      value: 10,
+      min_order: 1500,
+      max_discount: 1000,
+      per_customer_limit: 1,
+      is_active: true,
+      auto_apply: false,
+    },
+    {
+      id: stableId("coupon:FESTIVE500"),
+      code: "FESTIVE500",
+      description: "₹500 off orders above ₹6,000",
+      type: "flat",
+      value: 500,
+      min_order: 6000,
+      max_discount: null,
+      per_customer_limit: null,
+      is_active: true,
+      auto_apply: false,
+    },
   ],
   "code",
   false,
@@ -155,8 +199,8 @@ writeFileSync(join(ROOT, "supabase", "seed.sql"), sql);
 /* ------------------------- optional demo analytics ------------------------ */
 // Deterministic pseudo-random generator so the file is stable between runs.
 let seed = 42;
-const rnd = () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
-const pick = <T,>(arr: T[]) => arr[Math.floor(rnd() * arr.length)];
+const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+const pick = <T>(arr: T[]) => arr[Math.floor(rnd() * arr.length)];
 
 const cities = [
   ["Chennai", "Tamil Nadu", "600001"],
@@ -168,7 +212,20 @@ const cities = [
   ["Kochi", "Kerala", "682001"],
   ["Coimbatore", "Tamil Nadu", "641001"],
 ];
-const names = ["Ananya Iyer", "Prakkanthi R", "Meera Krishnan", "Divya Nair", "Rhea Patel", "Kavya Menon", "Sneha Reddy", "Aditi Shah", "Lakshmi M", "Nisha Rao", "Arjun V", "Karthik S"];
+const names = [
+  "Ananya Iyer",
+  "Prakkanthi R",
+  "Meera Krishnan",
+  "Divya Nair",
+  "Rhea Patel",
+  "Kavya Menon",
+  "Sneha Reddy",
+  "Aditi Shah",
+  "Lakshmi M",
+  "Nisha Rao",
+  "Arjun V",
+  "Karthik S",
+];
 const sources: [string | null, string | null, string | null][] = [
   [null, null, null],
   ["instagram", "social", "diwali_drop"],
@@ -286,9 +343,17 @@ for (let s = 0; s < 1400; s++) {
   if (rnd() < 0.7) {
     const p = pick(cat.products);
     eventRows.push({ ...base, event_name: "product_view", product_id: p.id, path: `/product/${p.slug}`, created_at: at(1) });
-    if (rnd() < 0.3) eventRows.push({ ...base, event_name: "add_to_wishlist", product_id: p.id, path: `/product/${p.slug}`, created_at: at(2) });
+    if (rnd() < 0.3)
+      eventRows.push({ ...base, event_name: "add_to_wishlist", product_id: p.id, path: `/product/${p.slug}`, created_at: at(2) });
     if (rnd() < 0.28) {
-      eventRows.push({ ...base, event_name: "add_to_cart", product_id: p.id, value: p.price, path: `/product/${p.slug}`, created_at: at(3) });
+      eventRows.push({
+        ...base,
+        event_name: "add_to_cart",
+        product_id: p.id,
+        value: p.price,
+        path: `/product/${p.slug}`,
+        created_at: at(3),
+      });
       if (rnd() < 0.55) {
         eventRows.push({ ...base, event_name: "begin_checkout", path: "/checkout", value: p.price, created_at: at(5) });
         if (rnd() < 0.6) eventRows.push({ ...base, event_name: "purchase", path: "/checkout", value: p.price, created_at: at(8) });
@@ -298,13 +363,40 @@ for (let s = 0; s < 1400; s++) {
   if (rnd() < 0.18) {
     const q = pick(["tote", "wallet", "olive", "crossbody", "burgundy bag", "laptop bag", "sling", "backpack", "coin purse", "gift"]);
     const zero = ["sling", "backpack"].includes(q);
-    eventRows.push({ ...base, event_name: "search", search_query: q, results_count: zero ? 0 : 1 + Math.floor(rnd() * 6), path: "/search", created_at: at(1) });
+    eventRows.push({
+      ...base,
+      event_name: "search",
+      search_query: q,
+      results_count: zero ? 0 : 1 + Math.floor(rnd() * 6),
+      path: "/search",
+      created_at: at(1),
+    });
   }
 }
 demo += insert("orders", orderRows, "id", false);
 demo += insert("order_items", itemRows, "id", false);
 // analytics_events has an identity id; insert in chunks without conflict handling
-const evCols = ["event_name", "session_id", "product_id", "path", "referrer_host", "utm_source", "utm_medium", "utm_campaign", "device_type", "browser", "os", "country", "region", "city", "search_query", "results_count", "value", "metadata", "created_at"];
+const evCols = [
+  "event_name",
+  "session_id",
+  "product_id",
+  "path",
+  "referrer_host",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "device_type",
+  "browser",
+  "os",
+  "country",
+  "region",
+  "city",
+  "search_query",
+  "results_count",
+  "value",
+  "metadata",
+  "created_at",
+];
 demo += `delete from public.analytics_events where metadata ->> 'demo' = 'true';\n`;
 for (let i = 0; i < eventRows.length; i += 500) {
   const chunk = eventRows.slice(i, i + 500);

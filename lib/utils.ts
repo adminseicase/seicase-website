@@ -65,7 +65,10 @@ export function truncate(value: string, max: number) {
 
 /** Strip HTML tags for meta descriptions and search snippets. */
 export function stripHtml(html: string | null | undefined) {
-  return (html ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return (html ?? "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function absoluteUrl(path: string) {
@@ -140,3 +143,19 @@ export const INDIAN_STATES = [
   "Uttarakhand",
   "West Bengal",
 ] as const;
+
+/** ISO timestamp `days` ago (kept out of components so render stays pure). */
+export function daysAgoIso(days: number) {
+  return new Date(Date.now() - days * 86_400_000).toISOString();
+}
+
+/** "5m ago", "3h ago", "2d ago" */
+export function timeAgo(iso: string) {
+  const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  return m < 1 ? "just now" : m < 60 ? `${m}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)}d ago`;
+}
+
+/** True when the timestamp is older than `days` days. */
+export function olderThanDays(iso: string | null | undefined, days: number) {
+  return !!iso && Date.now() - Date.parse(iso) > days * 86_400_000;
+}

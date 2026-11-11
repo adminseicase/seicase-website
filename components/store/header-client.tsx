@@ -32,8 +32,8 @@ export function StickyHeader({ children }: { children: React.ReactNode }) {
     <header
       data-compact={compact}
       className={cn(
-        "sticky top-0 z-40 border-b border-transparent bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85 transition-[height,border-color,box-shadow] duration-300",
-        compact ? "h-16 border-border shadow-[0_1px_0_rgba(0,0,0,0.02)]" : "h-[72px] md:h-20",
+        "bg-background/95 supports-[backdrop-filter]:bg-background/85 sticky top-0 z-40 border-b border-transparent backdrop-blur transition-[height,border-color,box-shadow] duration-300",
+        compact ? "border-border h-16 shadow-[0_1px_0_rgba(0,0,0,0.02)]" : "h-[72px] md:h-20",
       )}
     >
       {children}
@@ -47,7 +47,7 @@ const iconBtn =
 function CountBadge({ count }: { count: number }) {
   if (!count) return null;
   return (
-    <span className="absolute right-1 top-1 inline-flex min-w-[18px] items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-medium leading-[18px] text-background">
+    <span className="bg-foreground text-background absolute top-1 right-1 inline-flex min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] leading-[18px] font-medium">
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -57,17 +57,8 @@ export function HeaderActions() {
   const hydrated = useHydrated();
   const lines = useCart((s) => s.lines);
   const wishCount = useWishlist((s) => s.items.length);
-  const { miniCartOpen, searchOpen, setSearch, setMiniCart } = useUi();
-  const [searchLoaded, setSearchLoaded] = useState(false);
-  const [cartLoaded, setCartLoaded] = useState(false);
+  const { mounted, setSearch, setMiniCart } = useUi();
   const count = hydrated ? cartCount(lines) : 0;
-
-  useEffect(() => {
-    if (searchOpen) setSearchLoaded(true);
-  }, [searchOpen]);
-  useEffect(() => {
-    if (miniCartOpen) setCartLoaded(true);
-  }, [miniCartOpen]);
 
   // "/" focuses search, like many premium stores
   useEffect(() => {
@@ -83,39 +74,44 @@ export function HeaderActions() {
   }, [setSearch]);
 
   return (
-    <div className="flex items-center justify-self-end gap-0.5 md:gap-1">
+    <div className="flex items-center gap-0.5 justify-self-end md:gap-1">
       <button type="button" className={iconBtn} aria-label="Search" onClick={() => setSearch(true)}>
         <Search />
       </button>
       <Link href="/account" className={cn(iconBtn, "hidden sm:inline-flex")} aria-label="My account">
         <User />
       </Link>
-      <Link href="/wishlist" className={cn(iconBtn, "hidden sm:inline-flex")} aria-label={`Wishlist${hydrated && wishCount ? `, ${wishCount} items` : ""}`}>
+      <Link
+        href="/wishlist"
+        className={cn(iconBtn, "hidden sm:inline-flex")}
+        aria-label={`Wishlist${hydrated && wishCount ? `, ${wishCount} items` : ""}`}
+      >
         <Heart />
         <CountBadge count={hydrated ? wishCount : 0} />
       </Link>
-      <button type="button" className={iconBtn} aria-label={`Shopping bag${count ? `, ${count} items` : ""}`} onClick={() => setMiniCart(true)}>
+      <button
+        type="button"
+        className={iconBtn}
+        aria-label={`Shopping bag${count ? `, ${count} items` : ""}`}
+        onClick={() => setMiniCart(true)}
+      >
         <ShoppingBag />
         <CountBadge count={count} />
       </button>
-      {searchLoaded && <SearchDialog />}
-      {cartLoaded && <MiniCart />}
+      {mounted.search && <SearchDialog />}
+      {mounted.cart && <MiniCart />}
     </div>
   );
 }
 
 export function MobileMenuButton({ nav, phone }: { nav: NavData; phone: string }) {
-  const { menuOpen, setMenu } = useUi();
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    if (menuOpen) setLoaded(true);
-  }, [menuOpen]);
+  const { menuOpen, setMenu, mounted } = useUi();
   return (
     <>
       <button type="button" className={iconBtn} aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenu(true)}>
         <Menu />
       </button>
-      {loaded && <MobileMenu nav={nav} phone={phone} />}
+      {mounted.menu && <MobileMenu nav={nav} phone={phone} />}
     </>
   );
 }

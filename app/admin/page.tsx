@@ -23,13 +23,36 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
     getSeries(r.prevFrom, r.prevTo, pickGrain(r.days)),
     getReport(r.from, r.to),
     getTrackerCounts(),
-    supabase.from("product_variants").select("id, sku, colour_name, stock, products!inner(name, low_stock_threshold, status)").lte("stock", 5).neq("products.status", "archived").order("stock").limit(6),
-    supabase.from("orders").select("id, order_number, customer_name, total, status, created_at").neq("status", "pending").order("created_at", { ascending: false }).limit(6),
+    supabase
+      .from("product_variants")
+      .select("id, sku, colour_name, stock, products!inner(name, low_stock_threshold, status)")
+      .lte("stock", 5)
+      .neq("products.status", "archived")
+      .order("stock")
+      .limit(6),
+    supabase
+      .from("orders")
+      .select("id, order_number, customer_name, total, status, created_at")
+      .neq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(6),
   ]);
 
   const trackers = [
-    { href: "/admin/orders?status=placed", label: "Orders to ship", n: counts.orders_to_ship, Icon: ShoppingBag, warn: counts.delayed_orders ? `${counts.delayed_orders} delayed` : null },
-    { href: "/admin/inventory?filter=low", label: "Low / out of stock", n: counts.low_stock + counts.out_of_stock, Icon: Boxes, warn: counts.out_of_stock ? `${counts.out_of_stock} out` : null },
+    {
+      href: "/admin/orders?status=placed",
+      label: "Orders to ship",
+      n: counts.orders_to_ship,
+      Icon: ShoppingBag,
+      warn: counts.delayed_orders ? `${counts.delayed_orders} delayed` : null,
+    },
+    {
+      href: "/admin/inventory?filter=low",
+      label: "Low / out of stock",
+      n: counts.low_stock + counts.out_of_stock,
+      Icon: Boxes,
+      warn: counts.out_of_stock ? `${counts.out_of_stock} out` : null,
+    },
     { href: "/admin/returns", label: "Open returns", n: counts.returns_open, Icon: Undo2 },
     { href: "/admin/payments?status=failed", label: "Failed payments (24h)", n: counts.payments_failed_24h, Icon: Wallet },
     { href: "/admin/reviews?status=pending", label: "Reviews to moderate", n: counts.reviews_pending, Icon: Star },
@@ -38,28 +61,42 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
 
   return (
     <>
-      <PageHeader title="Dashboard" description={`${formatDate(r.from)} – ${formatDate(new Date(Date.parse(r.to) - 1))} · compared with the previous ${r.days} days`} actions={<DateRangePicker />} />
+      <PageHeader
+        title="Dashboard"
+        description={`${formatDate(r.from)} – ${formatDate(new Date(Date.parse(r.to) - 1))} · compared with the previous ${r.days} days`}
+        actions={<DateRangePicker />}
+      />
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard label="Revenue" value={formatCompactINR(kpi.revenue)} delta={pctChange(kpi.revenue, prev.revenue)} />
         <StatCard label="Orders" value={formatNumber(kpi.orders)} delta={pctChange(kpi.orders, prev.orders)} />
         <StatCard label="Average order value" value={formatINR(kpi.aov)} delta={pctChange(kpi.aov, prev.aov)} />
-        <StatCard label="Conversion rate" value={`${kpi.conversion_rate.toFixed(2)}%`} delta={pctChange(kpi.conversion_rate, prev.conversion_rate)} hint={`${formatNumber(kpi.sessions)} sessions`} />
+        <StatCard
+          label="Conversion rate"
+          value={`${kpi.conversion_rate.toFixed(2)}%`}
+          delta={pctChange(kpi.conversion_rate, prev.conversion_rate)}
+          hint={`${formatNumber(kpi.sessions)} sessions`}
+        />
         <StatCard label="Visitors" value={formatNumber(kpi.visitors)} delta={pctChange(kpi.visitors, prev.visitors)} />
         <StatCard label="New / returning customers" value={`${kpi.new_customers} / ${kpi.returning_customers}`} />
-        <StatCard label="Gross profit" value={formatCompactINR(kpi.gross_profit)} delta={pctChange(kpi.gross_profit, prev.gross_profit)} hint={kpi.revenue ? `${((kpi.gross_profit / kpi.revenue) * 100).toFixed(0)}% margin` : undefined} />
+        <StatCard
+          label="Gross profit"
+          value={formatCompactINR(kpi.gross_profit)}
+          delta={pctChange(kpi.gross_profit, prev.gross_profit)}
+          hint={kpi.revenue ? `${((kpi.gross_profit / kpi.revenue) * 100).toFixed(0)}% margin` : undefined}
+        />
         <StatCard label="Refund rate" value={`${kpi.refund_rate.toFixed(1)}%`} delta={pctChange(kpi.refund_rate, prev.refund_rate) * -1} />
       </div>
 
       <ul className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         {trackers.map(({ href, label, n, Icon, warn }) => (
           <li key={label}>
-            <Link href={href} className="flex h-full flex-col rounded-xl border bg-surface p-4 hover:border-foreground">
-              <Icon className="size-5 stroke-[1.5] text-cognac" aria-hidden="true" />
+            <Link href={href} className="bg-surface hover:border-foreground flex h-full flex-col rounded-xl border p-4">
+              <Icon className="text-cognac size-5 stroke-[1.5]" aria-hidden="true" />
               <p className="mt-3 text-2xl font-medium tabular-nums">{n}</p>
-              <p className="text-xs text-muted">{label}</p>
+              <p className="text-muted text-xs">{label}</p>
               {warn && (
-                <p className="mt-1 flex items-center gap-1 text-xs text-danger">
+                <p className="text-danger mt-1 flex items-center gap-1 text-xs">
                   <AlertCircle className="size-3" /> {warn}
                 </p>
               )}
@@ -69,7 +106,14 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
       </ul>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <Card title="Sales over time" actions={<Link href="/admin/analytics" className="text-xs text-muted hover:text-foreground">Full report →</Link>}>
+        <Card
+          title="Sales over time"
+          actions={
+            <Link href="/admin/analytics" className="text-muted hover:text-foreground text-xs">
+              Full report →
+            </Link>
+          }
+        >
           <SalesChart data={series} compare={prevSeries} />
         </Card>
         <Card title="Conversion funnel">
@@ -81,7 +125,14 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
         <Card title="Top products">
           <BarList money rows={report.top_products.slice(0, 6).map((p) => ({ label: p.name, value: p.revenue, sub: `${p.units} sold` }))} />
         </Card>
-        <Card title="Low stock" actions={<Link href="/admin/inventory?filter=low" className="text-xs text-muted hover:text-foreground">Inventory →</Link>}>
+        <Card
+          title="Low stock"
+          actions={
+            <Link href="/admin/inventory?filter=low" className="text-muted hover:text-foreground text-xs">
+              Inventory →
+            </Link>
+          }
+        >
           <ul className="divide-y text-sm">
             {(lowStock.data ?? []).map((v) => {
               const p = v.products as unknown as { name: string };
@@ -94,14 +145,21 @@ export default async function DashboardPage({ searchParams }: PageProps<"/admin"
                 </li>
               );
             })}
-            {!lowStock.data?.length && <li className="py-6 text-center text-muted">All stocked up.</li>}
+            {!lowStock.data?.length && <li className="text-muted py-6 text-center">All stocked up.</li>}
           </ul>
         </Card>
-        <Card title="Recent orders" actions={<Link href="/admin/orders" className="inline-flex items-center gap-1 text-xs text-muted hover:text-foreground">All <ArrowRight className="size-3" /></Link>}>
+        <Card
+          title="Recent orders"
+          actions={
+            <Link href="/admin/orders" className="text-muted hover:text-foreground inline-flex items-center gap-1 text-xs">
+              All <ArrowRight className="size-3" />
+            </Link>
+          }
+        >
           <ul className="divide-y text-sm">
             {(recent.data ?? []).map((o) => (
               <li key={o.id} className="flex items-center justify-between gap-2 py-2">
-                <Link href={`/admin/orders/${o.id}`} className="truncate hover:text-cognac">
+                <Link href={`/admin/orders/${o.id}`} className="hover:text-cognac truncate">
                   #{o.order_number} <span className="text-muted">{o.customer_name}</span>
                 </Link>
                 <span className="flex shrink-0 items-center gap-2">

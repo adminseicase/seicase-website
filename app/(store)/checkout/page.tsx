@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Checkout", robots: { index: false, f
 
 export default function CheckoutPage() {
   return (
-    <Container className="pb-10 pt-8 md:pt-12">
+    <Container className="pt-8 pb-10 md:pt-12">
       <h1 className="mb-8 text-4xl md:text-5xl">Checkout</h1>
       <CheckoutForm />
     </Container>

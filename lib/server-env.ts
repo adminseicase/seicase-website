@@ -14,7 +14,6 @@ export const serverEnv = {
   ipHashSalt: process.env.IP_HASH_SALT || "seicase",
 };
 
-export const isRazorpayConfigured = () =>
-  Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && serverEnv.razorpayKeySecret);
+export const isRazorpayConfigured = () => Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID && serverEnv.razorpayKeySecret);
 export const isEmailConfigured = () => Boolean(serverEnv.resendApiKey);
 export const isServiceRoleConfigured = () => Boolean(serverEnv.supabaseServiceRoleKey);

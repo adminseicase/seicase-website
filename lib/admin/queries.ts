@@ -16,17 +16,19 @@ export interface TrackerCounts {
 export async function getTrackerCounts(): Promise<TrackerCounts> {
   const supabase = await createClient();
   const { data } = await supabase.rpc("admin_tracker_counts");
-  return (data as unknown as TrackerCounts) ?? {
-    low_stock: 0,
-    out_of_stock: 0,
-    orders_to_ship: 0,
-    delayed_orders: 0,
-    returns_open: 0,
-    reviews_pending: 0,
-    messages_unread: 0,
-    payments_failed_24h: 0,
-    abandoned_carts: 0,
-  };
+  return (
+    (data as unknown as TrackerCounts) ?? {
+      low_stock: 0,
+      out_of_stock: 0,
+      orders_to_ship: 0,
+      delayed_orders: 0,
+      returns_open: 0,
+      reviews_pending: 0,
+      messages_unread: 0,
+      payments_failed_24h: 0,
+      abandoned_carts: 0,
+    }
+  );
 }
 
 /** Parses ?page=&q= style params used by every admin list. */

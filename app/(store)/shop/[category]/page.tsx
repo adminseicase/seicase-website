@@ -5,7 +5,13 @@ import { Suspense } from "react";
 import { ShopPage } from "@/components/store/shop/shop-page";
 import { ShopResultsSkeleton } from "@/components/store/shop/shop-results";
 
-const NEW_IN = { name: "New In", slug: "new-in", description: "The newest pieces from our studio.", seo_title: null, seo_description: null };
+const NEW_IN = {
+  name: "New In",
+  slug: "new-in",
+  description: "The newest pieces from our studio.",
+  seo_title: null,
+  seo_description: null,
+};
 
 export async function generateStaticParams() {
   const cats = await getCategories();
@@ -30,7 +36,13 @@ export async function generateMetadata({ params }: PageProps<"/shop/[category]">
 
 export default function Page(props: PageProps<"/shop/[category]">) {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-[1440px] px-4 pt-10 md:px-8"><ShopResultsSkeleton /></div>}>
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-[1440px] px-4 pt-10 md:px-8">
+          <ShopResultsSkeleton />
+        </div>
+      }
+    >
       <Content params={props.params} searchParams={props.searchParams} />
     </Suspense>
   );

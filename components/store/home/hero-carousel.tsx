@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion } from "@/lib/hooks";
 
 /** Lightweight accessible carousel: swipe, arrows, numbered 01/02/03, autoplay that pauses. */
 export function HeroCarousel({ children, count }: { children: React.ReactNode[]; count: number }) {
@@ -10,23 +11,29 @@ export function HeroCarousel({ children, count }: { children: React.ReactNode[];
   const [playing, setPlaying] = useState(true);
   const [hovered, setHovered] = useState(false);
   const touchX = useRef<number | null>(null);
+  const reducedMotion = usePrefersReducedMotion();
+  // Slides 2+ are mounted once the browser is idle, so only slide 1 competes with the first paint.
+  const [restReady, setRestReady] = useState(false);
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const id = w.requestIdleCallback
+      ? w.requestIdleCallback(() => setRestReady(true), { timeout: 2500 })
+      : window.setTimeout(() => setRestReady(true), 1500);
+    return () => (w.cancelIdleCallback ? w.cancelIdleCallback(id) : clearTimeout(id));
+  }, []);
+  const autoplay = playing && !reducedMotion;
 
   const go = useCallback((i: number) => setIndex((i + count) % count), [count]);
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) setPlaying(false);
-  }, []);
-
-  useEffect(() => {
-    if (!playing || hovered || count < 2) return;
+    if (!autoplay || hovered || count < 2) return;
     const t = setTimeout(() => go(index + 1), 6500);
     return () => clearTimeout(t);
-  }, [index, playing, hovered, count, go]);
+  }, [index, autoplay, hovered, count, go]);
 
   return (
     <section
-      className="relative overflow-hidden bg-surface-muted"
+      className="bg-surface-muted relative overflow-hidden"
       aria-roledescription="carousel"
       aria-label="Featured collections"
       onMouseEnter={() => setHovered(true)}
@@ -50,9 +57,12 @@ export function HeroCarousel({ children, count }: { children: React.ReactNode[];
             aria-label={`${i + 1} of ${count}`}
             aria-hidden={i !== index}
             inert={i !== index}
-            className={cn("absolute inset-0 transition-opacity duration-700 ease-out", i === index ? "opacity-100" : "pointer-events-none opacity-0")}
+            className={cn(
+              "absolute inset-0 transition-opacity duration-700 ease-out",
+              i === index ? "opacity-100" : "pointer-events-none opacity-0",
+            )}
           >
-            {child}
+            {i === 0 || restReady || i === index ? child : null}
           </div>
         ))}
       </div>
@@ -70,7 +80,7 @@ export function HeroCarousel({ children, count }: { children: React.ReactNode[];
                     aria-current={i === index}
                     className={cn(
                       "inline-flex h-11 min-w-11 items-center justify-center text-sm tabular-nums transition-colors",
-                      i === index ? "font-medium text-foreground" : "text-foreground/55 hover:text-foreground",
+                      i === index ? "text-foreground font-medium" : "text-foreground/55 hover:text-foreground",
                     )}
                   >
                     <span className={cn("border-b pb-0.5", i === index ? "border-foreground" : "border-transparent")}>
@@ -83,16 +93,16 @@ export function HeroCarousel({ children, count }: { children: React.ReactNode[];
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setPlaying((p) => !p)}
-                className="inline-flex size-11 items-center justify-center rounded-full text-foreground/70 hover:text-foreground"
-                aria-label={playing ? "Pause slideshow" : "Play slideshow"}
+                onClick={() => setPlaying(!autoplay)}
+                className="text-foreground/70 hover:text-foreground inline-flex size-11 items-center justify-center rounded-full"
+                aria-label={autoplay ? "Pause slideshow" : "Play slideshow"}
               >
-                {playing ? <Pause className="size-4 stroke-[1.5]" /> : <Play className="size-4 stroke-[1.5]" />}
+                {autoplay ? <Pause className="size-4 stroke-[1.5]" /> : <Play className="size-4 stroke-[1.5]" />}
               </button>
               <button
                 type="button"
                 onClick={() => go(index - 1)}
-                className="inline-flex size-11 items-center justify-center rounded-full border border-foreground/20 bg-surface/80 backdrop-blur hover:bg-surface"
+                className="border-foreground/20 bg-surface/80 hover:bg-surface inline-flex size-11 items-center justify-center rounded-full border backdrop-blur"
                 aria-label="Previous slide"
               >
                 <ArrowLeft className="size-4 stroke-[1.5]" />
@@ -100,7 +110,7 @@ export function HeroCarousel({ children, count }: { children: React.ReactNode[];
               <button
                 type="button"
                 onClick={() => go(index + 1)}
-                className="inline-flex size-11 items-center justify-center rounded-full border border-foreground/20 bg-surface/80 backdrop-blur hover:bg-surface"
+                className="border-foreground/20 bg-surface/80 hover:bg-surface inline-flex size-11 items-center justify-center rounded-full border backdrop-blur"
                 aria-label="Next slide"
               >
                 <ArrowRight className="size-4 stroke-[1.5]" />

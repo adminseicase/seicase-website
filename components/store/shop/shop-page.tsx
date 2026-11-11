@@ -23,11 +23,11 @@ export function ShopPage({
   fixed: { categorySlug?: string; styleSlug?: string; newIn?: boolean; q?: string };
 }) {
   return (
-    <Container className="pb-8 pt-6 md:pt-10">
+    <Container className="pt-6 pb-8 md:pt-10">
       <Breadcrumbs items={crumbs} />
-      <header className="mb-8 mt-4 max-w-2xl md:mb-10">
+      <header className="mt-4 mb-8 max-w-2xl md:mb-10">
         <h1 className="text-4xl md:text-6xl">{title}</h1>
-        {description && <p className="mt-3 text-muted">{description}</p>}
+        {description && <p className="text-muted mt-3">{description}</p>}
       </header>
       <Suspense fallback={<ShopResultsSkeleton />}>
         <ShopResults searchParams={searchParams} basePath={basePath} fixed={fixed} />

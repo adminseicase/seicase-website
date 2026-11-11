@@ -31,9 +31,9 @@ export function MiniCart() {
       <LazyMotion features={domAnimation}>
         {lines.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-            <ShoppingBag className="size-10 stroke-1 text-muted" aria-hidden="true" />
+            <ShoppingBag className="text-muted size-10 stroke-1" aria-hidden="true" />
             <p className="font-serif text-2xl">Your bag is empty</p>
-            <p className="text-sm text-muted">Find something you&apos;ll love to carry.</p>
+            <p className="text-muted text-sm">Find something you&apos;ll love to carry.</p>
             <Button asChild onClick={() => setMiniCart(false)}>
               <Link href="/shop">
                 Explore Collection <ArrowRight />
@@ -63,7 +63,7 @@ export function MiniCart() {
                         alt={l.name}
                         width={88}
                         height={110}
-                        className="h-[110px] w-[88px] rounded-md bg-surface-muted object-cover"
+                        className="bg-surface-muted h-[110px] w-[88px] rounded-md object-cover"
                         placeholder="blur"
                         blurDataURL={BLUR_DATA_URL}
                       />
@@ -71,15 +71,23 @@ export function MiniCart() {
                     <div className="flex min-w-0 flex-1 flex-col">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <Link href={`/product/${l.slug}`} onClick={() => setMiniCart(false)} className="font-serif text-lg leading-tight hover:text-cognac">
+                          <Link
+                            href={`/product/${l.slug}`}
+                            onClick={() => setMiniCart(false)}
+                            className="hover:text-cognac font-serif text-lg leading-tight"
+                          >
                             {l.name}
                           </Link>
-                          <p className="text-xs text-muted">{l.colour}</p>
-                          {l.charm && <p className="text-xs text-muted">+ {l.charm.name} ({formatINR(l.charm.price)})</p>}
+                          <p className="text-muted text-xs">{l.colour}</p>
+                          {l.charm && (
+                            <p className="text-muted text-xs">
+                              + {l.charm.name} ({formatINR(l.charm.price)})
+                            </p>
+                          )}
                         </div>
                         <button
                           type="button"
-                          className="-mr-2 -mt-1 inline-flex size-9 items-center justify-center rounded-full text-muted hover:bg-surface-muted hover:text-foreground"
+                          className="text-muted hover:bg-surface-muted hover:text-foreground -mt-1 -mr-2 inline-flex size-9 items-center justify-center rounded-full"
                           aria-label={`Remove ${l.name}`}
                           onClick={() => {
                             remove(l.key);
@@ -90,7 +98,12 @@ export function MiniCart() {
                         </button>
                       </div>
                       <div className="mt-auto flex items-end justify-between pt-2">
-                        <QuantityStepper size="sm" value={l.quantity} onChange={(q) => setQuantity(l.key, q)} label={`Quantity for ${l.name}`} />
+                        <QuantityStepper
+                          size="sm"
+                          value={l.quantity}
+                          onChange={(q) => setQuantity(l.key, q)}
+                          label={`Quantity for ${l.name}`}
+                        />
                         <p className="text-sm font-medium">{formatINR(lineTotal(l))}</p>
                       </div>
                     </div>
@@ -98,12 +111,12 @@ export function MiniCart() {
                 ))}
               </AnimatePresence>
             </ul>
-            <div className="space-y-3 border-t bg-surface px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-4">
+            <div className="bg-surface space-y-3 border-t px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted">Subtotal</span>
+                <span className="text-muted text-sm">Subtotal</span>
                 <span className="text-lg font-medium">{formatINR(subtotal)}</span>
               </div>
-              <p className="text-xs text-muted">Taxes included. Shipping and discounts calculated at checkout.</p>
+              <p className="text-muted text-xs">Taxes included. Shipping and discounts calculated at checkout.</p>
               <Button asChild size="lg" className="w-full">
                 <Link href="/cart" onClick={() => setMiniCart(false)}>
                   View Cart <ArrowRight />

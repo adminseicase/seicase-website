@@ -36,7 +36,10 @@ function GoogleButton({ next }: { next: string }) {
       }
     >
       <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
-        <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.9-5.5 3.9-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.7 3.3 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.5 0 9.2-3.9 9.2-9.4 0-.6-.1-1.1-.2-1.6H12z" />
+        <path
+          fill="#EA4335"
+          d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.9-5.5 3.9-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.7 3.3 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.5 0 9.2-3.9 9.2-9.4 0-.6-.1-1.1-.2-1.6H12z"
+        />
       </svg>
       Continue with Google
     </Button>
@@ -45,8 +48,8 @@ function GoogleButton({ next }: { next: string }) {
 
 function Divider({ label = "or" }: { label?: string }) {
   return (
-    <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-muted">
-      <span className="h-px flex-1 bg-border" /> {label} <span className="h-px flex-1 bg-border" />
+    <div className="text-muted my-6 flex items-center gap-3 text-xs tracking-[0.16em] uppercase">
+      <span className="bg-border h-px flex-1" /> {label} <span className="bg-border h-px flex-1" />
     </div>
   );
 }
@@ -66,7 +69,16 @@ export function LoginForm() {
   const [notice, setNotice] = useState<string | null>(error);
 
   const tab = (m: typeof mode, label: string, Icon: typeof Mail) => (
-    <button type="button" role="tab" aria-selected={mode === m} onClick={() => setMode(m)} className={cn("flex h-10 flex-1 items-center justify-center gap-1.5 rounded-md text-xs transition-colors", mode === m ? "bg-surface shadow-soft" : "text-muted hover:text-foreground")}>
+    <button
+      type="button"
+      role="tab"
+      aria-selected={mode === m}
+      onClick={() => setMode(m)}
+      className={cn(
+        "flex h-10 flex-1 items-center justify-center gap-1.5 rounded-md text-xs transition-colors",
+        mode === m ? "bg-surface shadow-soft" : "text-muted hover:text-foreground",
+      )}
+    >
       <Icon className="size-3.5" aria-hidden="true" /> {label}
     </button>
   );
@@ -74,9 +86,9 @@ export function LoginForm() {
   return (
     <div>
       <h1 className="text-4xl md:text-5xl">Welcome back</h1>
-      <p className="mt-2 text-muted">Sign in to track orders, save addresses and your wishlist.</p>
+      <p className="text-muted mt-2">Sign in to track orders, save addresses and your wishlist.</p>
       {notice && (
-        <p className="mt-4 rounded-lg bg-surface-muted p-3 text-sm" role="status">
+        <p className="bg-surface-muted mt-4 rounded-lg p-3 text-sm" role="status">
           {notice}
         </p>
       )}
@@ -84,7 +96,7 @@ export function LoginForm() {
         <GoogleButton next={next} />
       </div>
       <Divider />
-      <div role="tablist" aria-label="Sign-in method" className="mb-5 flex gap-1 rounded-lg bg-surface-muted p-1">
+      <div role="tablist" aria-label="Sign-in method" className="bg-surface-muted mb-5 flex gap-1 rounded-lg p-1">
         {tab("password", "Password", KeyRound)}
         {tab("magic", "Email link", Mail)}
         {tab("phone", "Phone OTP", Smartphone)}
@@ -111,11 +123,18 @@ export function LoginForm() {
           <div>
             <div className="flex items-baseline justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link href="/forgot-password" className="text-xs text-muted underline-offset-4 hover:underline">
+              <Link href="/forgot-password" className="text-muted text-xs underline-offset-4 hover:underline">
                 Forgot password?
               </Link>
             </div>
-            <Input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
           <Button type="submit" size="lg" className="w-full" disabled={pending}>
             {pending ? "Signing in…" : "Sign in"}
@@ -170,14 +189,34 @@ export function LoginForm() {
           <div>
             <Label htmlFor="phone">Mobile number</Label>
             <div className="flex">
-              <span className="inline-flex h-11 items-center rounded-l-md border border-r-0 border-border-strong bg-surface-muted px-3 text-sm text-muted">+91</span>
-              <Input id="phone" inputMode="numeric" maxLength={10} autoComplete="tel-national" className="rounded-l-none" required value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} disabled={otpSent} />
+              <span className="border-border-strong bg-surface-muted text-muted inline-flex h-11 items-center rounded-l-md border border-r-0 px-3 text-sm">
+                +91
+              </span>
+              <Input
+                id="phone"
+                inputMode="numeric"
+                maxLength={10}
+                autoComplete="tel-national"
+                className="rounded-l-none"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                disabled={otpSent}
+              />
             </div>
           </div>
           {otpSent && (
             <div>
               <Label htmlFor="otp">6-digit code</Label>
-              <Input id="otp" inputMode="numeric" autoComplete="one-time-code" maxLength={6} required value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))} />
+              <Input
+                id="otp"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                required
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+              />
             </div>
           )}
           <Button type="submit" size="lg" className="w-full" disabled={pending}>
@@ -186,9 +225,12 @@ export function LoginForm() {
         </form>
       )}
 
-      <p className="mt-8 text-center text-sm text-muted">
+      <p className="text-muted mt-8 text-center text-sm">
         New to seicase?{" "}
-        <Link href={`/signup${next !== "/account" ? `?next=${encodeURIComponent(next)}` : ""}`} className="text-foreground underline underline-offset-4">
+        <Link
+          href={`/signup${next !== "/account" ? `?next=${encodeURIComponent(next)}` : ""}`}
+          className="text-foreground underline underline-offset-4"
+        >
           Create an account
         </Link>
       </p>
@@ -206,14 +248,14 @@ export function SignupForm() {
     return (
       <div>
         <h1 className="text-4xl">Check your inbox</h1>
-        <p className="mt-3 text-muted">{done}</p>
+        <p className="text-muted mt-3">{done}</p>
       </div>
     );
   }
   return (
     <div>
       <h1 className="text-4xl md:text-5xl">Create your account</h1>
-      <p className="mt-2 text-muted">Join seicase for faster checkout, order tracking and 10% off your first order.</p>
+      <p className="text-muted mt-2">Join seicase for faster checkout, order tracking and 10% off your first order.</p>
       <div className="mt-8">
         <GoogleButton next={next} />
       </div>
@@ -234,27 +276,50 @@ export function SignupForm() {
       >
         <div>
           <Label htmlFor="name">Full name</Label>
-          <Input id="name" autoComplete="name" required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+          <Input
+            id="name"
+            autoComplete="name"
+            required
+            value={form.full_name}
+            onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+          />
         </div>
         <div>
           <Label htmlFor="su-email">Email</Label>
-          <Input id="su-email" type="email" autoComplete="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          <Input
+            id="su-email"
+            type="email"
+            autoComplete="email"
+            required
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
         </div>
         <div>
           <Label htmlFor="su-password">Password</Label>
-          <Input id="su-password" type="password" autoComplete="new-password" minLength={8} required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} aria-describedby="pw-hint" />
-          <p id="pw-hint" className="mt-1 text-xs text-muted">
+          <Input
+            id="su-password"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            aria-describedby="pw-hint"
+          />
+          <p id="pw-hint" className="text-muted mt-1 text-xs">
             At least 8 characters.
           </p>
         </div>
         <label className="flex items-center gap-3 text-sm">
-          <Checkbox checked={form.marketing} onChange={(e) => setForm({ ...form, marketing: e.target.checked })} /> Send me new arrivals and offers
+          <Checkbox checked={form.marketing} onChange={(e) => setForm({ ...form, marketing: e.target.checked })} /> Send me new arrivals and
+          offers
         </label>
         <Button type="submit" size="lg" className="w-full" disabled={pending}>
           {pending ? "Creating account…" : "Create account"}
         </Button>
       </form>
-      <p className="mt-8 text-center text-sm text-muted">
+      <p className="text-muted mt-8 text-center text-sm">
         Already have an account?{" "}
         <Link href="/login" className="text-foreground underline underline-offset-4">
           Sign in
@@ -271,9 +336,9 @@ export function ForgotPasswordForm() {
   return (
     <div>
       <h1 className="text-4xl md:text-5xl">Reset password</h1>
-      <p className="mt-2 text-muted">Enter your email and we&apos;ll send you a link to choose a new password.</p>
+      <p className="text-muted mt-2">Enter your email and we&apos;ll send you a link to choose a new password.</p>
       {msg ? (
-        <p className="mt-6 rounded-lg bg-surface-muted p-4 text-sm" role="status">
+        <p className="bg-surface-muted mt-6 rounded-lg p-4 text-sm" role="status">
           {msg}
         </p>
       ) : (
@@ -328,7 +393,15 @@ export function ResetPasswordForm() {
       >
         <div>
           <Label htmlFor="new-password">New password</Label>
-          <Input id="new-password" type="password" autoComplete="new-password" minLength={8} required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Input
+            id="new-password"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
         <Button type="submit" size="lg" className="w-full" disabled={pending}>
           Update password

@@ -16,6 +16,7 @@ import { QuantityStepper } from "../quantity-stepper";
 import { ProductGallery } from "./product-gallery";
 import { PincodeChecker } from "./pincode-checker";
 import { rememberViewed } from "./recently-viewed";
+import { useBrowserValue } from "@/lib/hooks";
 
 /**
  * Interactive part of the product page: gallery, colour selection, charm
@@ -25,7 +26,13 @@ import { rememberViewed } from "./recently-viewed";
 export function ProductView({ product, charms, children }: { product: ProductDetail; charms: Charm[]; children?: React.ReactNode }) {
   const variants = product.variants;
   const initial = variants.find((v) => v.is_default) ?? variants[0];
-  const [variantId, setVariantId] = useState(initial?.id);
+  // ?colour=olive links pre-select a colour (read after hydration, no mismatch)
+  const urlVariantId = useBrowserValue(() => {
+    const c = new URLSearchParams(window.location.search).get("colour");
+    return variants.find((x) => x.colour_name.toLowerCase().replace(/\s+/g, "-") === c)?.id ?? "";
+  }, "");
+  const [chosenId, setChosenId] = useState<string | null>(null);
+  const variantId = chosenId ?? (urlVariantId || initial?.id);
   const [qty, setQty] = useState(1);
   const [charmId, setCharmId] = useState<string | null>(null);
   const variant = variants.find((v) => v.id === variantId) ?? variants[0];
@@ -45,16 +52,15 @@ export function ProductView({ product, charms, children }: { product: ProductDet
     return (forVariant.length ? forVariant : g).sort((a, b) => a.sort_order - b.sort_order);
   }, [product.images, variant?.id]);
 
-  // Honour ?colour=olive links after hydration (keeps server and client HTML identical)
-  useEffect(() => {
-    const c = new URLSearchParams(window.location.search).get("colour");
-    const v = variants.find((x) => x.colour_name.toLowerCase().replace(/\s+/g, "-") === c);
-    if (v) setVariantId(v.id);
-  }, [variants]);
-
   useEffect(() => {
     track("product_view", { product_id: product.id, value: product.price });
-    rememberViewed({ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.images.find((i) => i.is_primary)?.url ?? product.images[0]?.url ?? null });
+    rememberViewed({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      image: product.images.find((i) => i.is_primary)?.url ?? product.images[0]?.url ?? null,
+    });
   }, [product]);
 
   // Sticky mobile "Add to Bag" appears once the main button scrolls away
@@ -67,7 +73,7 @@ export function ProductView({ product, charms, children }: { product: ProductDet
   }, []);
 
   const selectVariant = (id: string) => {
-    setVariantId(id);
+    setChosenId(id);
     const v = variants.find((x) => x.id === id);
     if (v) {
       const url = new URL(window.location.href);
@@ -89,7 +95,11 @@ export function ProductView({ product, charms, children }: { product: ProductDet
       charm: charm ? { id: charm.id, name: charm.name, price: Number(charm.price), image: charm.image_url } : null,
     };
     add(line, qty);
-    track("add_to_cart", { product_id: product.id, value: (price + (charm?.price ?? 0)) * qty, metadata: { variant: variant.sku, charm: charm?.slug } });
+    track("add_to_cart", {
+      product_id: product.id,
+      value: (price + (charm?.price ?? 0)) * qty,
+      metadata: { variant: variant.sku, charm: charm?.slug },
+    });
     openMiniCart({ ...line, key: `${variant.id}${charm ? `+${charm.id}` : ""}`, quantity: qty });
     if (qty > variant.stock) toast.message(`Only ${variant.stock} available — we'll confirm at checkout.`);
   };
@@ -106,18 +116,21 @@ export function ProductView({ product, charms, children }: { product: ProductDet
             {onSale && (
               <>
                 <p className="text-muted line-through">{formatINR(product.compare_at_price)}</p>
-                <span className="rounded-full bg-burgundy px-2 py-0.5 text-xs text-white">
+                <span className="bg-burgundy rounded-full px-2 py-0.5 text-xs text-white">
                   Save {Math.round(((product.compare_at_price! - price) / product.compare_at_price!) * 100)}%
                 </span>
               </>
             )}
           </div>
-          <p className="mt-1 text-xs text-muted">Inclusive of all taxes</p>
+          <p className="text-muted mt-1 text-xs">Inclusive of all taxes</p>
           {product.rating_count > 0 && (
-            <a href="#reviews" className="mt-3 inline-flex items-center gap-2 text-sm hover:text-cognac">
+            <a href="#reviews" className="hover:text-cognac mt-3 inline-flex items-center gap-2 text-sm">
               <span className="flex" aria-hidden="true">
                 {Array.from({ length: 5 }, (_, i) => (
-                  <Star key={i} className={cn("size-3.5", i < Math.round(product.rating_avg) ? "fill-foreground stroke-foreground" : "stroke-muted")} />
+                  <Star
+                    key={i}
+                    className={cn("size-3.5", i < Math.round(product.rating_avg) ? "fill-foreground stroke-foreground" : "stroke-muted")}
+                  />
                 ))}
               </span>
               <span>
@@ -125,7 +138,7 @@ export function ProductView({ product, charms, children }: { product: ProductDet
               </span>
             </a>
           )}
-          {product.short_description && <p className="mt-5 max-w-md leading-relaxed text-foreground/85">{product.short_description}</p>}
+          {product.short_description && <p className="text-foreground/85 mt-5 max-w-md leading-relaxed">{product.short_description}</p>}
 
           <fieldset className="mt-7">
             <legend className="mb-3 text-sm">
@@ -143,52 +156,67 @@ export function ProductView({ product, charms, children }: { product: ProductDet
                   onClick={() => selectVariant(v.id)}
                   className={cn(
                     "relative inline-flex size-11 items-center justify-center rounded-full border-2 transition-colors",
-                    v.id === variant?.id ? "border-foreground" : "border-transparent hover:border-border-strong",
+                    v.id === variant?.id ? "border-foreground" : "hover:border-border-strong border-transparent",
                   )}
                 >
                   <span className="size-8 rounded-full border border-black/10" style={{ background: v.colour_hex }} />
-                  {v.stock <= 0 && <span className="absolute h-px w-9 rotate-45 bg-foreground/60" aria-hidden="true" />}
+                  {v.stock <= 0 && <span className="bg-foreground/60 absolute h-px w-9 rotate-45" aria-hidden="true" />}
                 </button>
               ))}
             </div>
           </fieldset>
 
           {charms.length > 0 && (
-            <fieldset className="mt-7 rounded-xl border bg-surface/70 p-4">
+            <fieldset className="bg-surface/70 mt-7 rounded-xl border p-4">
               <legend className="sr-only">Make it yours with a charm</legend>
               <div className="mb-3 flex items-baseline justify-between">
                 <p className="font-serif text-xl">Make It Yours</p>
-                <p className="text-xs text-muted">Add a charm for a personal touch</p>
+                <p className="text-muted text-xs">Add a charm for a personal touch</p>
               </div>
-              <div className="scrollbar-none flex gap-2 overflow-x-auto" role="radiogroup" aria-label="Charm">
-                {charms.filter((c) => c.is_active).map((c) => {
-                  const on = c.id === charmId;
-                  const out = c.stock <= 0;
-                  return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={on}
-                      disabled={out}
-                      onClick={() => setCharmId(on ? null : c.id)}
-                      className={cn(
-                        "relative w-[84px] shrink-0 rounded-lg border p-1.5 text-left transition-colors disabled:opacity-40",
-                        on ? "border-foreground bg-surface" : "border-transparent hover:border-border-strong",
-                      )}
-                    >
-                      <Image src={c.image_url || "/images/placeholder.webp"} alt="" width={80} height={80} className="aspect-square w-full rounded-md object-cover" placeholder="blur" blurDataURL={BLUR_DATA_URL} />
-                      <span className="mt-1 block truncate text-[11px]">{c.name.replace(" Charm", "")}</span>
-                      <span className="block text-[11px] text-muted">+{formatINR(c.price)}</span>
-                      <span className={cn("absolute right-1 top-1 inline-flex size-5 items-center justify-center rounded-full bg-foreground text-background", !on && "hidden")}>
-                        <Check className="size-3" />
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="flex scrollbar-none gap-2 overflow-x-auto" role="radiogroup" aria-label="Charm">
+                {charms
+                  .filter((c) => c.is_active)
+                  .map((c) => {
+                    const on = c.id === charmId;
+                    const out = c.stock <= 0;
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        disabled={out}
+                        onClick={() => setCharmId(on ? null : c.id)}
+                        className={cn(
+                          "relative w-[84px] shrink-0 rounded-lg border p-1.5 text-left transition-colors disabled:opacity-40",
+                          on ? "border-foreground bg-surface" : "hover:border-border-strong border-transparent",
+                        )}
+                      >
+                        <Image
+                          src={c.image_url || "/images/placeholder.webp"}
+                          alt=""
+                          width={80}
+                          height={80}
+                          className="aspect-square w-full rounded-md object-cover"
+                          placeholder="blur"
+                          blurDataURL={BLUR_DATA_URL}
+                        />
+                        <span className="mt-1 block truncate text-[11px]">{c.name.replace(" Charm", "")}</span>
+                        <span className="text-muted block text-[11px]">+{formatINR(c.price)}</span>
+                        <span
+                          className={cn(
+                            "bg-foreground text-background absolute top-1 right-1 inline-flex size-5 items-center justify-center rounded-full",
+                            !on && "hidden",
+                          )}
+                        >
+                          <Check className="size-3" />
+                        </span>
+                      </button>
+                    );
+                  })}
               </div>
               {charm && (
-                <p className="mt-2 flex items-center gap-1.5 text-xs text-muted">
+                <p className="text-muted mt-2 flex items-center gap-1.5 text-xs">
                   <Plus className="size-3" /> {charm.name} will be attached to your bag
                 </p>
               )}
@@ -197,12 +225,12 @@ export function ProductView({ product, charms, children }: { product: ProductDet
 
           <div className="mt-6" aria-live="polite">
             {soldOut ? (
-              <p className="text-sm text-danger">This colour is sold out. Choose another colour or save it to your wishlist.</p>
+              <p className="text-danger text-sm">This colour is sold out. Choose another colour or save it to your wishlist.</p>
             ) : lowStock ? (
-              <p className="text-sm text-burgundy">Only {variant.stock} left — order soon.</p>
+              <p className="text-burgundy text-sm">Only {variant.stock} left — order soon.</p>
             ) : (
-              <p className="flex items-center gap-2 text-sm text-success">
-                <span className="size-2 rounded-full bg-success" aria-hidden="true" /> In stock, ready to ship
+              <p className="text-success flex items-center gap-2 text-sm">
+                <span className="bg-success size-2 rounded-full" aria-hidden="true" /> In stock, ready to ship
               </p>
             )}
           </div>
@@ -214,26 +242,33 @@ export function ProductView({ product, charms, children }: { product: ProductDet
             </Button>
             <WishlistButton
               variant="outline"
-              product={{ id: product.id, slug: product.slug, name: product.name, price, image: images[0]?.url ?? null, variantId: variant?.id }}
+              product={{
+                id: product.id,
+                slug: product.slug,
+                name: product.name,
+                price,
+                image: images[0]?.url ?? null,
+                variantId: variant?.id,
+              }}
             />
           </div>
-          {variant && <p className="mt-3 text-xs text-muted">SKU: {variant.sku}</p>}
+          {variant && <p className="text-muted mt-3 text-xs">SKU: {variant.sku}</p>}
 
           <ul className="mt-7 grid grid-cols-3 gap-2 border-y py-5 text-center text-xs">
             <li className="flex flex-col items-center gap-2">
-              <LeatherIcon className="size-6 text-brown" />
+              <LeatherIcon className="text-brown size-6" />
               Premium
               <br />
               Leather
             </li>
             <li className="flex flex-col items-center gap-2">
-              <Sparkles className="size-6 stroke-[1.25] text-brown" aria-hidden="true" />
+              <Sparkles className="text-brown size-6 stroke-[1.25]" aria-hidden="true" />
               Thoughtful
               <br />
               Design
             </li>
             <li className="flex flex-col items-center gap-2">
-              <Truck className="size-6 stroke-[1.25] text-brown" aria-hidden="true" />
+              <Truck className="text-brown size-6 stroke-[1.25]" aria-hidden="true" />
               Free Shipping
               <br />
               Across India
@@ -248,7 +283,7 @@ export function ProductView({ product, charms, children }: { product: ProductDet
       {/* Sticky Add to Bag for phones */}
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-30 border-t bg-surface/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur transition-transform duration-300 lg:hidden",
+          "bg-surface/95 fixed inset-x-0 bottom-0 z-30 border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 lg:hidden",
           showSticky ? "translate-y-0" : "translate-y-full",
         )}
         aria-hidden={!showSticky}
@@ -257,7 +292,7 @@ export function ProductView({ product, charms, children }: { product: ProductDet
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="truncate font-serif text-lg leading-tight">{product.name}</p>
-            <p className="text-sm text-muted">
+            <p className="text-muted text-sm">
               {variant?.colour_name} · {formatINR(price + (charm?.price ?? 0))}
             </p>
           </div>

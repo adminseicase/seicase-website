@@ -6,11 +6,26 @@ import type { SessionUser } from "@/lib/auth";
 import type { Json } from "@/lib/supabase/database.types";
 
 /** Records who changed what (Admin → Audit log). Never throws. */
-export async function audit(actor: SessionUser, action: string, entity: string, entityId: string | null, summary: string, changes?: unknown) {
+export async function audit(
+  actor: SessionUser,
+  action: string,
+  entity: string,
+  entityId: string | null,
+  summary: string,
+  changes?: unknown,
+) {
   try {
     await createAdminClient()
       .from("audit_logs")
-      .insert({ actor_id: actor.id, actor_email: actor.email, action, entity, entity_id: entityId, summary, changes: (changes ?? null) as Json });
+      .insert({
+        actor_id: actor.id,
+        actor_email: actor.email,
+        action,
+        entity,
+        entity_id: entityId,
+        summary,
+        changes: (changes ?? null) as Json,
+      });
   } catch (e) {
     console.error("[audit]", e);
   }
@@ -34,6 +49,11 @@ export function cleanHtml(html: string | null | undefined) {
 export type ActionResult<T = undefined> = { ok: true; message: string; data?: T } | { ok: false; message: string };
 
 export function fail(e: unknown): { ok: false; message: string } {
-  const message = e instanceof Error ? e.message : typeof e === "object" && e && "message" in e ? String((e as { message: string }).message) : "Something went wrong";
+  const message =
+    e instanceof Error
+      ? e.message
+      : typeof e === "object" && e && "message" in e
+        ? String((e as { message: string }).message)
+        : "Something went wrong";
   return { ok: false, message: message.includes("duplicate key") ? "That slug / code is already in use." : message };
 }

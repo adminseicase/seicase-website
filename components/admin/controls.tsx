@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { Button, type ButtonProps } from "@/components/ui/button";
+import { daysAgoIso } from "@/lib/utils";
 
 /** Search box that writes ?q= to the URL (debounced). */
 export function SearchInput({ placeholder = "Search…" }: { placeholder?: string }) {
@@ -15,7 +16,7 @@ export function SearchInput({ placeholder = "Search…" }: { placeholder?: strin
   return (
     <form
       role="search"
-      className="flex h-10 w-full max-w-xs items-center gap-2 rounded-lg border bg-surface px-3"
+      className="bg-surface flex h-10 w-full max-w-xs items-center gap-2 rounded-lg border px-3"
       onSubmit={(e) => {
         e.preventDefault();
         const sp = new URLSearchParams(params.toString());
@@ -25,8 +26,14 @@ export function SearchInput({ placeholder = "Search…" }: { placeholder?: strin
         router.replace(`${pathname}${sp.size ? `?${sp}` : ""}`);
       }}
     >
-      <Search className="size-4 text-muted" aria-hidden="true" />
-      <input value={value} onChange={(e) => setValue(e.target.value)} placeholder={placeholder} aria-label={placeholder} className="min-w-0 flex-1 bg-transparent text-sm focus:outline-none" />
+      <Search className="text-muted size-4" aria-hidden="true" />
+      <input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={placeholder}
+        aria-label={placeholder}
+        className="min-w-0 flex-1 bg-transparent text-sm focus:outline-none"
+      />
     </form>
   );
 }
@@ -74,8 +81,8 @@ export function DateRangePicker() {
     router.replace(`${pathname}?${sp}`);
   };
   const preset = (days: number) => {
-    const t = new Date();
-    const f = new Date(Date.now() - (days - 1) * 86_400_000);
+    const t = new Date(daysAgoIso(0));
+    const f = new Date(daysAgoIso(days - 1));
     setFrom(iso(f));
     setTo(iso(t));
     go(iso(f), iso(t));
@@ -83,7 +90,12 @@ export function DateRangePicker() {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {[7, 30, 90, 365].map((d) => (
-        <button key={d} type="button" onClick={() => preset(d)} className="h-9 rounded-lg border bg-surface px-3 text-xs hover:border-foreground">
+        <button
+          key={d}
+          type="button"
+          onClick={() => preset(d)}
+          className="bg-surface hover:border-foreground h-9 rounded-lg border px-3 text-xs"
+        >
           {d === 365 ? "12 months" : `${d} days`}
         </button>
       ))}
@@ -97,13 +109,25 @@ export function DateRangePicker() {
         <label className="sr-only" htmlFor="dr-from">
           From
         </label>
-        <input id="dr-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-9 rounded-lg border bg-surface px-2 text-xs" />
-        <span className="text-xs text-muted">to</span>
+        <input
+          id="dr-from"
+          type="date"
+          value={from}
+          onChange={(e) => setFrom(e.target.value)}
+          className="bg-surface h-9 rounded-lg border px-2 text-xs"
+        />
+        <span className="text-muted text-xs">to</span>
         <label className="sr-only" htmlFor="dr-to">
           To
         </label>
-        <input id="dr-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-9 rounded-lg border bg-surface px-2 text-xs" />
-        <button type="submit" className="h-9 rounded-lg bg-foreground px-3 text-xs text-background">
+        <input
+          id="dr-to"
+          type="date"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
+          className="bg-surface h-9 rounded-lg border px-2 text-xs"
+        />
+        <button type="submit" className="bg-foreground text-background h-9 rounded-lg px-3 text-xs">
           Apply
         </button>
       </form>

@@ -6,7 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "analyze": "next analyze",
+    "images:generate": "node scripts/generate-images.ts",
+    "db:seed:generate": "node scripts/generate-seed.ts",
+    "db:push": "supabase db push",
+    "db:seed": "supabase db execute --file supabase/seed.sql",
+    "db:types": "supabase gen types typescript --linked --schema public > lib/supabase/database.types.ts",
+    "email:preview": "email dev --dir emails"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.5",
@@ -35,7 +45,6 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.4.6",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
     "@types/papaparse": "^5.5.2",
@@ -51,5 +60,8 @@
     "tailwindcss": "4.3.3",
     "typescript": "^5"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=20.11"
+  }
 }

@@ -40,7 +40,8 @@ export interface Report {
   cohorts: { cohort: string; customers: number; m1: number; m2: number; m3: number; m4_6: number }[];
 }
 
-const num = <T extends object>(o: T): T => JSON.parse(JSON.stringify(o), (_, v) => (typeof v === "string" && /^-?\d+(\.\d+)?$/.test(v) ? Number(v) : v));
+const num = <T extends object>(o: T): T =>
+  JSON.parse(JSON.stringify(o), (_, v) => (typeof v === "string" && /^-?\d+(\.\d+)?$/.test(v) ? Number(v) : v));
 
 export async function getKpis(from: string, to: string): Promise<Kpis> {
   const supabase = await createClient();

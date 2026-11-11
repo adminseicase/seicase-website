@@ -40,6 +40,7 @@ export async function submitReview(input: unknown) {
     status: "pending",
     is_verified: true,
   });
-  if (error) return { ok: false, message: error.code === "23505" ? "You've already reviewed this product." : "We couldn't save your review." };
+  if (error)
+    return { ok: false, message: error.code === "23505" ? "You've already reviewed this product." : "We couldn't save your review." };
   return { ok: true, message: "Thank you! Your review will appear once it's approved." };
 }

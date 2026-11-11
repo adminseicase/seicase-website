@@ -35,7 +35,7 @@ export function ProductTabs({
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
   return (
-    <section className="mt-16 rounded-2xl bg-surface-muted/60 p-4 md:p-8" aria-label="More about this product">
+    <section className="bg-surface-muted/60 mt-16 rounded-2xl p-4 md:p-8" aria-label="More about this product">
       <div role="tablist" aria-label="Product information" className="mx-auto flex max-w-md justify-center gap-6 border-b">
         {tabs.map((t, i) => (
           <button
@@ -56,7 +56,10 @@ export function ProductTabs({
               setActive(tabs[next].id);
               refs.current[next]?.focus();
             }}
-            className={cn("-mb-px h-12 border-b-2 px-1 text-sm transition-colors", active === t.id ? "border-foreground" : "border-transparent text-muted hover:text-foreground")}
+            className={cn(
+              "-mb-px h-12 border-b-2 px-1 text-sm transition-colors",
+              active === t.id ? "border-foreground" : "text-muted hover:text-foreground border-transparent",
+            )}
           >
             {t.label}
           </button>
@@ -68,9 +71,13 @@ export function ProductTabs({
             spinOn ? (
               <SpinViewer frames={spinFrames} name={name} />
             ) : (
-              <button type="button" onClick={() => setSpinOn(true)} className="group relative mx-auto block aspect-square w-full max-w-[560px] overflow-hidden rounded-2xl" aria-label="Start 360 degree view">
+              <button
+                type="button"
+                onClick={() => setSpinOn(true)}
+                className="group relative mx-auto block aspect-square w-full max-w-[560px] overflow-hidden rounded-2xl"
+              >
                 <Image src={spinFrames[0]} alt="" fill sizes="(max-width: 768px) 92vw, 560px" className="object-cover" />
-                <span className="absolute inset-x-0 bottom-6 mx-auto flex w-fit items-center gap-2 rounded-full bg-surface/90 px-4 py-2 text-sm shadow-soft">
+                <span className="bg-surface/90 shadow-soft absolute inset-x-0 bottom-6 mx-auto flex w-fit items-center gap-2 rounded-full px-4 py-2 text-sm">
                   <Rotate3d className="size-4 stroke-[1.5]" /> Tap to view in 360°
                 </span>
               </button>
@@ -86,10 +93,22 @@ export function ProductTabs({
           )}
         </div>
       )}
-      <div role="tabpanel" id="panel-details" aria-labelledby="tab-details" hidden={active !== "details"} className="mx-auto max-w-2xl pt-8">
+      <div
+        role="tabpanel"
+        id="panel-details"
+        aria-labelledby="tab-details"
+        hidden={active !== "details"}
+        className="mx-auto max-w-2xl pt-8"
+      >
         {details}
       </div>
-      <div role="tabpanel" id="panel-dimensions" aria-labelledby="tab-dimensions" hidden={active !== "dimensions"} className="mx-auto max-w-2xl pt-8">
+      <div
+        role="tabpanel"
+        id="panel-dimensions"
+        aria-labelledby="tab-dimensions"
+        hidden={active !== "dimensions"}
+        className="mx-auto max-w-2xl pt-8"
+      >
         {dimensions}
       </div>
     </section>

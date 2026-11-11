@@ -5,17 +5,27 @@ import { env } from "@/lib/env";
 import "./globals.css";
 
 // Self-hosted at build time by next/font: no layout shift, no third-party requests.
+// Variable fonts: one file per family/style instead of one per weight.
+// Only the display serif (used by the hero headline) is preloaded so fonts
+// never compete with the LCP image; Jost swaps in with metric-matched fallbacks.
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
   display: "swap",
   variable: "--font-cormorant",
 });
+// Italic is used sparingly (taglines, excerpts) — loaded on demand, not preloaded.
+const cormorantItalic = Cormorant_Garamond({
+  subsets: ["latin"],
+  style: "italic",
+  display: "swap",
+  preload: false,
+  variable: "--font-cormorant-italic",
+});
 const jost = Jost({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
   display: "swap",
+  preload: false,
+  adjustFontFallback: true,
   variable: "--font-jost",
 });
 
@@ -48,7 +58,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-IN" className={`${cormorant.variable} ${jost.variable}`}>
+    <html lang="en-IN" className={`${cormorant.variable} ${cormorantItalic.variable} ${jost.variable}`}>
       <body className="min-h-dvh">
         {children}
         <Toaster

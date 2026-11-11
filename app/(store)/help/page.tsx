@@ -27,15 +27,22 @@ export default async function HelpPage() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-surface-muted">
+      <section className="bg-surface-muted relative overflow-hidden">
         <Container className="relative grid items-center gap-8 py-14 md:grid-cols-[1.1fr_1fr] md:py-20">
           <div>
             <h1 className="text-5xl md:text-6xl">How can we help you?</h1>
-            <p className="mt-3 max-w-md text-muted">Find answers to common questions or get in touch with our team.</p>
+            <p className="text-muted mt-3 max-w-md">Find answers to common questions or get in touch with our team.</p>
             <HelpSearch faqs={faqs.map((f) => ({ id: f.id, question: f.question, answer: f.answer }))} />
           </div>
           <div className="relative hidden aspect-[4/3] overflow-hidden rounded-2xl md:block">
-            <Image src="/images/products/the-heritage-satchel/burgundy-detail.webp" alt="" fill sizes="45vw" className="object-cover" preload />
+            <Image
+              src="/images/products/the-heritage-satchel/burgundy-detail.webp"
+              alt=""
+              fill
+              sizes="45vw"
+              className="object-cover"
+              preload
+            />
           </div>
         </Container>
       </section>
@@ -44,8 +51,11 @@ export default async function HelpPage() {
         <ul className="grid grid-cols-3 gap-3 sm:grid-cols-5">
           {quick.map(({ href, label, Icon }) => (
             <li key={label}>
-              <Link href={href} className="flex h-full flex-col items-center gap-2 rounded-xl border bg-surface p-4 text-center text-sm hover:border-foreground">
-                <Icon className="size-6 stroke-[1.25] text-brown" aria-hidden="true" /> {label}
+              <Link
+                href={href}
+                className="bg-surface hover:border-foreground flex h-full flex-col items-center gap-2 rounded-xl border p-4 text-center text-sm"
+              >
+                <Icon className="text-brown size-6 stroke-[1.25]" aria-hidden="true" /> {label}
               </Link>
             </li>
           ))}
@@ -65,11 +75,14 @@ export default async function HelpPage() {
             </section>
           ))}
         </div>
-        <aside className="h-fit rounded-2xl bg-surface-muted p-6 text-center lg:sticky lg:top-24">
+        <aside className="bg-surface-muted h-fit rounded-2xl p-6 text-center lg:sticky lg:top-24">
           <Headset className="mx-auto size-10 stroke-1" aria-hidden="true" />
           <p className="mt-3 font-serif text-2xl">Still have questions?</p>
-          <p className="mt-1 text-sm text-muted">Our team is here to help.</p>
-          <Link href="/contact" className="mt-5 inline-flex h-11 items-center rounded-md bg-foreground px-5 text-sm text-background hover:bg-brown">
+          <p className="text-muted mt-1 text-sm">Our team is here to help.</p>
+          <Link
+            href="/contact"
+            className="bg-foreground text-background hover:bg-brown mt-5 inline-flex h-11 items-center rounded-md px-5 text-sm"
+          >
             Contact Support →
           </Link>
         </aside>
@@ -88,14 +101,14 @@ export default async function HelpPage() {
 
 function FaqList({ items }: { items: { id: string; question: string; answer: string }[] }) {
   return (
-    <div className="divide-y rounded-xl border bg-surface">
+    <div className="bg-surface divide-y rounded-xl border">
       {items.map((f) => (
         <details key={f.id} id={`q-${f.id}`} className="group px-5">
           <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 text-[0.95rem] [&::-webkit-details-marker]:hidden">
             {f.question}
             <ChevronDown className="size-4 shrink-0 stroke-[1.5] transition-transform group-open:rotate-180" aria-hidden="true" />
           </summary>
-          <p className="pb-5 text-sm leading-relaxed text-muted">{f.answer}</p>
+          <p className="text-muted pb-5 text-sm leading-relaxed">{f.answer}</p>
         </details>
       ))}
     </div>

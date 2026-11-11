@@ -13,7 +13,9 @@ export const orderUrl = (orderNumber: string, token: string) => `${env.siteUrl}/
 export async function loadEmailOrder(orderId: string): Promise<(EmailOrder & { email: string; accessToken: string }) | null> {
   const { data: o } = await createAdminClient()
     .from("orders")
-    .select("order_number, access_token, email, customer_name, subtotal, discount_total, shipping_total, cod_fee, total, payment_method, shipping_address, order_items(product_name, variant_name, quantity, unit_price, image_url)")
+    .select(
+      "order_number, access_token, email, customer_name, subtotal, discount_total, shipping_total, cod_fee, total, payment_method, shipping_address, order_items(product_name, variant_name, quantity, unit_price, image_url)",
+    )
     .eq("id", orderId)
     .single();
   if (!o) return null;
@@ -23,7 +25,13 @@ export async function loadEmailOrder(orderId: string): Promise<(EmailOrder & { e
     accessToken: o.access_token,
     email: o.email,
     customerName: o.customer_name || address?.full_name || "there",
-    items: o.order_items.map((i) => ({ name: i.product_name, variant: i.variant_name, quantity: i.quantity, price: Number(i.unit_price), image: i.image_url })),
+    items: o.order_items.map((i) => ({
+      name: i.product_name,
+      variant: i.variant_name,
+      quantity: i.quantity,
+      price: Number(i.unit_price),
+      image: i.image_url,
+    })),
     subtotal: Number(o.subtotal),
     discount: Number(o.discount_total),
     shipping: Number(o.shipping_total),
@@ -39,7 +47,11 @@ export async function loadEmailOrder(orderId: string): Promise<(EmailOrder & { e
 export async function onOrderPlaced(orderId: string) {
   const order = await loadEmailOrder(orderId);
   if (!order) return;
-  await sendEmail({ to: order.email, subject: `Your seicase order #${order.orderNumber} is confirmed`, template: { kind: "order-confirmation", order } });
+  await sendEmail({
+    to: order.email,
+    subject: `Your seicase order #${order.orderNumber} is confirmed`,
+    template: { kind: "order-confirmation", order },
+  });
   const admin = await adminEmail();
   if (admin) {
     await sendEmail({

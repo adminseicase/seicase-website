@@ -10,7 +10,16 @@ async function Details() {
   const user = await requireUser("/account/details");
   const supabase = await createClient();
   const { data } = await supabase.from("profiles").select("marketing_opt_in").eq("id", user.id).maybeSingle();
-  return <DetailsForm initial={{ full_name: user.fullName ?? "", phone: user.phone?.replace(/^\+91/, "") ?? "", email: user.email ?? "", marketing_opt_in: data?.marketing_opt_in ?? false }} />;
+  return (
+    <DetailsForm
+      initial={{
+        full_name: user.fullName ?? "",
+        phone: user.phone?.replace(/^\+91/, "") ?? "",
+        email: user.email ?? "",
+        marketing_opt_in: data?.marketing_opt_in ?? false,
+      }}
+    />
+  );
 }
 
 export default function DetailsPage() {

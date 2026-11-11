@@ -17,15 +17,30 @@ export function LazyMap({ lat, lng, label }: { lat: number; lng: number; label: 
   const d = 0.008;
   const src = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - d}%2C${lat - d}%2C${lng + d}%2C${lat + d}&layer=mapnik&marker=${lat}%2C${lng}`;
   return (
-    <div ref={ref} className="relative aspect-[16/7] min-h-64 overflow-hidden rounded-2xl border bg-surface-muted">
+    <div ref={ref} className="bg-surface-muted relative aspect-[16/7] min-h-64 overflow-hidden rounded-2xl border">
       {show ? (
-        <iframe title={`Map: ${label}`} src={src} loading="lazy" className="absolute inset-0 h-full w-full" referrerPolicy="no-referrer-when-downgrade" />
+        <iframe
+          title={`Map: ${label}`}
+          src={src}
+          loading="lazy"
+          className="absolute inset-0 h-full w-full"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
       ) : (
-        <button type="button" onClick={() => setShow(true)} className="absolute inset-0 flex items-center justify-center gap-2 text-sm text-muted">
-          <MapPin className="size-5 text-burgundy" aria-hidden="true" /> Show map
+        <button
+          type="button"
+          onClick={() => setShow(true)}
+          className="text-muted absolute inset-0 flex items-center justify-center gap-2 text-sm"
+        >
+          <MapPin className="text-burgundy size-5" aria-hidden="true" /> Show map
         </button>
       )}
-      <a href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`} target="_blank" rel="noopener noreferrer" className="absolute bottom-3 right-3 rounded-md bg-surface/95 px-3 py-2 text-xs shadow-soft hover:bg-surface">
+      <a
+        href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bg-surface/95 shadow-soft hover:bg-surface absolute right-3 bottom-3 rounded-md px-3 py-2 text-xs"
+      >
         Open in Google Maps
       </a>
     </div>

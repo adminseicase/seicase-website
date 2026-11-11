@@ -47,14 +47,17 @@ function Accordion({ title, children, open = false }: { title: string; children:
         {title}
         <ChevronDown className="size-4 stroke-[1.5] transition-transform group-open:rotate-180" aria-hidden="true" />
       </summary>
-      <div className="pb-5 text-sm leading-relaxed text-foreground/85">{children}</div>
+      <div className="text-foreground/85 pb-5 text-sm leading-relaxed">{children}</div>
     </details>
   );
 }
 
 async function RelatedProducts({ categoryId, productId }: { categoryId: string | null; productId: string }) {
   const all = await getAllProducts();
-  const related = [...all.filter((p) => p.id !== productId && p.category_id === categoryId), ...all.filter((p) => p.id !== productId && p.category_id !== categoryId && p.is_trending)].slice(0, 8);
+  const related = [
+    ...all.filter((p) => p.id !== productId && p.category_id === categoryId),
+    ...all.filter((p) => p.id !== productId && p.category_id !== categoryId && p.is_trending),
+  ].slice(0, 8);
   if (!related.length) return null;
   return (
     <section aria-labelledby="also-like" className="mt-16">
@@ -72,7 +75,7 @@ async function RelatedProducts({ categoryId, productId }: { categoryId: string |
 
 function ProductSkeleton() {
   return (
-    <Container className="pb-8 pt-6 md:pt-8" aria-busy="true">
+    <Container className="pt-6 pb-8 md:pt-8" aria-busy="true">
       <Skeleton className="h-4 w-60" />
       <div className="mt-5 grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
         <Skeleton className="aspect-[4/5] rounded-2xl" />
@@ -102,8 +105,14 @@ async function ProductContent({ params }: Pick<PageProps<"/product/[slug]">, "pa
   if (!product) notFound();
   const [charms, reviews, settings] = await Promise.all([getCharms(), getProductReviews(product.id), getSiteSettings()]);
   const isBag = ["handbags", "purses"].includes(product.category?.slug ?? "");
-  const spinFrames = product.images.filter((i) => i.kind === "spin").sort((a, b) => a.sort_order - b.sort_order).map((i) => i.url);
-  const angles = product.images.filter((i) => i.kind === "gallery" && i.url.includes("-angle")).map((i) => i.url).slice(0, 3);
+  const spinFrames = product.images
+    .filter((i) => i.kind === "spin")
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((i) => i.url);
+  const angles = product.images
+    .filter((i) => i.kind === "gallery" && i.url.includes("-angle"))
+    .map((i) => i.url)
+    .slice(0, 3);
   const { shipping } = settings;
 
   const dimensions = (
@@ -146,10 +155,14 @@ async function ProductContent({ params }: Pick<PageProps<"/product/[slug]">, "pa
       )}
     </dl>
   );
-  const details = product.description ? <div className="prose-seicase" dangerouslySetInnerHTML={{ __html: product.description }} /> : <p>{product.short_description}</p>;
+  const details = product.description ? (
+    <div className="prose-seicase" dangerouslySetInnerHTML={{ __html: product.description }} />
+  ) : (
+    <p>{product.short_description}</p>
+  );
 
   return (
-    <Container className="pb-8 pt-6 md:pt-8">
+    <Container className="pt-6 pb-8 md:pt-8">
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -170,8 +183,9 @@ async function ProductContent({ params }: Pick<PageProps<"/product/[slug]">, "pa
             </Accordion>
             <Accordion title="Shipping & Returns">
               <p>
-                Free shipping on orders above {formatINR(shipping.free_threshold)} (otherwise {formatINR(shipping.flat_rate)}). Dispatched within 1–2 business days;
-                delivery in {shipping.metro_days} days to metros and {shipping.standard_days} days elsewhere. Easy {shipping.return_window_days}-day returns.
+                Free shipping on orders above {formatINR(shipping.free_threshold)} (otherwise {formatINR(shipping.flat_rate)}). Dispatched
+                within 1–2 business days; delivery in {shipping.metro_days} days to metros and {shipping.standard_days} days elsewhere. Easy{" "}
+                {shipping.return_window_days}-day returns.
               </p>
             </Accordion>
           </div>
@@ -180,7 +194,13 @@ async function ProductContent({ params }: Pick<PageProps<"/product/[slug]">, "pa
 
       <ProductTabs name={product.name} spinFrames={spinFrames} posters={angles} details={details} dimensions={dimensions} />
 
-      <Reviews productId={product.id} productName={product.name} reviews={reviews} ratingAvg={Number(product.rating_avg)} ratingCount={product.rating_count} />
+      <Reviews
+        productId={product.id}
+        productName={product.name}
+        reviews={reviews}
+        ratingAvg={Number(product.rating_avg)}
+        ratingCount={product.rating_count}
+      />
 
       <Suspense fallback={<Skeleton className="mt-16 h-80" />}>
         <RelatedProducts categoryId={product.category_id} productId={product.id} />
@@ -194,12 +214,21 @@ async function ProductContent({ params }: Pick<PageProps<"/product/[slug]">, "pa
             "@type": "Product",
             name: product.name,
             description: stripHtml(product.description) || product.short_description,
-            image: product.images.filter((i) => i.kind === "gallery").slice(0, 6).map((i) => absoluteUrl(i.url)),
+            image: product.images
+              .filter((i) => i.kind === "gallery")
+              .slice(0, 6)
+              .map((i) => absoluteUrl(i.url)),
             sku: product.variants[0]?.sku,
             brand: { "@type": "Brand", name: "seicase" },
             material: product.material ?? undefined,
             ...(product.rating_count > 0
-              ? { aggregateRating: { "@type": "AggregateRating", ratingValue: Number(product.rating_avg).toFixed(1), reviewCount: product.rating_count } }
+              ? {
+                  aggregateRating: {
+                    "@type": "AggregateRating",
+                    ratingValue: Number(product.rating_avg).toFixed(1),
+                    reviewCount: product.rating_count,
+                  },
+                }
               : {}),
             review: reviews.slice(0, 3).map((r) => ({
               "@type": "Review",
@@ -220,7 +249,11 @@ async function ProductContent({ params }: Pick<PageProps<"/product/[slug]">, "pa
               shippingDetails: {
                 "@type": "OfferShippingDetails",
                 shippingDestination: { "@type": "DefinedRegion", addressCountry: "IN" },
-                shippingRate: { "@type": "MonetaryAmount", value: Number(product.price) >= shipping.free_threshold ? 0 : shipping.flat_rate, currency: "INR" },
+                shippingRate: {
+                  "@type": "MonetaryAmount",
+                  value: Number(product.price) >= shipping.free_threshold ? 0 : shipping.flat_rate,
+                  currency: "INR",
+                },
               },
               hasMerchantReturnPolicy: {
                 "@type": "MerchantReturnPolicy",
@@ -236,8 +269,15 @@ async function ProductContent({ params }: Pick<PageProps<"/product/[slug]">, "pa
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/") },
               { "@type": "ListItem", position: 2, name: "Shop", item: absoluteUrl("/shop") },
-              ...(product.category ? [{ "@type": "ListItem", position: 3, name: product.category.name, item: absoluteUrl(`/shop/${product.category.slug}`) }] : []),
-              { "@type": "ListItem", position: product.category ? 4 : 3, name: product.name, item: absoluteUrl(`/product/${product.slug}`) },
+              ...(product.category
+                ? [{ "@type": "ListItem", position: 3, name: product.category.name, item: absoluteUrl(`/shop/${product.category.slug}`) }]
+                : []),
+              {
+                "@type": "ListItem",
+                position: product.category ? 4 : 3,
+                name: product.name,
+                item: absoluteUrl(`/product/${product.slug}`),
+              },
             ],
           },
         ]}

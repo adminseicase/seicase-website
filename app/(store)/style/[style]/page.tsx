@@ -22,7 +22,13 @@ export async function generateMetadata({ params }: PageProps<"/style/[style]">):
 
 export default function Page(props: PageProps<"/style/[style]">) {
   return (
-    <Suspense fallback={<div className="mx-auto max-w-[1440px] px-4 pt-10 md:px-8"><ShopResultsSkeleton /></div>}>
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-[1440px] px-4 pt-10 md:px-8">
+          <ShopResultsSkeleton />
+        </div>
+      }
+    >
       <Content params={props.params} searchParams={props.searchParams} />
     </Suspense>
   );

@@ -61,7 +61,14 @@ export async function validateCart(input: unknown): Promise<ValidatedLine[]> {
       .filter((v) => variantIds.includes(v.id))
       .map((v) => {
         const p = c.products.find((x) => x.id === v.product_id)!;
-        return { id: v.id, stock: v.stock, price: Number(v.price_override ?? p.price), name: p.name, colour: v.colour_name, published: all.some((a) => a.id === p.id) };
+        return {
+          id: v.id,
+          stock: v.stock,
+          price: Number(v.price_override ?? p.price),
+          name: p.name,
+          colour: v.colour_name,
+          published: all.some((a) => a.id === p.id),
+        };
       });
   }
   const charms = await getCharms();
@@ -111,7 +118,11 @@ export async function syncServerCart(input: { lines: unknown; sessionId: string;
     last_activity_at: new Date().toISOString(),
   };
   const { data: cart } = user
-    ? await admin.from("carts").upsert({ ...cartRow, user_id: user.id }, { onConflict: "user_id" }).select("id").single()
+    ? await admin
+        .from("carts")
+        .upsert({ ...cartRow, user_id: user.id }, { onConflict: "user_id" })
+        .select("id")
+        .single()
     : await admin.from("carts").upsert(cartRow, { onConflict: "session_id" }).select("id").single();
   if (!cart) return { ok: false };
 
@@ -119,7 +130,15 @@ export async function syncServerCart(input: { lines: unknown; sessionId: string;
   if (lines.data.length) {
     const c = buildCatalog();
     const productIds = isServiceRoleConfigured()
-      ? (await admin.from("product_variants").select("id, product_id").in("id", lines.data.map((l) => l.variantId))).data ?? []
+      ? ((
+          await admin
+            .from("product_variants")
+            .select("id, product_id")
+            .in(
+              "id",
+              lines.data.map((l) => l.variantId),
+            )
+        ).data ?? [])
       : c.variants.map((v) => ({ id: v.id, product_id: v.product_id }));
     await admin.from("cart_items").insert(
       lines.data

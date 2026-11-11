@@ -20,7 +20,12 @@ export function CouponField({ code, onApply, quote }: { code: string | null; onA
           </p>
         </div>
         {code && (
-          <button type="button" onClick={() => onApply(null)} className="inline-flex size-9 items-center justify-center rounded-full hover:bg-surface-muted" aria-label="Remove code">
+          <button
+            type="button"
+            onClick={() => onApply(null)}
+            className="hover:bg-surface-muted inline-flex size-9 items-center justify-center rounded-full"
+            aria-label="Remove code"
+          >
             <X className="size-4" />
           </button>
         )}
@@ -44,9 +49,9 @@ export function CouponField({ code, onApply, quote }: { code: string | null; onA
         onChange={(e) => setValue(e.target.value)}
         placeholder="Discount code"
         autoComplete="off"
-        className="h-11 min-w-0 flex-1 rounded-md border border-border-strong bg-surface px-3 text-sm uppercase placeholder:normal-case focus:border-cognac focus:outline-none"
+        className="border-border-strong bg-surface focus:border-cognac h-11 min-w-0 flex-1 rounded-md border px-3 text-sm uppercase placeholder:normal-case focus:outline-none"
       />
-      <button type="submit" className="h-11 rounded-md border border-foreground px-4 text-sm hover:bg-foreground hover:text-background">
+      <button type="submit" className="border-foreground hover:bg-foreground hover:text-background h-11 rounded-md border px-4 text-sm">
         Apply
       </button>
     </form>
@@ -64,14 +69,19 @@ export function Totals({ quote, loading, fallbackSubtotal }: { quote: Quote | nu
   return (
     <dl className={cn("space-y-2.5 text-sm transition-opacity", loading && "opacity-60")} aria-busy={loading}>
       {row("Subtotal", formatINR(subtotal))}
-      {quote && quote.discount > 0 && row(`Discount${quote.coupon ? ` (${quote.coupon.code})` : ""}`, <span className="text-success">− {formatINR(quote.discount)}</span>)}
+      {quote &&
+        quote.discount > 0 &&
+        row(
+          `Discount${quote.coupon ? ` (${quote.coupon.code})` : ""}`,
+          <span className="text-success">− {formatINR(quote.discount)}</span>,
+        )}
       {row("Shipping", quote ? (quote.shipping === 0 ? "FREE" : formatINR(quote.shipping)) : "Calculated at checkout")}
       {quote && quote.codFee > 0 && row("Cash on Delivery fee", formatINR(quote.codFee))}
       <div className="flex items-baseline justify-between border-t pt-3 text-base">
         <dt className="font-medium">Total</dt>
         <dd className="font-serif text-2xl">{formatINR(quote?.total ?? subtotal)}</dd>
       </div>
-      {quote && quote.gst > 0 && <p className="text-right text-xs text-muted">Includes GST of {formatINR(quote.gst, { exact: true })}</p>}
+      {quote && quote.gst > 0 && <p className="text-muted text-right text-xs">Includes GST of {formatINR(quote.gst, { exact: true })}</p>}
     </dl>
   );
 }

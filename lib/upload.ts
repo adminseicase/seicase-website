@@ -1,7 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
-
 /**
  * Resizes + compresses an image in the browser (WebP, max edge `maxSize`)
  * and uploads it straight to Supabase Storage with the user's session.
@@ -30,6 +28,8 @@ export async function uploadImage(
   folder: string,
   opts: { userScoped?: boolean; maxSize?: number } = {},
 ): Promise<string> {
+  // Loaded on demand so the Supabase SDK never weighs down storefront pages.
+  const { createClient } = await import("@/lib/supabase/client");
   const supabase = createClient();
   const blob = await compressImage(file, opts.maxSize ?? 2000);
   let prefix = folder;
@@ -40,7 +40,9 @@ export async function uploadImage(
   }
   const ext = blob.type === "image/svg+xml" ? "svg" : "webp";
   const path = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from(bucket).upload(path, blob, { contentType: blob.type, cacheControl: "31536000", upsert: false });
+  const { error } = await supabase.storage
+    .from(bucket)
+    .upload(path, blob, { contentType: blob.type, cacheControl: "31536000", upsert: false });
   if (error) throw new Error(error.message);
   return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }

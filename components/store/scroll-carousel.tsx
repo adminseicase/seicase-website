@@ -57,11 +57,16 @@ export function ScrollCarousel({
     <div className={cn("relative", className)} role="region" aria-roledescription="carousel" aria-label={label}>
       <ul
         ref={ref}
-        className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-4 px-4 md:-mx-0 md:gap-5 md:scroll-px-0 md:px-0"
+        className="-mx-4 flex snap-x snap-mandatory scroll-px-4 scrollbar-none gap-4 overflow-x-auto px-4 md:-mx-0 md:scroll-px-0 md:gap-5 md:px-0"
         tabIndex={0}
       >
         {children.map((child, i) => (
-          <li key={i} className={cn("shrink-0 snap-start", itemClassName)} aria-roledescription="slide" aria-label={`${i + 1} of ${children.length}`}>
+          <li
+            key={i}
+            className={cn("shrink-0 snap-start", itemClassName)}
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${children.length}`}
+          >
             {child}
           </li>
         ))}

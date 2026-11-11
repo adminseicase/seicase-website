@@ -10,7 +10,14 @@ import { cancelOrder, requestReturn } from "@/lib/actions/account";
 import { retryPayment } from "@/lib/actions/checkout";
 import { openRazorpay } from "../checkout/razorpay";
 
-const REASONS = ["Changed my mind", "Colour looks different", "Size isn't right", "Item damaged or defective", "Wrong item received", "Other"];
+const REASONS = [
+  "Changed my mind",
+  "Colour looks different",
+  "Size isn't right",
+  "Item damaged or defective",
+  "Wrong item received",
+  "Other",
+];
 
 export function OrderActions({
   orderId,
@@ -96,7 +103,12 @@ export function OrderActions({
             <legend className="mb-2 text-sm font-medium">Items</legend>
             {items.map((i) => (
               <label key={i.id} className="flex min-h-10 items-center gap-3 text-sm">
-                <input type="checkbox" className="size-4 accent-foreground" checked={selected.includes(i.id)} onChange={(e) => setSelected((s) => (e.target.checked ? [...s, i.id] : s.filter((x) => x !== i.id)))} />
+                <input
+                  type="checkbox"
+                  className="accent-foreground size-4"
+                  checked={selected.includes(i.id)}
+                  onChange={(e) => setSelected((s) => (e.target.checked ? [...s, i.id] : s.filter((x) => x !== i.id)))}
+                />
                 {i.name}
               </label>
             ))}
@@ -105,7 +117,8 @@ export function OrderActions({
             <legend className="mb-2 text-sm font-medium">I&apos;d like</legend>
             {(["return", "exchange"] as const).map((t) => (
               <label key={t} className="flex items-center gap-2 text-sm capitalize">
-                <input type="radio" name="rtype" className="accent-foreground" checked={type === t} onChange={() => setType(t)} /> {t === "return" ? "A refund" : "An exchange"}
+                <input type="radio" name="rtype" className="accent-foreground" checked={type === t} onChange={() => setType(t)} />{" "}
+                {t === "return" ? "A refund" : "An exchange"}
               </label>
             ))}
           </fieldset>

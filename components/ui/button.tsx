@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Slot } from "radix-ui";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -32,15 +31,16 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   asChild?: boolean;
 }
 
-export function Button({ className, variant, size, asChild, type, ...props }: ButtonProps) {
-  const Comp = asChild ? Slot.Root : "button";
+/** `asChild` styles the single child element (e.g. a <Link>) as a button — no extra wrapper, no dependency. */
+export function Button({ className, variant, size, asChild, type, children, ...props }: ButtonProps) {
+  const classes = cn(buttonVariants({ variant, size }), className);
+  if (asChild && React.isValidElement<{ className?: string }>(children)) {
+    return React.cloneElement(children, { ...(props as object), className: cn(classes, children.props.className) });
+  }
   return (
-    <Comp
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size }), className)}
-      {...(!asChild ? { type: type ?? "button" } : {})}
-      {...props}
-    />
+    <button data-slot="button" className={classes} type={type ?? "button"} {...props}>
+      {children}
+    </button>
   );
 }
 

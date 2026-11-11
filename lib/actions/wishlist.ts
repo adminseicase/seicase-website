@@ -26,9 +26,10 @@ export async function syncWishlist(localIds: string[]): Promise<WishlistItem[] |
   const ids = z.array(z.string().uuid()).max(200).parse(localIds);
   const supabase = await createClient();
   if (ids.length) {
-    await supabase
-      .from("wishlists")
-      .upsert(ids.map((product_id) => ({ user_id: user.id, product_id })), { onConflict: "user_id,product_id", ignoreDuplicates: true });
+    await supabase.from("wishlists").upsert(
+      ids.map((product_id) => ({ user_id: user.id, product_id })),
+      { onConflict: "user_id,product_id", ignoreDuplicates: true },
+    );
   }
   const { data } = await supabase
     .from("wishlists")
@@ -45,8 +46,17 @@ export async function syncWishlist(localIds: string[]): Promise<WishlistItem[] |
         product_images: { url: string; is_primary: boolean; sort_order: number; kind: string }[];
       } | null;
       if (!p) return null;
-      const img = [...p.product_images].filter((i) => i.kind === "gallery").sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
-      return { productId: p.id, slug: p.slug, name: p.name, price: Number(p.price), image: img?.url ?? null, addedAt: Date.parse(w.created_at) };
+      const img = [...p.product_images]
+        .filter((i) => i.kind === "gallery")
+        .sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
+      return {
+        productId: p.id,
+        slug: p.slug,
+        name: p.name,
+        price: Number(p.price),
+        image: img?.url ?? null,
+        addedAt: Date.parse(w.created_at),
+      };
     })
     .filter((x): x is WishlistItem => !!x);
 }

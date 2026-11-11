@@ -1,0 +1,6 @@
+.next
+node_modules
+public
+supabase/seed*.sql
+lib/supabase/database.types.ts
+package-lock.json

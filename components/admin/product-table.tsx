@@ -47,10 +47,13 @@ function StockCell({ v }: { v: Row["variants"][number] }) {
         aria-label={`Stock for ${v.colour} (${v.sku})`}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className={cn("h-8 w-16 rounded-md border bg-background px-2 text-xs tabular-nums", v.stock === 0 ? "border-danger" : v.stock <= 5 && "border-warning")}
+        className={cn(
+          "bg-background h-8 w-16 rounded-md border px-2 text-xs tabular-nums",
+          v.stock === 0 ? "border-danger" : v.stock <= 5 && "border-warning",
+        )}
       />
       {dirty && (
-        <button type="submit" disabled={pending} className="h-8 rounded-md bg-foreground px-2 text-[11px] text-background">
+        <button type="submit" disabled={pending} className="bg-foreground text-background h-8 rounded-md px-2 text-[11px]">
           Save
         </button>
       )}
@@ -79,7 +82,7 @@ export function ProductTable({ rows }: { rows: Row[] }) {
   return (
     <>
       {selected.length > 0 && (
-        <div className="sticky top-16 z-20 mb-3 flex flex-wrap items-center gap-2 rounded-xl border bg-surface p-3 shadow-soft">
+        <div className="bg-surface shadow-soft sticky top-16 z-20 mb-3 flex flex-wrap items-center gap-2 rounded-xl border p-3">
           <span className="mr-2 text-sm">{selected.length} selected</span>
           <Button size="sm" variant="outline" disabled={pending} onClick={() => run("publish")}>
             Publish
@@ -98,12 +101,18 @@ export function ProductTable({ rows }: { rows: Row[] }) {
           </Button>
         </div>
       )}
-      <div className="overflow-x-auto rounded-xl border bg-surface">
+      <div className="bg-surface overflow-x-auto rounded-xl border">
         <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="border-b bg-surface-muted/50 text-xs text-muted">
+          <thead className="bg-surface-muted/50 text-muted border-b text-xs">
             <tr>
               <th className="w-10 px-4 py-3">
-                <input type="checkbox" aria-label="Select all" checked={all} onChange={(e) => setSelected(e.target.checked ? rows.map((r) => r.id) : [])} className="accent-foreground" />
+                <input
+                  type="checkbox"
+                  aria-label="Select all"
+                  checked={all}
+                  onChange={(e) => setSelected(e.target.checked ? rows.map((r) => r.id) : [])}
+                  className="accent-foreground"
+                />
               </th>
               <th className="px-2 py-3 font-medium">Product</th>
               <th className="px-4 py-3 font-medium">Status</th>
@@ -115,7 +124,7 @@ export function ProductTable({ rows }: { rows: Row[] }) {
           <tbody className="divide-y">
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-muted">
+                <td colSpan={6} className="text-muted px-4 py-12 text-center">
                   No products found.
                 </td>
               </tr>
@@ -123,22 +132,32 @@ export function ProductTable({ rows }: { rows: Row[] }) {
             {rows.map((r) => (
               <tr key={r.id} className={cn(selected.includes(r.id) && "bg-surface-muted/50")}>
                 <td className="px-4 py-3">
-                  <input type="checkbox" aria-label={`Select ${r.name}`} checked={selected.includes(r.id)} onChange={(e) => setSelected((s) => (e.target.checked ? [...s, r.id] : s.filter((x) => x !== r.id)))} className="accent-foreground" />
+                  <input
+                    type="checkbox"
+                    aria-label={`Select ${r.name}`}
+                    checked={selected.includes(r.id)}
+                    onChange={(e) => setSelected((s) => (e.target.checked ? [...s, r.id] : s.filter((x) => x !== r.id)))}
+                    className="accent-foreground"
+                  />
                 </td>
                 <td className="px-2 py-3">
-                  <Link href={`/admin/products/${r.id}`} className="flex items-center gap-3 hover:text-cognac">
-                    {r.image ? <Image src={r.image} alt="" width={44} height={55} className="h-[55px] w-11 rounded-md object-cover" /> : <span className="h-[55px] w-11 rounded-md bg-surface-muted" />}
+                  <Link href={`/admin/products/${r.id}`} className="hover:text-cognac flex items-center gap-3">
+                    {r.image ? (
+                      <Image src={r.image} alt="" width={44} height={55} className="h-[55px] w-11 rounded-md object-cover" />
+                    ) : (
+                      <span className="bg-surface-muted h-[55px] w-11 rounded-md" />
+                    )}
                     <span>
                       <span className="font-medium">{r.name}</span>
-                      {r.featured && <span className="ml-2 text-xs text-cognac">★ Featured</span>}
-                      <span className="block text-xs text-muted">/{r.slug}</span>
+                      {r.featured && <span className="text-cognac ml-2 text-xs">★ Featured</span>}
+                      <span className="text-muted block text-xs">/{r.slug}</span>
                     </span>
                   </Link>
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge status={r.status} />
                 </td>
-                <td className="px-4 py-3 text-muted">{r.category}</td>
+                <td className="text-muted px-4 py-3">{r.category}</td>
                 <td className="px-4 py-3 tabular-nums">{formatINR(r.price)}</td>
                 <td className="px-4 py-3">
                   <div className="flex flex-wrap gap-x-4 gap-y-2">

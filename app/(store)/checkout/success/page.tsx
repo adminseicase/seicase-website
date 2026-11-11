@@ -20,7 +20,7 @@ async function Confirmation({ searchParams }: { searchParams: PageProps<"/checko
     return (
       <div className="py-16 text-center">
         <h1 className="text-4xl">We couldn&apos;t find that order</h1>
-        <p className="mt-3 text-muted">Please check the link in your confirmation email, or contact us.</p>
+        <p className="text-muted mt-3">Please check the link in your confirmation email, or contact us.</p>
       </div>
     );
   }
@@ -29,17 +29,20 @@ async function Confirmation({ searchParams }: { searchParams: PageProps<"/checko
     <>
       <ClearCart />
       <div className="mx-auto mb-12 max-w-xl text-center">
-        <CircleCheck className="mx-auto size-14 stroke-1 text-success" aria-hidden="true" />
+        <CircleCheck className="text-success mx-auto size-14 stroke-1" aria-hidden="true" />
         <h1 className="mt-4 text-4xl md:text-5xl">Thank you, {(order.customer_name ?? "").split(" ")[0] || "friend"}.</h1>
-        <p className="mt-3 text-muted">
-          Your order <strong className="font-medium text-foreground">#{order.order_number}</strong> {order.status === "pending" ? "is awaiting payment confirmation" : "is confirmed"}. We&apos;ve sent the details to{" "}
-          {order.email}.
+        <p className="text-muted mt-3">
+          Your order <strong className="text-foreground font-medium">#{order.order_number}</strong>{" "}
+          {order.status === "pending" ? "is awaiting payment confirmation" : "is confirmed"}. We&apos;ve sent the details to {order.email}.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/shop" className="inline-flex h-11 items-center rounded-md bg-foreground px-5 text-sm text-background hover:bg-brown">
+          <Link href="/shop" className="bg-foreground text-background hover:bg-brown inline-flex h-11 items-center rounded-md px-5 text-sm">
             Continue Shopping
           </Link>
-          <Link href="/account" className="inline-flex h-11 items-center rounded-md border border-foreground px-5 text-sm hover:bg-foreground hover:text-background">
+          <Link
+            href="/account"
+            className="border-foreground hover:bg-foreground hover:text-background inline-flex h-11 items-center rounded-md border px-5 text-sm"
+          >
             My Orders
           </Link>
         </div>
@@ -51,7 +54,7 @@ async function Confirmation({ searchParams }: { searchParams: PageProps<"/checko
 
 export default function SuccessPage({ searchParams }: PageProps<"/checkout/success">) {
   return (
-    <Container className="pb-10 pt-10 md:pt-16">
+    <Container className="pt-10 pb-10 md:pt-16">
       <Suspense fallback={<Skeleton className="mx-auto h-96 max-w-3xl" />}>
         <Confirmation searchParams={searchParams} />
       </Suspense>

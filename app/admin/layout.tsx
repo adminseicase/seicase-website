@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import { requireStaff } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 import { AdminShell } from "@/components/admin/shell";
@@ -12,6 +13,16 @@ export const metadata: Metadata = { title: { default: "Admin", template: "%s · 
 export const instant = false;
 
 async function Guarded({ children }: { children: React.ReactNode }) {
+  // Explicitly per-request, even before Supabase is configured.
+  await connection();
+  if (!isSupabaseConfigured) {
+    return (
+      <main className="mx-auto max-w-lg px-6 py-24 text-center">
+        <p className="font-serif text-4xl">seicase admin</p>
+        <p className="text-muted mt-4">Connect Supabase to use the admin panel. Follow docs/SETUP.md, then restart the server.</p>
+      </main>
+    );
+  }
   const user = await requireStaff();
   const counts = await getTrackerCounts();
   return (
@@ -22,14 +33,6 @@ async function Guarded({ children }: { children: React.ReactNode }) {
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  if (!isSupabaseConfigured) {
-    return (
-      <main className="mx-auto max-w-lg px-6 py-24 text-center">
-        <p className="font-serif text-4xl">seicase admin</p>
-        <p className="mt-4 text-muted">Connect Supabase to use the admin panel. Follow docs/SETUP.md, then restart the server.</p>
-      </main>
-    );
-  }
   return (
     <Suspense fallback={<AdminSkeleton />}>
       <Guarded>{children}</Guarded>

@@ -12,7 +12,18 @@ import { deleteAddress, saveAddress } from "@/lib/actions/account";
 import { INDIAN_STATES } from "@/lib/utils";
 import type { SavedAddress } from "@/lib/types";
 
-const empty = { full_name: "", phone: "", line1: "", line2: "", landmark: "", city: "", state: "", pincode: "", label: "Home", is_default: false };
+const empty = {
+  full_name: "",
+  phone: "",
+  line1: "",
+  line2: "",
+  landmark: "",
+  city: "",
+  state: "",
+  pincode: "",
+  label: "Home",
+  is_default: false,
+};
 
 export function AddressBook({ addresses }: { addresses: SavedAddress[] }) {
   const router = useRouter();
@@ -24,7 +35,19 @@ export function AddressBook({ addresses }: { addresses: SavedAddress[] }) {
   const edit = (a?: SavedAddress) => {
     setForm(
       a
-        ? { id: a.id, full_name: a.full_name, phone: a.phone.replace(/^\+91/, ""), line1: a.line1, line2: a.line2 ?? "", landmark: a.landmark ?? "", city: a.city, state: a.state, pincode: a.pincode, label: a.label ?? "Home", is_default: a.is_default }
+        ? {
+            id: a.id,
+            full_name: a.full_name,
+            phone: a.phone.replace(/^\+91/, ""),
+            line1: a.line1,
+            line2: a.line2 ?? "",
+            landmark: a.landmark ?? "",
+            city: a.city,
+            state: a.state,
+            pincode: a.pincode,
+            label: a.label ?? "Home",
+            is_default: a.is_default,
+          }
         : { ...empty, is_default: addresses.length === 0 },
     );
     setOpen(true);
@@ -40,13 +63,13 @@ export function AddressBook({ addresses }: { addresses: SavedAddress[] }) {
     <>
       <div className="grid gap-4 sm:grid-cols-2">
         {addresses.map((a) => (
-          <div key={a.id} className="rounded-2xl border bg-surface p-5 text-sm">
+          <div key={a.id} className="bg-surface rounded-2xl border p-5 text-sm">
             <div className="mb-2 flex items-center gap-2">
               <MapPin className="size-4 stroke-[1.5]" aria-hidden="true" />
               <p className="font-medium">{a.label}</p>
               {a.is_default && <Badge tone="cognac">Default</Badge>}
             </div>
-            <address className="not-italic leading-relaxed text-muted">
+            <address className="text-muted leading-relaxed not-italic">
               {a.full_name}
               <br />
               {a.line1}
@@ -77,7 +100,11 @@ export function AddressBook({ addresses }: { addresses: SavedAddress[] }) {
             </div>
           </div>
         ))}
-        <button type="button" onClick={() => edit()} className="flex min-h-44 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed text-sm text-muted hover:border-foreground hover:text-foreground">
+        <button
+          type="button"
+          onClick={() => edit()}
+          className="text-muted hover:border-foreground hover:text-foreground flex min-h-44 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed text-sm"
+        >
           <Plus className="size-5 stroke-[1.5]" aria-hidden="true" /> Add a new address
         </button>
       </div>

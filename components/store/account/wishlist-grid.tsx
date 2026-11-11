@@ -24,14 +24,24 @@ export function WishlistGrid({ sync = false }: { sync?: boolean }) {
       .catch(() => {});
   }, [sync, merge]);
 
-  if (!hydrated) return <div className="grid grid-cols-2 gap-4 md:grid-cols-3">{[0, 1, 2].map((i) => <Skeleton key={i} className="aspect-[4/5] rounded-xl" />)}</div>;
+  if (!hydrated)
+    return (
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <Skeleton key={i} className="aspect-[4/5] rounded-xl" />
+        ))}
+      </div>
+    );
   if (!items.length) {
     return (
       <div className="rounded-2xl border border-dashed p-12 text-center">
-        <Heart className="mx-auto size-10 stroke-1 text-muted" aria-hidden="true" />
+        <Heart className="text-muted mx-auto size-10 stroke-1" aria-hidden="true" />
         <p className="mt-4 font-serif text-2xl">Your wishlist is empty</p>
-        <p className="mt-1 text-sm text-muted">Tap the heart on any piece to save it for later.</p>
-        <Link href="/shop" className="mt-6 inline-flex h-11 items-center rounded-md bg-foreground px-5 text-sm text-background hover:bg-brown">
+        <p className="text-muted mt-1 text-sm">Tap the heart on any piece to save it for later.</p>
+        <Link
+          href="/shop"
+          className="bg-foreground text-background hover:bg-brown mt-6 inline-flex h-11 items-center rounded-md px-5 text-sm"
+        >
           Explore Collection
         </Link>
       </div>
@@ -42,11 +52,19 @@ export function WishlistGrid({ sync = false }: { sync?: boolean }) {
       {items.map((i) => (
         <li key={i.productId} className="group relative">
           <Link href={`/product/${i.slug}`} className="block">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-surface-muted">
-              <Image src={i.image || "/images/placeholder.webp"} alt={i.name} fill sizes="(max-width: 768px) 46vw, 30vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" placeholder="blur" blurDataURL={BLUR_DATA_URL} />
+            <div className="bg-surface-muted relative aspect-[4/5] overflow-hidden rounded-xl">
+              <Image
+                src={i.image || "/images/placeholder.webp"}
+                alt={i.name}
+                fill
+                sizes="(max-width: 768px) 46vw, 30vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                placeholder="blur"
+                blurDataURL={BLUR_DATA_URL}
+              />
             </div>
             <p className="mt-3 font-serif text-lg leading-tight">{i.name}</p>
-            <p className="text-sm text-muted">{formatINR(i.price)}</p>
+            <p className="text-muted text-sm">{formatINR(i.price)}</p>
           </Link>
           <button
             type="button"
@@ -54,12 +72,15 @@ export function WishlistGrid({ sync = false }: { sync?: boolean }) {
               remove(i.productId);
               if (sync) toggleWishlistServer(i.productId, false).catch(() => {});
             }}
-            className="absolute right-3 top-3 inline-flex size-10 items-center justify-center rounded-full bg-surface/90 hover:bg-surface"
+            className="bg-surface/90 hover:bg-surface absolute top-3 right-3 inline-flex size-10 items-center justify-center rounded-full"
             aria-label={`Remove ${i.name} from wishlist`}
           >
             <Trash className="size-4 stroke-[1.5]" />
           </button>
-          <Link href={`/product/${i.slug}`} className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-md border border-foreground text-sm hover:bg-foreground hover:text-background">
+          <Link
+            href={`/product/${i.slug}`}
+            className="border-foreground hover:bg-foreground hover:text-background mt-3 inline-flex h-10 w-full items-center justify-center rounded-md border text-sm"
+          >
             Choose colour &amp; add to bag
           </Link>
         </li>

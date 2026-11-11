@@ -18,9 +18,18 @@ type Result = { ok: boolean; message: string };
 
 async function authorizeOrder(orderId: string, token?: string | null) {
   const admin = createAdminClient();
-  const { data: o } = await admin.from("orders").select("id, user_id, access_token, status, email, customer_name, order_number, payment_status, payment_method, delivered_at").eq("id", orderId).single();
+  const { data: o } = await admin
+    .from("orders")
+    .select("id, user_id, access_token, status, email, customer_name, order_number, payment_status, payment_method, delivered_at")
+    .eq("id", orderId)
+    .single();
   if (!o) return null;
-  if (token && Buffer.from(token).length === Buffer.from(o.access_token).length && timingSafeEqual(Buffer.from(token), Buffer.from(o.access_token))) return o;
+  if (
+    token &&
+    Buffer.from(token).length === Buffer.from(o.access_token).length &&
+    timingSafeEqual(Buffer.from(token), Buffer.from(o.access_token))
+  )
+    return o;
   const user = await getCurrentUser();
   if (user && user.id === o.user_id) return o;
   return null;
@@ -32,7 +41,8 @@ export async function cancelOrder(input: unknown): Promise<Result> {
   if (!d.success) return { ok: false, message: "Invalid request" };
   const o = await authorizeOrder(d.data.orderId, d.data.token);
   if (!o) return { ok: false, message: "Order not found" };
-  if (!["placed", "confirmed"].includes(o.status)) return { ok: false, message: "This order has already shipped and can't be cancelled. You can request a return after delivery." };
+  if (!["placed", "confirmed"].includes(o.status))
+    return { ok: false, message: "This order has already shipped and can't be cancelled. You can request a return after delivery." };
   const admin = createAdminClient();
   await admin.rpc("release_order", { p_order_id: o.id, p_reason: "Cancelled by customer" });
   if (o.payment_method === "razorpay" && o.payment_status === "paid") await refundOrder(o.id, undefined, "Customer cancellation");
@@ -40,7 +50,13 @@ export async function cancelOrder(input: unknown): Promise<Result> {
     sendEmail({
       to: o.email,
       subject: `Your order #${o.order_number} has been cancelled`,
-      template: { kind: "order-status", orderNumber: o.order_number, customerName: o.customer_name ?? "there", status: "cancelled", orderUrl: orderUrl(o.order_number, o.access_token) },
+      template: {
+        kind: "order-status",
+        orderNumber: o.order_number,
+        customerName: o.customer_name ?? "there",
+        status: "cancelled",
+        orderUrl: orderUrl(o.order_number, o.access_token),
+      },
     }),
   );
   revalidatePath("/account");
@@ -82,7 +98,11 @@ export async function requestReturn(input: unknown): Promise<Result> {
 /* ------------------------------- profile ------------------------------- */
 export async function updateProfile(input: unknown): Promise<Result> {
   const d = z
-    .object({ full_name: z.string().trim().min(2).max(80), phone: indianPhone.optional().or(z.literal("")), marketing_opt_in: z.boolean().optional() })
+    .object({
+      full_name: z.string().trim().min(2).max(80),
+      phone: indianPhone.optional().or(z.literal("")),
+      marketing_opt_in: z.boolean().optional(),
+    })
     .safeParse(input);
   if (!d.success) return { ok: false, message: d.error.issues[0]?.message ?? "Please check your details" };
   const user = await getCurrentUser();
@@ -106,7 +126,11 @@ export async function changePassword(input: unknown): Promise<Result> {
 }
 
 /* ------------------------------ addresses ------------------------------ */
-const savedAddressSchema = addressSchema.extend({ id: z.string().uuid().optional(), label: z.string().trim().max(30).optional(), is_default: z.boolean().optional() });
+const savedAddressSchema = addressSchema.extend({
+  id: z.string().uuid().optional(),
+  label: z.string().trim().max(30).optional(),
+  is_default: z.boolean().optional(),
+});
 
 export async function saveAddress(input: unknown): Promise<Result> {
   const d = savedAddressSchema.safeParse(input);
@@ -116,7 +140,9 @@ export async function saveAddress(input: unknown): Promise<Result> {
   const supabase = await createClient();
   const { id, ...rest } = d.data;
   const row = { ...rest, line2: rest.line2 || null, landmark: rest.landmark || null, label: rest.label || "Home", user_id: user.id };
-  const { error } = id ? await supabase.from("addresses").update(row).eq("id", id).eq("user_id", user.id) : await supabase.from("addresses").insert(row);
+  const { error } = id
+    ? await supabase.from("addresses").update(row).eq("id", id).eq("user_id", user.id)
+    : await supabase.from("addresses").insert(row);
   if (error) return { ok: false, message: "Couldn't save this address" };
   revalidatePath("/account/addresses");
   return { ok: true, message: "Address saved" };
@@ -136,4 +162,3 @@ export async function signOut() {
   await supabase.auth.signOut();
   redirect("/");
 }
-

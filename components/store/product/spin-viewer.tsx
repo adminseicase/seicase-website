@@ -27,7 +27,7 @@ export default function SpinViewer({ frames, name }: { frames: string[]; name: s
         aria-valuemax={n}
         aria-valuenow={frame + 1}
         aria-valuetext={`Angle ${Math.round((frame / n) * 360)} degrees`}
-        className="relative mx-auto aspect-square max-w-[560px] cursor-grab touch-pan-y select-none overflow-hidden rounded-2xl bg-surface-muted active:cursor-grabbing"
+        className="bg-surface-muted relative mx-auto aspect-square max-w-[560px] cursor-grab touch-pan-y overflow-hidden rounded-2xl select-none active:cursor-grabbing"
         onKeyDown={(e) => {
           if (e.key === "ArrowRight") step(1);
           if (e.key === "ArrowLeft") step(-1);
@@ -60,19 +60,29 @@ export default function SpinViewer({ frames, name }: { frames: string[]; name: s
           />
         ))}
         {loaded < n && (
-          <div className="absolute inset-x-0 bottom-0 h-1 bg-border">
-            <div className="h-full bg-cognac transition-[width]" style={{ width: `${(loaded / n) * 100}%` }} />
+          <div className="bg-border absolute inset-x-0 bottom-0 h-1">
+            <div className="bg-cognac h-full transition-[width]" style={{ width: `${(loaded / n) * 100}%` }} />
           </div>
         )}
       </div>
-      <div className="mt-4 flex items-center justify-center gap-4 text-sm text-muted">
-        <button type="button" onClick={() => step(-1)} className="inline-flex size-11 items-center justify-center rounded-full border bg-surface hover:border-foreground" aria-label="Rotate left">
+      <div className="text-muted mt-4 flex items-center justify-center gap-4 text-sm">
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          className="bg-surface hover:border-foreground inline-flex size-11 items-center justify-center rounded-full border"
+          aria-label="Rotate left"
+        >
           <ArrowLeft className="size-4 stroke-[1.5]" />
         </button>
         <span className="inline-flex items-center gap-2">
           <Hand className="size-4 stroke-[1.5]" aria-hidden="true" /> Drag to rotate
         </span>
-        <button type="button" onClick={() => step(1)} className="inline-flex size-11 items-center justify-center rounded-full border bg-surface hover:border-foreground" aria-label="Rotate right">
+        <button
+          type="button"
+          onClick={() => step(1)}
+          className="bg-surface hover:border-foreground inline-flex size-11 items-center justify-center rounded-full border"
+          aria-label="Rotate right"
+        >
           <ArrowRight className="size-4 stroke-[1.5]" />
         </button>
       </div>

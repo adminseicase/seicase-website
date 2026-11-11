@@ -18,7 +18,7 @@ export function MobileMenu({ nav, phone }: { nav: NavData; phone: string }) {
       <ul className="pb-3">
         {links.map((l) => (
           <li key={l.href}>
-            <Link href={l.href} onClick={close} className="flex h-11 items-center text-[0.95rem] text-foreground/85 hover:text-cognac">
+            <Link href={l.href} onClick={close} className="text-foreground/85 hover:text-cognac flex h-11 items-center text-[0.95rem]">
               {l.label}
             </Link>
           </li>
@@ -46,7 +46,7 @@ export function MobileMenu({ nav, phone }: { nav: NavData; phone: string }) {
         <Link href="/wishlist" onClick={close} className="flex h-11 items-center justify-center gap-2 rounded-md border text-sm">
           <Heart className="size-4 stroke-[1.5]" /> Wishlist
         </Link>
-        <a href={`tel:${phone.replace(/\s/g, "")}`} className="col-span-2 flex h-11 items-center justify-center gap-2 text-sm text-muted">
+        <a href={`tel:${phone.replace(/\s/g, "")}`} className="text-muted col-span-2 flex h-11 items-center justify-center gap-2 text-sm">
           <Phone className="size-4 stroke-[1.5]" /> {phone}
         </a>
       </div>

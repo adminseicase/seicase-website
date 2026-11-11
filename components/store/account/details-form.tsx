@@ -13,7 +13,7 @@ export function DetailsForm({ initial }: { initial: { full_name: string; phone: 
   return (
     <div className="space-y-10">
       <form
-        className="grid max-w-xl gap-4 rounded-2xl border bg-surface p-6"
+        className="bg-surface grid max-w-xl gap-4 rounded-2xl border p-6"
         onSubmit={(e) => {
           e.preventDefault();
           start(async () => {
@@ -26,7 +26,13 @@ export function DetailsForm({ initial }: { initial: { full_name: string; phone: 
         <h2 className="text-2xl">Personal details</h2>
         <div>
           <Label htmlFor="d-name">Full name</Label>
-          <Input id="d-name" required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} autoComplete="name" />
+          <Input
+            id="d-name"
+            required
+            value={form.full_name}
+            onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+            autoComplete="name"
+          />
         </div>
         <div>
           <Label htmlFor="d-email">Email</Label>
@@ -34,17 +40,24 @@ export function DetailsForm({ initial }: { initial: { full_name: string; phone: 
         </div>
         <div>
           <Label htmlFor="d-phone">Mobile number</Label>
-          <Input id="d-phone" inputMode="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} autoComplete="tel" />
+          <Input
+            id="d-phone"
+            inputMode="tel"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            autoComplete="tel"
+          />
         </div>
         <label className="flex items-center gap-3 text-sm">
-          <Checkbox checked={form.marketing_opt_in} onChange={(e) => setForm({ ...form, marketing_opt_in: e.target.checked })} /> Email me about new arrivals and offers
+          <Checkbox checked={form.marketing_opt_in} onChange={(e) => setForm({ ...form, marketing_opt_in: e.target.checked })} /> Email me
+          about new arrivals and offers
         </label>
         <Button type="submit" className="w-fit" disabled={pending}>
           Save changes
         </Button>
       </form>
       <form
-        className="grid max-w-xl gap-4 rounded-2xl border bg-surface p-6"
+        className="bg-surface grid max-w-xl gap-4 rounded-2xl border p-6"
         onSubmit={(e) => {
           e.preventDefault();
           start(async () => {
@@ -59,7 +72,15 @@ export function DetailsForm({ initial }: { initial: { full_name: string; phone: 
         <h2 className="text-2xl">Change password</h2>
         <div>
           <Label htmlFor="d-pw">New password</Label>
-          <Input id="d-pw" type="password" minLength={8} required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+          <Input
+            id="d-pw"
+            type="password"
+            minLength={8}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
+          />
         </div>
         <Button type="submit" variant="secondary" className="w-fit" disabled={pending}>
           Update password

@@ -13,7 +13,14 @@ import { uploadImage } from "@/lib/upload";
 import { RichText } from "./rich-text";
 
 export type FieldDef =
-  | { name: string; label: string; type: "text" | "number" | "url" | "datetime" | "date"; required?: boolean; hint?: string; placeholder?: string }
+  | {
+      name: string;
+      label: string;
+      type: "text" | "number" | "url" | "datetime" | "date";
+      required?: boolean;
+      hint?: string;
+      placeholder?: string;
+    }
   | { name: string; label: string; type: "textarea"; rows?: number; hint?: string }
   | { name: string; label: string; type: "richtext" }
   | { name: string; label: string; type: "boolean"; hint?: string }
@@ -26,14 +33,38 @@ export interface Column {
   render?: "image" | "bool" | "badge" | "money" | "date";
 }
 
-function ImageField({ value, onChange, bucket, folder, label }: { value: string; onChange: (v: string) => void; bucket: "cms-images" | "product-images"; folder: string; label: string }) {
+function ImageField({
+  value,
+  onChange,
+  bucket,
+  folder,
+  label,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  bucket: "cms-images" | "product-images";
+  folder: string;
+  label: string;
+}) {
   const [busy, setBusy] = useState(false);
   return (
     <div className="flex items-center gap-3">
-      {value ? <Image src={value} alt="" width={96} height={72} className="h-[72px] w-24 rounded-md object-cover" /> : <span className="flex h-[72px] w-24 items-center justify-center rounded-md bg-surface-muted text-muted"><ImagePlus className="size-5" /></span>}
+      {value ? (
+        <Image src={value} alt="" width={96} height={72} className="h-[72px] w-24 rounded-md object-cover" />
+      ) : (
+        <span className="bg-surface-muted text-muted flex h-[72px] w-24 items-center justify-center rounded-md">
+          <ImagePlus className="size-5" />
+        </span>
+      )}
       <div className="min-w-0 flex-1 space-y-1">
-        <Input aria-label={`${label} URL`} value={value} onChange={(e) => onChange(e.target.value)} placeholder="/images/… or upload" className="h-9 text-xs" />
-        <label className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-xs hover:border-foreground">
+        <Input
+          aria-label={`${label} URL`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="/images/… or upload"
+          className="h-9 text-xs"
+        />
+        <label className="hover:border-foreground inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-xs">
           {busy ? <LoaderCircle className="size-3.5 animate-spin" /> : <ImagePlus className="size-3.5" />} Upload
           <input
             type="file"
@@ -82,11 +113,17 @@ export function CrudManager({
 
   const fmt = (row: Record<string, unknown>, c: Column) => {
     const v = row[c.key];
-    if (c.render === "image") return v ? <Image src={String(v)} alt="" width={56} height={42} className="h-[42px] w-14 rounded object-cover" /> : <span className="block h-[42px] w-14 rounded bg-surface-muted" />;
+    if (c.render === "image")
+      return v ? (
+        <Image src={String(v)} alt="" width={56} height={42} className="h-[42px] w-14 rounded object-cover" />
+      ) : (
+        <span className="bg-surface-muted block h-[42px] w-14 rounded" />
+      );
     if (c.render === "bool") return v ? "Yes" : "—";
     if (c.render === "money") return v == null ? "—" : `₹${Number(v).toLocaleString("en-IN")}`;
     if (c.render === "date") return v ? new Date(String(v)).toLocaleDateString("en-IN") : "—";
-    if (c.render === "badge") return <span className="rounded-full bg-surface-muted px-2 py-0.5 text-xs capitalize">{String(v ?? "")}</span>;
+    if (c.render === "badge")
+      return <span className="bg-surface-muted rounded-full px-2 py-0.5 text-xs capitalize">{String(v ?? "")}</span>;
     return <span className="line-clamp-2">{Array.isArray(v) ? v.join(", ") : String(v ?? "—")}</span>;
   };
 
@@ -112,9 +149,9 @@ export function CrudManager({
           <Plus /> {addLabel}
         </Button>
       </div>
-      <div className="overflow-x-auto rounded-xl border bg-surface">
+      <div className="bg-surface overflow-x-auto rounded-xl border">
         <table className="w-full min-w-[600px] text-left text-sm">
-          <thead className="border-b bg-surface-muted/50 text-xs text-muted">
+          <thead className="bg-surface-muted/50 text-muted border-b text-xs">
             <tr>
               {columns.map((c) => (
                 <th key={c.key} className="px-4 py-3 font-medium">
@@ -127,7 +164,7 @@ export function CrudManager({
           <tbody className="divide-y">
             {rows.length === 0 && (
               <tr>
-                <td colSpan={columns.length + 1} className="px-4 py-10 text-center text-muted">
+                <td colSpan={columns.length + 1} className="text-muted px-4 py-10 text-center">
                   Nothing here yet.
                 </td>
               </tr>
@@ -141,7 +178,12 @@ export function CrudManager({
                 ))}
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-1">
-                    <button type="button" onClick={() => setEditing({ id: String(r.id), values: toInput(r) })} className="inline-flex size-9 items-center justify-center rounded hover:bg-surface-muted" aria-label="Edit">
+                    <button
+                      type="button"
+                      onClick={() => setEditing({ id: String(r.id), values: toInput(r) })}
+                      className="hover:bg-surface-muted inline-flex size-9 items-center justify-center rounded"
+                      aria-label="Edit"
+                    >
                       <Pencil className="size-4" />
                     </button>
                     <button
@@ -155,7 +197,7 @@ export function CrudManager({
                           router.refresh();
                         });
                       }}
-                      className="inline-flex size-9 items-center justify-center rounded text-danger hover:bg-danger-bg"
+                      className="text-danger hover:bg-danger-bg inline-flex size-9 items-center justify-center rounded"
                       aria-label="Delete"
                     >
                       <Trash className="size-4" />
@@ -168,7 +210,12 @@ export function CrudManager({
         </table>
       </div>
 
-      <Modal open={!!editing} onOpenChange={(o) => !o && setEditing(null)} title={editing?.id ? "Edit" : addLabel} className="w-[min(96vw,760px)]">
+      <Modal
+        open={!!editing}
+        onOpenChange={(o) => !o && setEditing(null)}
+        title={editing?.id ? "Edit" : addLabel}
+        className="w-[min(96vw,760px)]"
+      >
         {editing && (
           <form
             className="space-y-4"
@@ -192,7 +239,7 @@ export function CrudManager({
                   return (
                     <label key={f.name} className="flex items-center gap-3 text-sm">
                       <Checkbox checked={!!val} onChange={(e) => setVal(f.name, e.target.checked)} /> {f.label}
-                      {f.hint && <span className="text-xs text-muted">{f.hint}</span>}
+                      {f.hint && <span className="text-muted text-xs">{f.hint}</span>}
                     </label>
                   );
                 case "textarea":
@@ -200,7 +247,7 @@ export function CrudManager({
                     <div key={f.name}>
                       <Label htmlFor={id}>{f.label}</Label>
                       <Textarea id={id} rows={f.rows ?? 3} value={String(val ?? "")} onChange={(e) => setVal(f.name, e.target.value)} />
-                      {f.hint && <p className="mt-1 text-xs text-muted">{f.hint}</p>}
+                      {f.hint && <p className="text-muted mt-1 text-xs">{f.hint}</p>}
                     </div>
                   );
                 case "richtext":
@@ -227,7 +274,13 @@ export function CrudManager({
                   return (
                     <div key={f.name}>
                       <Label>{f.label}</Label>
-                      <ImageField value={String(val ?? "")} onChange={(v) => setVal(f.name, v)} bucket={f.bucket ?? "cms-images"} folder={f.folder} label={f.label} />
+                      <ImageField
+                        value={String(val ?? "")}
+                        onChange={(v) => setVal(f.name, v)}
+                        bucket={f.bucket ?? "cms-images"}
+                        folder={f.folder}
+                        label={f.label}
+                      />
                     </div>
                   );
                 default:
@@ -242,7 +295,7 @@ export function CrudManager({
                         value={String(val ?? "")}
                         onChange={(e) => setVal(f.name, e.target.value)}
                       />
-                      {f.hint && <p className="mt-1 text-xs text-muted">{f.hint}</p>}
+                      {f.hint && <p className="text-muted mt-1 text-xs">{f.hint}</p>}
                     </div>
                   );
               }

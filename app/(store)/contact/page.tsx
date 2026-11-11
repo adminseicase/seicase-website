@@ -23,11 +23,11 @@ export default async function ContactPage() {
   ].filter((s) => s.href);
   return (
     <Container className="py-10 md:py-16">
-      <div className="grid gap-10 overflow-hidden rounded-3xl bg-surface-muted/70 md:grid-cols-[1fr_1.1fr]">
+      <div className="bg-surface-muted/70 grid gap-10 overflow-hidden rounded-3xl md:grid-cols-[1fr_1.1fr]">
         <div className="relative p-8 md:p-12">
-          <BotanicalVase className="pointer-events-none absolute -bottom-6 right-0 h-72 text-cognac/25 md:h-96" />
+          <BotanicalVase className="text-cognac/25 pointer-events-none absolute right-0 -bottom-6 h-72 md:h-96" />
           <h1 className="text-5xl md:text-6xl">Get in Touch</h1>
-          <p className="mt-3 text-muted">We&apos;d love to hear from you.</p>
+          <p className="text-muted mt-3">We&apos;d love to hear from you.</p>
           <ul className="relative mt-8 space-y-5 text-sm">
             <li className="flex items-center gap-4">
               <Phone className="size-5 stroke-[1.5]" aria-hidden="true" />
@@ -54,7 +54,13 @@ export default async function ContactPage() {
           <ul className="relative mt-8 flex gap-1">
             {socials.map(({ href, label, Icon }) => (
               <li key={label}>
-                <a href={href!} target="_blank" rel="noopener noreferrer" aria-label={label} className="inline-flex size-11 items-center justify-center rounded-full hover:bg-surface">
+                <a
+                  href={href!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="hover:bg-surface inline-flex size-11 items-center justify-center rounded-full"
+                >
                   <Icon />
                 </a>
               </li>

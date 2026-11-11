@@ -82,7 +82,9 @@ export async function sendEmail({
   try {
     const { html, text } = await renderEmail(template);
     if (!serverEnv.resendApiKey) {
-      console.info(`[email:dev] To: ${Array.isArray(to) ? to.join(", ") : to} · ${subject} (${template.kind}) — set RESEND_API_KEY to send.`);
+      console.info(
+        `[email:dev] To: ${Array.isArray(to) ? to.join(", ") : to} · ${subject} (${template.kind}) — set RESEND_API_KEY to send.`,
+      );
       return { ok: true };
     }
     resend ??= new Resend(serverEnv.resendApiKey);
